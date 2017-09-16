@@ -1,26 +1,15 @@
-import model.Pokoban
-import javax.ws.rs.*
-import javax.ws.rs.core.MediaType
+import services.PokobanService
+import java.util.*
+import javax.ws.rs.ApplicationPath
+import javax.ws.rs.core.Application
 
-@Path("/")
-class PokobanService {
+@ApplicationPath("/")
+class MyApplication : Application() {
 
-    @GET
-    @Produces(MediaType.APPLICATION_JSON)
-    fun index(): List<Pokoban> {
-        return listOf<Pokoban>(Pokoban())
-    }
-
-    @GET
-    @Path("{id}")
-    @Produces(MediaType.APPLICATION_JSON)
-    fun show(@PathParam("id") id: String): Pokoban {
-        return Pokoban()
-    }
-
-    @POST
-    @Produces(MediaType.APPLICATION_JSON)
-    fun create(): Pokoban {
-        return Pokoban()
+    /**
+     * @return a non-empty collection with classes, that must be included in the published JAX-RS application
+     */
+    override fun getClasses(): Set<Class<*>> {
+        return HashSet<Class<*>>(listOf(PokobanService::class.java))
     }
 }
