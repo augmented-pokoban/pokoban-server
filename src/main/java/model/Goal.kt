@@ -1,4 +1,3 @@
 package model
 
-class Goal {
-}
+class Goal(id: String, name: String) : LevelObject(id, name)

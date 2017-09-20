@@ -1,5 +1,3 @@
 package model
 
-class Agent {
-
-}
+class Agent(id: String, name: String) : LevelObject(id, name)

@@ -1,4 +1,3 @@
 package model
 
-class Box {
-}
+class Box(id: String, name: String) : LevelObject(id, name)

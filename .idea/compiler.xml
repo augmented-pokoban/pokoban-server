@@ -10,7 +10,7 @@
         <module name="pokoban-server" />
       </profile>
     </annotationProcessing>
-    <bytecodeTargetLevel>
+    <bytecodeTargetLevel target="1.8">
       <module name="pokoban-server" target="1.5" />
     </bytecodeTargetLevel>
   </component>
