@@ -1,5 +1,7 @@
 package model
 
+import com.google.gson.annotations.SerializedName
+
 class Pokoban(val id: String, val level: Level) {
 
 	/**
@@ -32,10 +34,16 @@ class Pokoban(val id: String, val level: Level) {
 	}
 }
 
-data class State(val agents: List<StateObject>,
-				 val boxes: List<StateObject>,
-				 val goals: List<StateObject>,
-				 val walls: List<StateObject>,
-				 val dimensions: Int)
+data class State (
+		@SerializedName("agents") val agents: List<StateObject>,
+		@SerializedName("boxes") val boxes: List<StateObject>,
+		@SerializedName("goals") val goals: List<StateObject>,
+		@SerializedName("walls") val walls: List<StateObject>,
+		@SerializedName("dimensions") val dimensions: Int
+)
 
-data class StateObject(val row: Int, val col: Int, val letter: String)
+data class StateObject(
+		@SerializedName("row") val row: Int,
+		@SerializedName("col") val col: Int,
+		@SerializedName("letter") val letter: String
+)

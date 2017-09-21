@@ -32,7 +32,7 @@ class LevelService private constructor() {
 		// iterate over lines in level file
 		File(javaClass.classLoader.getResource("levels/" + filename).toURI()).readLines().forEachIndexed { y, line ->
 			{
-				mapfile += line
+				mapfile += line + "\n"
 				if (y > height) height = y
 				// iterate over each character in line
 				line.split(Regex("")).forEachIndexed { x, field ->
