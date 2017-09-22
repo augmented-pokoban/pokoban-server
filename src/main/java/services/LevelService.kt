@@ -1,6 +1,7 @@
 package services
 
-import model.*
+import model.Level
+import model.objects.*
 import java.io.File
 import java.util.*
 
@@ -22,7 +23,7 @@ class LevelService private constructor() {
 
 	fun loadLevel(filename: String): Level {
 
-		val map: MutableMap<Int, LevelObject> = HashMap()
+		val map: MutableMap<Int, PokobanObject> = HashMap()
 
 		var width: Int = 0
 		var height: Int = 0
@@ -59,6 +60,11 @@ class LevelService private constructor() {
 
 		return Level(mapfile, map, width, height)
 	}
+
+	/**
+	 * Helper function for pair instances
+	 */
+	fun cantor(pair: Pair<Int, Int>): Int = cantor(pair.first, pair.second)
 
 	/**
 	 * Cantor pairing function implementation

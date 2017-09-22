@@ -2,6 +2,7 @@ package controllers
 
 import com.github.salomonbrys.kotson.jsonObject
 import com.google.gson.Gson
+import model.PokobanAction
 import services.PokobanService
 import javax.ws.rs.*
 import javax.ws.rs.core.MediaType
@@ -48,6 +49,23 @@ class PokobanController {
 		return jsonObject(
 				"state" to Gson().toJsonTree(game.getState()),
 				"map" to game.level.mapfile,
+				"gameID" to game.id
+		).toString()
+	}
+
+	/**
+	 * Takes given action in given game
+	 */
+	@POST
+	@Path("{id}/{action}")
+	@Produces(MediaType.APPLICATION_JSON)
+	fun transition(@PathParam("id") id: String,
+				   @PathParam("action") action: PokobanAction): String {
+
+		val game = PokobanService.instance.transition(id, action);
+
+		return jsonObject(
+				"state" to Gson().toJsonTree(game.getState()),
 				"gameID" to game.id
 		).toString()
 	}
