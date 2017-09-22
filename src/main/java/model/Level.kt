@@ -21,6 +21,11 @@ class Level(val mapfile: String,
 	/**
 	 * Returns the object at position (x, y) on the map
 	 */
+	fun get(pair: Pair<Int, Int>): PokobanObject? = get(pair.first, pair.second)
+
+	/**
+	 * Returns the object at position (x, y) on the map
+	 */
 	fun get(x: Int, y: Int): PokobanObject? = map[LevelService.instance.cantor(x, y)]
 
 	/**
