@@ -4,5 +4,17 @@ enum class Direction {
 	NORTH,
 	SOUTH,
 	EAST,
-	WEST,
+	WEST;
+
+	/**
+	 * Returns the inverse of a given position
+	 */
+	fun inverse(): Direction {
+		return when (this) {
+			NORTH -> SOUTH
+			SOUTH -> NORTH
+			EAST -> WEST
+			WEST -> EAST
+		}
+	}
 }

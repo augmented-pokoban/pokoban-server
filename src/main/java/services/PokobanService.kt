@@ -102,29 +102,38 @@ class PokobanService private constructor() {
 	 * Pushes a box in given direction, with agent
 	 */
 	private fun push(game: Pokoban, agent: Agent, direction: Direction): Pokoban {
-
 		// find the box
 		val (boxX, boxY) = getRelativePosition(game.level.get(agent), direction)
 		val box = game.level.get(boxX, boxY) ?: return game
-
 		val (boxNewX, boxNewY) = getRelativePosition(boxX, boxY, direction)
-		if (isValidPosition(game, boxNewX, boxNewY)) {
-			// TODO: move the box
-			game.level.update(box, boxNewX, boxNewY)
 
-			// TODO: move the agent
+		if (isValidPosition(game, boxNewX, boxNewY)) {
+			// move the box
+			game.level.update(box, boxNewX, boxNewY)
+			// move the agent into the box's old position
+			game.level.update(agent, boxX, boxY)
 		}
 
 		return game
 	}
 
+	/**
+	 * Pulls a box in given directoin, with agent
+	 */
 	private fun pull(game: Pokoban, agent: Agent, direction: Direction): Pokoban {
+		// find the box
+		val (agentX, agentY) = game.level.get(agent)
+		val (agentNewX, agentNewY) = getRelativePosition(agentX, agentY, direction)
 
-		// TODO: find the box
+		val (boxX, boxY) = getRelativePosition(game.level.get(agent), direction.inverse())
+		val box = game.level.get(boxX, boxY) ?: return game
 
-
-		// TODO: move the box
-		// TODO: move the agent
+		if (isValidPosition(game, agentNewX, agentNewY)) {
+			// move the agent
+			game.level.update(agent, agentNewX, agentNewY)
+			// move the box into the agents's old position
+			game.level.update(box, agentX, agentY)
+		}
 
 		return game
 	}
