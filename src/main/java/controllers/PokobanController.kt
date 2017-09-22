@@ -60,13 +60,17 @@ class PokobanController {
 	@Path("{id}/{action}")
 	@Produces(MediaType.APPLICATION_JSON)
 	fun transition(@PathParam("id") id: String,
-				   @PathParam("action") action: PokobanAction): String {
+				   @PathParam("action") action: String): String {
 
-		val game = PokobanService.instance.transition(id, action);
+		val pokobanAction = PokobanAction.valueOf(action.toUpperCase().replace("-", "_"))
+		val game = PokobanService.instance.transition(id, pokobanAction)
 
 		return jsonObject(
 				"state" to Gson().toJsonTree(game.getState()),
-				"gameID" to game.id
+				"action" to pokobanAction.toString(),
+				"reward" to -1,
+				"done" to false,
+				"success" to true
 		).toString()
 	}
 }

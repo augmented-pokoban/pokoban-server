@@ -75,34 +75,25 @@ class PokobanService private constructor() {
 	 * Moves the agent 1 step in given direction - if possible
 	 * Returns the game with an updated state
 	 */
-	private fun move(game: Pokoban, agent: Agent, direction: Direction): Pokoban {
+	private fun move(game: Pokoban,
+					 agent: Agent,
+					 direction: Direction): Pokoban {
 
 		val (currentX, currentY) = game.level.get(agent)
 		var newX: Int = currentX
 		var newY: Int = currentY
 
 		when (direction) {
-			Direction.NORTH -> newY++
-			Direction.SOUTH -> newY--
+			Direction.NORTH -> newY--
+			Direction.SOUTH -> newY++
 			Direction.EAST -> newX++
 			Direction.WEST -> newX--
 		}
 
 		// Is the new position even valid?
-		if (game.level.height <= newY || newY == 0) {
-			// New position is on the border of the top or bottom edge of the level, or outside the level
-			// We simply return the same game instance, since this action is invalid
-			return game
-		}
-		if (game.level.width <= newX || newX == 0) {
-			// New position is on the border of the left or right edge of the level, or outside the level
-			// We simply return the same game instance, since this action is invalid
-			return game
-		}
-
-		val newPosition = game.level.get(newX, newY)
-		if (newPosition != null) {
-			// Something is already located at this position!
+		if ((game.level.height <= newY || newY == 0) // New position is on the edge of the level, or outside the level
+				|| (game.level.width <= newX || newX == 0) // New position is on the edge of the level, or outside the level
+				|| (game.level.get(newX, newY) != null)) { // Something is already located at this position!
 			// We simply return the same game instance, since this action is invalid
 			return game
 		}

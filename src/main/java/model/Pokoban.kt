@@ -10,25 +10,10 @@ class Pokoban(val id: String, val level: Level) {
 	 */
 	fun getState(): PokobanState {
 
-		val agents: List<PokobanObjectState> = level.getAgents().map {
-			val (row, col) = level.get(it)
-			PokobanObjectState(row, col, it.name)
-		}
-
-		val boxes: List<PokobanObjectState> = level.getBoxes().map {
-			val (row, col) = level.get(it)
-			PokobanObjectState(row, col, it.name)
-		}
-
-		val goals: List<PokobanObjectState> = level.getGoals().map {
-			val (row, col) = level.get(it)
-			PokobanObjectState(row, col, it.name)
-		}
-
-		val walls: List<PokobanObjectState> = level.getWalls().map {
-			val (row, col) = level.get(it)
-			PokobanObjectState(row, col, it.name)
-		}
+		val agents: List<PokobanObjectState> = level.getAgents().map { PokobanObjectState(level.get(it), it.name) }
+		val boxes: List<PokobanObjectState> = level.getBoxes().map { PokobanObjectState(level.get(it), it.name) }
+		val goals: List<PokobanObjectState> = level.getGoals().map { PokobanObjectState(level.get(it), it.name) }
+		val walls: List<PokobanObjectState> = level.getWalls().map { PokobanObjectState(level.get(it), it.name) }
 
 		// assume width and height are the same
 		return PokobanState(agents, boxes, goals, walls, level.width)
