@@ -4,6 +4,7 @@ import model.Direction
 import model.Pokoban
 import model.PokobanAction
 import model.objects.Agent
+import model.objects.Goal
 import java.util.*
 import kotlin.collections.HashMap
 
@@ -84,10 +85,7 @@ class PokobanService private constructor() {
 	 * Moves the agent 1 step in given direction - if possible
 	 * Returns the game with an updated state
 	 */
-	private fun move(game: Pokoban,
-					 agent: Agent,
-					 direction: Direction): Pokoban {
-
+	private fun move(game: Pokoban, agent: Agent, direction: Direction): Pokoban {
 		val (newX, newY) = getRelativePosition(game.level.get(agent), direction)
 
 		if (isValidPosition(game, newX, newY)) {
@@ -148,14 +146,14 @@ class PokobanService private constructor() {
 
 	/**
 	 * Checks if it is valid to move into (x, y)
-	 * Returns false if (x, y) is not empty
+	 * Returns false if (x, y) is not empty or a goal
 	 * Returns false if (x, y) is on or outside the edge of the map
 	 * Returns true otherwise
 	 */
 	private fun isValidPosition(game: Pokoban, x: Int, y: Int): Boolean {
 		return !((game.level.height <= y || y == 0)
 				|| (game.level.width <= x || x == 0)
-				|| (game.level.get(x, y) != null))
+				|| (game.level.get(x, y) != null || game.level.get(x, y) !is Goal))
 	}
 
 	/**

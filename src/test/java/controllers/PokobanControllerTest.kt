@@ -57,4 +57,22 @@ class PokobanControllerTest {
 		assertEquals(1, (response.getJSONObject("state").getJSONArray("agents").first() as JSONObject).get("row"))
 		assertEquals(1, (response.getJSONObject("state").getJSONArray("agents").first() as JSONObject).get("col"))
 	}
+
+	@Ignore("Requires running server")
+	@Test
+	fun testPush() {
+		// start a new game
+		var response = Unirest.post("http://localhost:8080/pokoban-server/test2").asJson().body.`object`
+
+		val gameId = response.get("gameID")
+
+		// push box east (15, 1) -> (16, 1)
+		response = Unirest.post("http://localhost:8080/pokoban-server/$gameId/push-east").asJson().body.`object`
+
+		assertEquals(1, (response.getJSONObject("state").getJSONArray("agents").first() as JSONObject).get("row"))
+		assertEquals(15, (response.getJSONObject("state").getJSONArray("agents").first() as JSONObject).get("col"))
+
+		assertEquals(1, (response.getJSONObject("state").getJSONArray("boxes").first() as JSONObject).get("row"))
+		assertEquals(16, (response.getJSONObject("state").getJSONArray("boxes").first() as JSONObject).get("col"))
+	}
 }
