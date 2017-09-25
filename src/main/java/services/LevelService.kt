@@ -47,8 +47,8 @@ class LevelService private constructor() {
 						when (field) {
 							"+" -> map.put(coordinate, Wall(fieldId, field))
 							in Regex("^[0-9]$") -> map.put(coordinate, Agent(fieldId, field))
-							in Regex("^[a-z]$") -> map.put(coordinate, Box(fieldId, field))
-							in Regex("^[A-Z]$") -> map.put(coordinate, Goal(fieldId, field))
+							in Regex("^[a-z]$") -> map.put(coordinate, Goal(fieldId, field))
+							in Regex("^[A-Z]$") -> map.put(coordinate, Box(fieldId, field))
 							else -> {
 								// who cares?
 							}
