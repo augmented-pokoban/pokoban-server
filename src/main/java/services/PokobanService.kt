@@ -28,7 +28,6 @@ class PokobanService private constructor() {
 	 * Start a new game
 	 */
 	fun start(filename: String): Pokoban {
-
 		val level = LevelService.instance.loadLevel(filename)
 		val gameId = UUID.randomUUID().toString()
 		val newGame = Pokoban(gameId, level);
