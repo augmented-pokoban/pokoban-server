@@ -1,11 +1,11 @@
 package model
 
-import exceptions.ImpossibleActionException
 import model.objects.*
 import services.LevelService
 
 class Level(val mapfile: String,
-			private val map: MutableMap<Int, PokobanObject>,
+			private val immovableMap: MutableMap<Int, PokobanObject>,
+			private val moveableMap: MutableMap<Int, PokobanObject>,
 			val width: Int,
 			val height: Int) {
 
@@ -14,35 +14,20 @@ class Level(val mapfile: String,
 	 * Assumes no illegal object collisions
 	 */
 	fun update(pokobanObject: PokobanObject, x: Int, y: Int) {
-		val objectAtPosition = get(x, y)
-		val currentPosition = get(pokobanObject)
-		var objectToPut: PokobanObject = pokobanObject
-
-		// check if we are putting something on a goal
-		if (objectAtPosition is Goal) {
-			objectToPut = when (pokobanObject) {
-				is Box -> GoalBox(objectAtPosition, pokobanObject) // move box into goal
-				is Agent -> GoalAgent(objectAtPosition, pokobanObject) // move agent into goal
-				is GoalBox -> GoalBox(objectAtPosition, pokobanObject.box) // move box from one goal to another
-				is GoalAgent -> GoalAgent(objectAtPosition, pokobanObject.agent) // move agent from one goal to another
-				else -> throw ImpossibleActionException("Trying to move a wall?")
-			}
-		}
-
-		// check if we need to split a GoalBox or GoalAgent
-		when (pokobanObject) {
-			is GoalObject -> {
-				// add the empty goal back at current position
-				map.put(LevelService.instance.cantor(currentPosition), pokobanObject.goal)
-			}
-			else -> {
-				// remove object from it's current position
-				map.remove(LevelService.instance.cantor(currentPosition))
-			}
-		}
+		// remove object from it's current position
+		moveableMap.remove(LevelService.instance.cantor(get(pokobanObject)))
 
 		// add object to it's new position
-		map.put(LevelService.instance.cantor(x, y), objectToPut)
+		moveableMap.put(LevelService.instance.cantor(x, y), pokobanObject)
+	}
+
+	/**
+	 * Returns whether or not goal is solved
+	 */
+	fun isSolved(goal: Goal): Boolean {
+		val objectAtGoalPosition = get(get(goal))
+		return objectAtGoalPosition != null
+				&& (objectAtGoalPosition is Box && objectAtGoalPosition.name.toLowerCase() == goal.name)
 	}
 
 	/**
@@ -53,48 +38,36 @@ class Level(val mapfile: String,
 	/**
 	 * Returns the object at position (x, y) on the map
 	 */
-	fun get(x: Int, y: Int): PokobanObject? = map[LevelService.instance.cantor(x, y)]
+	fun get(x: Int, y: Int): PokobanObject? = moveableMap[LevelService.instance.cantor(x, y)]
 
 	/**
 	 * Returns the position (x, y) of objectToFind on the map
 	 */
 	fun get(objectToFind: PokobanObject): Pair<Int, Int> {
-		val entry = map.entries.filter { it.value == objectToFind }
+		val entry = (moveableMap.entries + immovableMap.entries).filter { it.value == objectToFind }
+		if (entry.isEmpty()) throw RuntimeException("Object does not exist")
 		if (entry.size > 1) throw RuntimeException("Multiple map entries exist for: " + objectToFind)
-		if (entry.isEmpty()) {
-			throw RuntimeException("Object does not exist")
-        }
 		return LevelService.instance.decantor(entry.first().key)
 	}
 
 	/**
-	 * Returns all agents - if they are position on a goal or not
+	 * Returns all agents
 	 */
-	fun getAgents(): List<Agent> {
-		return map.values.filter({ it is Agent }).map({ it as Agent }) +
-				map.values.filter({ it is GoalAgent }).map({ (it as GoalAgent).agent })
-	}
+	fun getAgents(): List<Agent> = moveableMap.values.filter({ it is Agent }).map { it as Agent }
 
 	/**
-	 * Returns all goals - if there is something on top of them or not
+	 * Returns all boxes
 	 */
-	fun getGoals(): List<Goal> {
-		return map.values.filter({ it is Goal }).map({ it as Goal }) +
-				map.values.filter({ it is GoalObject }).map({ (it as GoalObject).goal })
-	}
+	fun getBoxes(): List<Box> = moveableMap.values.filter({ it is Box }).map { it as Box }
 
 	/**
-	 * Returns all boxes - if they are on top of a goal or not
+	 * Returns all goals
 	 */
-	fun getBoxes(): List<Box> {
-		return map.values.filter({ it is Box}).map({ it as Box }) +
-				map.values.filter({ it is GoalBox}).map({ (it as GoalBox).box })
-	}
+	fun getGoals(): List<Goal> = immovableMap.values.filter({ it is Goal }).map { it as Goal }
 
-	fun getGoalBoxess(): List<GoalBox> = (map.values.filter { it is GoalBox }).map { it as GoalBox }
-
-	fun getGoalAgents(): List<GoalAgent> = (map.values.filter { it is GoalAgent }).map { it as GoalAgent }
-
-	fun getWalls(): List<Wall> = (map.values.filter { it is Wall }).map { it as Wall }
+	/**
+	 * Returns all walls
+	 */
+	fun getWalls(): List<Wall> = immovableMap.values.filter({ it is Wall }).map { it as Wall }
 }
 

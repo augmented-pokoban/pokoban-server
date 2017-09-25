@@ -66,15 +66,43 @@ class PokobanControllerTest {
 
 		val gameId = response.get("gameID")
 
-		// push box east (15, 1) -> (16, 1)
+		// push box east (15, 2) -> (16, 2)
 		response = Unirest.post("http://localhost:8080/pokoban-server/$gameId/push-east").asJson().body.`object`
+
+		assertEquals(2, (response.getJSONObject("state").getJSONArray("agents").first() as JSONObject).get("row"))
+
+		assertEquals(2, (response.getJSONObject("state").getJSONArray("boxes").first() as JSONObject).get("row"))
+		assertEquals(16, (response.getJSONObject("state").getJSONArray("boxes").first() as JSONObject).get("col"))
+
+		assertEquals(-1, (response.get("reward")))
+	}
+
+	@Ignore("Requires running server")
+	@Test
+	fun testGoalAgent() {
+		// start a new game
+		var response = Unirest.post("http://localhost:8080/pokoban-server/test3").asJson().body.`object`
+
+		val gameId = response.get("gameID")
+
+		assertEquals(1, (response.getJSONObject("state").getJSONArray("agents").first() as JSONObject).get("row"))
+		assertEquals(14, (response.getJSONObject("state").getJSONArray("agents").first() as JSONObject).get("col"))
+
+		// move east
+		response = Unirest.post("http://localhost:8080/pokoban-server/$gameId/move-east").asJson().body.`object`
 
 		assertEquals(1, (response.getJSONObject("state").getJSONArray("agents").first() as JSONObject).get("row"))
 		assertEquals(15, (response.getJSONObject("state").getJSONArray("agents").first() as JSONObject).get("col"))
 
-		assertEquals(1, (response.getJSONObject("state").getJSONArray("boxes").first() as JSONObject).get("row"))
-		assertEquals(16, (response.getJSONObject("state").getJSONArray("boxes").first() as JSONObject).get("col"))
+		// push box east (15, 1) -> (16, 1)
+		response = Unirest.post("http://localhost:8080/pokoban-server/$gameId/pull-west").asJson().body.`object`
 
-		assertEquals(-1, (response.get("reward")))
+		assertEquals(1, (response.getJSONObject("state").getJSONArray("agents").first() as JSONObject).get("row"))
+		assertEquals(14, (response.getJSONObject("state").getJSONArray("agents").first() as JSONObject).get("col"))
+
+		assertEquals(1, (response.getJSONObject("state").getJSONArray("boxes").first() as JSONObject).get("row"))
+		assertEquals(15, (response.getJSONObject("state").getJSONArray("boxes").first() as JSONObject).get("col"))
+
+		assertEquals(99, (response.get("reward")))
 	}
 }

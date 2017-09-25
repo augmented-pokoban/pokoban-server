@@ -23,7 +23,8 @@ class LevelService private constructor() {
 
 	fun loadLevel(filename: String): Level {
 
-		val map: MutableMap<Int, PokobanObject> = HashMap()
+		val immoveableMap: MutableMap<Int, PokobanObject> = HashMap()
+		val moveableMap: MutableMap<Int, PokobanObject> = HashMap()
 
 		var width: Int = 0
 		var height: Int = 0
@@ -45,10 +46,10 @@ class LevelService private constructor() {
 
 						// determine object at position in file
 						when (field) {
-							"+" -> map.put(coordinate, Wall(fieldId, field))
-							in Regex("^[0-9]$") -> map.put(coordinate, Agent(fieldId, field))
-							in Regex("^[a-z]$") -> map.put(coordinate, Goal(fieldId, field))
-							in Regex("^[A-Z]$") -> map.put(coordinate, Box(fieldId, field))
+							"+" -> immoveableMap.put(coordinate, Wall(fieldId, field))
+							in Regex("^[a-z]$") -> immoveableMap.put(coordinate, Goal(fieldId, field))
+							in Regex("^[A-Z]$") -> moveableMap.put(coordinate, Box(fieldId, field))
+							in Regex("^[0-9]$") -> moveableMap.put(coordinate, Agent(fieldId, field))
 							else -> {
 								// who cares?
 							}
@@ -58,7 +59,7 @@ class LevelService private constructor() {
 			}() // executes this block
 		}
 
-		return Level(mapfile, map, width, height)
+		return Level(mapfile, immoveableMap, moveableMap, width, height)
 	}
 
 	/**

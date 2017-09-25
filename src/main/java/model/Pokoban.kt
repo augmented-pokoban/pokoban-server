@@ -1,6 +1,5 @@
 package model
 
-import com.google.gson.Gson
 import com.google.gson.annotations.SerializedName
 import model.objects.PokobanObjectState
 import java.io.Serializable
@@ -24,15 +23,12 @@ class Pokoban(val id: String, val level: Level) : Serializable {
 	/**
 	 * Returns true if all goals are solved
 	 */
-	fun isDone(): Boolean {
-		return level.getGoalBoxess().isNotEmpty() &&
-				level.getGoalBoxess().fold(true, { total, next -> total && next.isSolved() })
-	}
+	fun isDone(): Boolean = level.getGoals().fold(true, { total, next -> total && level.isSolved(next) })
 
 	/**
 	 * Returns the number of solved goals
 	 */
-	fun numberOfSolvedGoals(): Int = level.getGoalBoxess().map({ it.isSolved() }).size
+	fun numberOfSolvedGoals(): Int = level.getGoals().map({ level.isSolved(it) }).size
 
 	override fun equals(other: Any?): Boolean = super.equals(other)
 
