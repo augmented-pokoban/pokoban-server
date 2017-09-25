@@ -58,17 +58,26 @@ class Level(val mapfile: String,
 	 * Returns the position (x, y) of objectToFind on the map
 	 */
 	fun get(objectToFind: PokobanObject): Pair<Int, Int> {
-		val entry = map.entries.filter { it.value === objectToFind }
+		val entry = map.entries.filter {
+			it.value === objectToFind || it.value.id.split(":").first() === objectToFind.id
+		}
 		if (entry.size > 1) throw RuntimeException("Multiple map entries exist for: " + objectToFind)
 		if (entry.isEmpty()) throw RuntimeException("Object does not exist")
 		return LevelService.instance.decantor(entry.first().key)
 	}
 
-	fun getAgents(): List<Agent> = (map.values.filter { it is Agent }).map { it as Agent }
+	fun getAgents(): List<Agent> {
+		return map.values.filter({ it is Agent }).map({ it as Agent }) +
+				map.values.filter({ it is GoalAgent }).map({ (it as GoalAgent).agent })
+	}
 
-	fun getBoxes(): List<Box> = (map.values.filter({ it is Box })).map { it as Box }
+	fun getGoals(): List<Goal> {
+		return map.values.filter({ it is Goal }).map({ it as Goal }) +
+				map.values.filter({ it is GoalAgent }).map({ (it as GoalAgent).goal }) +
+				map.values.filter({ it is GoalBox }).map({ (it as GoalBox).goal })
+	}
 
-	fun getGoals(): List<Goal> = (map.values.filter { it is Goal }).map { it as Goal }
+	fun getBoxes(): List<Box> = (map.values.filter({ it is Box || it is GoalBox })).map { it as Box }
 
 	fun getGoalBoxess(): List<GoalBox> = (map.values.filter { it is GoalBox }).map { it as GoalBox }
 

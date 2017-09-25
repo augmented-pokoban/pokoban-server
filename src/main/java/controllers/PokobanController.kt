@@ -68,7 +68,7 @@ class PokobanController {
 
 		val success = beforeTransition != afterTransition
 		val done = afterTransition.isDone()
-		if (done) reward += 10
+		if (done) reward += 100
 
 		return jsonObject(
 				"state" to Gson().toJsonTree(afterTransition.getState()),

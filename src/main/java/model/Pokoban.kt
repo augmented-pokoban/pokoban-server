@@ -7,7 +7,6 @@ import java.io.Serializable
 
 class Pokoban(val id: String, val level: Level) : Serializable {
 
-	var reward: Int = 0
 	private val gson = Gson()
 
 	/**
@@ -18,12 +17,10 @@ class Pokoban(val id: String, val level: Level) : Serializable {
 		val agents: List<PokobanObjectState> = level.getAgents().map { PokobanObjectState(level.get(it), it.name) }
 		val boxes: List<PokobanObjectState> = level.getBoxes().map { PokobanObjectState(level.get(it), it.name) }
 		val goals: List<PokobanObjectState> = level.getGoals().map { PokobanObjectState(level.get(it), it.name) }
-		val goalBoxes: List<PokobanObjectState> = level.getGoalBoxess().map { PokobanObjectState(level.get(it), it.name) }
-		val goalAgents: List<PokobanObjectState> = level.getGoalAgents().map { PokobanObjectState(level.get(it), it.name) }
 		val walls: List<PokobanObjectState> = level.getWalls().map { PokobanObjectState(level.get(it), it.name) }
 
 		// assume width and height are the same
-		return PokobanState(agents, boxes, goals, goalBoxes, goalAgents, walls, level.width)
+		return PokobanState(agents, boxes, goals, walls, level.width)
 	}
 
 	/**
@@ -34,6 +31,11 @@ class Pokoban(val id: String, val level: Level) : Serializable {
 				level.getGoalBoxess().fold(true, { total, next -> total && next.isSolved() })
 	}
 
+	/**
+	 * Returns the number of solved goals
+	 */
+	fun numberOfSolvedGoals(): Int = level.getGoalBoxess().map({ it.isSolved() }).size
+
 	override fun equals(other: Any?): Boolean = super.equals(other) || gson.toJson(getState()) == gson.toJson(other)
 
 	override fun hashCode(): Int = id.hashCode()
@@ -42,7 +44,5 @@ class Pokoban(val id: String, val level: Level) : Serializable {
 data class PokobanState(@SerializedName("agents") val agents: List<PokobanObjectState>,
 						@SerializedName("boxes") val boxes: List<PokobanObjectState>,
 						@SerializedName("goals") val goals: List<PokobanObjectState>,
-						@SerializedName("goalBoxes") val goalBoxes: List<PokobanObjectState>,
-						@SerializedName("goalAgents") val goalAgents: List<PokobanObjectState>,
 						@SerializedName("walls") val walls: List<PokobanObjectState>,
 						@SerializedName("dimensions") val dimensions: Int)

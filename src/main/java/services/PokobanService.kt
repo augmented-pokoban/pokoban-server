@@ -55,6 +55,7 @@ class PokobanService private constructor() {
 
 		var game = instance.get(gameId)
 		val agent: Agent = game.level.getAgents().first() // We assume only 1 agent
+		val solvedGoalsBefore = game.numberOfSolvedGoals()
 
 		game = when (action) { // kotlin is awesome
 			PokobanAction.MOVE_NORTH -> move(game, agent, Direction.NORTH)
@@ -75,7 +76,12 @@ class PokobanService private constructor() {
 		instance.update(gameId, game)
 
 		// calculate reward
-		var reward = -1
+		val solvedGoalsAfter = game.numberOfSolvedGoals()
+		val reward: Int = when {
+			solvedGoalsBefore > solvedGoalsAfter -> -10 // we suck!
+			solvedGoalsBefore < solvedGoalsAfter -> 10 // we solved a goal!
+			else -> -1
+		}
 
 		return Pair(reward, game)
 	}
