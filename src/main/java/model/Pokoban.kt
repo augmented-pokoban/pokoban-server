@@ -28,7 +28,7 @@ class Pokoban(val id: String, val level: Level) : Serializable {
 	/**
 	 * Returns the number of solved goals
 	 */
-	fun numberOfSolvedGoals(): Int = level.getGoals().map({ level.isSolved(it) }).size
+	fun numberOfSolvedGoals(): Int = level.getGoals().filter({ level.isSolved(it) }).size
 
 	override fun equals(other: Any?): Boolean = super.equals(other)
 

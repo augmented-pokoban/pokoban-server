@@ -65,18 +65,18 @@ class PokobanController {
 		val pokobanAction = PokobanAction.valueOf(action.toUpperCase().replace("-", "_"))
 
 		var success = true
-		var (reward, afterTransition) = try {
+		var (reward, game) = try {
 			PokobanService.instance.transition(id, pokobanAction)
 		} catch (e: ImpossibleActionException) {
 			success = false
 			Pair(-1, PokobanService.instance.get(id)) // return the same game state
 		}
 
-		val done = afterTransition.isDone()
+		val done = game.isDone()
 		if (done) reward += 100
 
 		return jsonObject(
-				"state" to Gson().toJsonTree(afterTransition.getState()),
+				"state" to Gson().toJsonTree(game.getState()),
 				"action" to pokobanAction.toString(),
 				"reward" to reward,
 				"done" to done,
