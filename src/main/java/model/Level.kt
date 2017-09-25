@@ -45,7 +45,8 @@ class Level(val mapfile: String,
 	 * Returns the position (x, y) of objectToFind on the map
 	 */
 	fun get(objectToFind: PokobanObject): Pair<Int, Int> {
-		val entry = (collisionMap.entries + goalMap.entries).filter { it.value == objectToFind }
+		var entry = (collisionMap.entries + goalMap.entries).filter { it.value == objectToFind }
+		if (entry.isEmpty()) entry = wallMap.entries.filter { it.value == objectToFind }
 		if (entry.isEmpty()) throw RuntimeException("Object does not exist")
 		if (entry.size > 1) throw RuntimeException("Multiple map entries exist for: " + objectToFind)
 		return LevelService.instance.decantor(entry.first().key)
@@ -64,11 +65,11 @@ class Level(val mapfile: String,
 	/**
 	 * Returns all goals
 	 */
-	fun getGoals(): List<Goal> = goalMap.values as List<Goal>
+	fun getGoals(): List<Goal> = goalMap.values.map { it }
 
 	/**
 	 * Returns all walls
 	 */
-	fun getWalls(): List<Wall> = wallMap.values as List<Wall>
+	fun getWalls(): List<Wall> = wallMap.values.map { it }
 }
 
