@@ -27,7 +27,6 @@ class LevelServiceTest {
 
         val level = LevelService.instance.loadLevel("test.lvl")
 
-        assertEquals("+", level.get(0, 0).toString())
         assertEquals("0", level.get(1, 1).toString())
     }
 }

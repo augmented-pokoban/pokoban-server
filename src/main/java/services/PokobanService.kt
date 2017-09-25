@@ -5,7 +5,6 @@ import model.Direction
 import model.Pokoban
 import model.PokobanAction
 import model.objects.Agent
-import model.objects.Goal
 import java.util.*
 import kotlin.collections.HashMap
 
@@ -161,9 +160,9 @@ class PokobanService private constructor() {
 	 * Returns true otherwise
 	 */
 	private fun isValidPosition(game: Pokoban, x: Int, y: Int): Boolean {
-		return !((game.level.height <= y || y == 0)
+		return !(game.level.height <= y || y == 0)
 				|| (game.level.width <= x || x == 0)
-				|| (game.level.get(x, y) != null && game.level.get(x, y) !is Goal))
+				|| (game.level.get(x, y) != null)
 	}
 
 	/**
