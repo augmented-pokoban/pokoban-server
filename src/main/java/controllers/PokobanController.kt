@@ -64,11 +64,11 @@ class PokobanController {
 		val pokobanAction = PokobanAction.valueOf(action.toUpperCase().replace("-", "_"))
 
 		val beforeTransition = PokobanService.instance.get(id)
-		val afterTransition = PokobanService.instance.transition(id, pokobanAction)
+		var (reward, afterTransition )= PokobanService.instance.transition(id, pokobanAction)
 
 		val success = beforeTransition != afterTransition
 		val done = afterTransition.isDone()
-		val reward = -1
+		if (done) reward += 10
 
 		return jsonObject(
 				"state" to Gson().toJsonTree(afterTransition.getState()),

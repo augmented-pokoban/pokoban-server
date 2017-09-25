@@ -7,6 +7,7 @@ import java.io.Serializable
 
 class Pokoban(val id: String, val level: Level) : Serializable {
 
+	var reward: Int = 0
 	private val gson = Gson()
 
 	/**
@@ -28,7 +29,10 @@ class Pokoban(val id: String, val level: Level) : Serializable {
 	/**
 	 * Returns true if all goals are solved
 	 */
-	fun isDone(): Boolean = (level.getGoalBoxess().map { it.isSolved() }).reduce { acc, isSolved -> acc && isSolved }
+	fun isDone(): Boolean {
+		return level.getGoalBoxess().isNotEmpty() &&
+				level.getGoalBoxess().fold(true, { total, next -> total && next.isSolved() })
+	}
 
 	override fun equals(other: Any?): Boolean = super.equals(other) || gson.toJson(getState()) == gson.toJson(other)
 

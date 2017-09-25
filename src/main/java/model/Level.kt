@@ -11,9 +11,8 @@ class Level(val mapfile: String,
 	/**
 	 * Set the object at position (x, y), and removes it from current position
 	 * Assumes no illegal object collisions
-	 * Returns the reward for performing the given action
 	 */
-	fun update(pokobanObject: PokobanObject, x: Int, y: Int): Number {
+	fun update(pokobanObject: PokobanObject, x: Int, y: Int) {
 		val objectAtPosition = get(x, y)
 		var objectToPut: PokobanObject = pokobanObject
 
@@ -43,12 +42,6 @@ class Level(val mapfile: String,
 
 		// add object to it's new position
 		map.put(LevelService.instance.cantor(x, y), objectToPut)
-
-		// calculate reward
-		return when (objectToPut) {
-			is GoalBox -> if (objectToPut.isSolved()) 10 else -1
-			else -> -1
-		}
 	}
 
 	/**

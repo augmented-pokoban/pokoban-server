@@ -74,5 +74,7 @@ class PokobanControllerTest {
 
 		assertEquals(1, (response.getJSONObject("state").getJSONArray("boxes").first() as JSONObject).get("row"))
 		assertEquals(16, (response.getJSONObject("state").getJSONArray("boxes").first() as JSONObject).get("col"))
+
+		assertEquals(-1, (response.get("reward")))
 	}
 }

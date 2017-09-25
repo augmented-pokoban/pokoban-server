@@ -49,8 +49,9 @@ class PokobanService private constructor() {
 
 	/**
 	 * Transitions given game into a new state
+	 * Returns (reward, game)
 	 */
-	fun transition(gameId: String, action: PokobanAction): Pokoban {
+	fun transition(gameId: String, action: PokobanAction): Pair<Int, Pokoban> {
 
 		var game = instance.get(gameId)
 		val agent: Agent = game.level.getAgents().first() // We assume only 1 agent
@@ -73,7 +74,10 @@ class PokobanService private constructor() {
 		// update the game in singleton instance
 		instance.update(gameId, game)
 
-		return game
+		// calculate reward
+		var reward = -1
+
+		return Pair(reward, game)
 	}
 
 	/**
@@ -153,7 +157,7 @@ class PokobanService private constructor() {
 	private fun isValidPosition(game: Pokoban, x: Int, y: Int): Boolean {
 		return !((game.level.height <= y || y == 0)
 				|| (game.level.width <= x || x == 0)
-				|| (game.level.get(x, y) != null || game.level.get(x, y) !is Goal))
+				|| (game.level.get(x, y) != null && game.level.get(x, y) !is Goal))
 	}
 
 	/**
