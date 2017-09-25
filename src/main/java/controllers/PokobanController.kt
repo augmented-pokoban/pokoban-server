@@ -64,11 +64,11 @@ class PokobanController {
 				   @PathParam("action") action: String): String {
 		val pokobanAction = PokobanAction.valueOf(action.toUpperCase().replace("-", "_"))
 
-		val beforeTransition = PokobanService.instance.get(id)
 		var success = true
 		var (reward, afterTransition) = try {
 			PokobanService.instance.transition(id, pokobanAction)
 		} catch (e: ImpossibleActionException) {
+			success = false
 			PokobanService.instance.transition(id, pokobanAction)
 		}
 

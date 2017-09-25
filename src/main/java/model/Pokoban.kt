@@ -7,8 +7,6 @@ import java.io.Serializable
 
 class Pokoban(val id: String, val level: Level) : Serializable {
 
-	private val gson = Gson()
-
 	/**
 	 * Returns the current state of the game
 	 */
@@ -36,7 +34,7 @@ class Pokoban(val id: String, val level: Level) : Serializable {
 	 */
 	fun numberOfSolvedGoals(): Int = level.getGoalBoxess().map({ it.isSolved() }).size
 
-	override fun equals(other: Any?): Boolean = super.equals(other) || gson.toJson(getState()) == gson.toJson(other)
+	override fun equals(other: Any?): Boolean = super.equals(other)
 
 	override fun hashCode(): Int = id.hashCode()
 }
