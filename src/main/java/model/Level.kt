@@ -68,18 +68,30 @@ class Level(val mapfile: String,
 		return LevelService.instance.decantor(entry.first().key)
 	}
 
+	/**
+	 * Returns all agents - if they are position on a goal or not
+	 */
 	fun getAgents(): List<Agent> {
 		return map.values.filter({ it is Agent }).map({ it as Agent }) +
 				map.values.filter({ it is GoalAgent }).map({ (it as GoalAgent).agent })
 	}
 
+	/**
+	 * Returns all goals - if there is something on top of them or not
+	 */
 	fun getGoals(): List<Goal> {
 		return map.values.filter({ it is Goal }).map({ it as Goal }) +
 				map.values.filter({ it is GoalAgent }).map({ (it as GoalAgent).goal }) +
 				map.values.filter({ it is GoalBox }).map({ (it as GoalBox).goal })
 	}
 
-	fun getBoxes(): List<Box> = (map.values.filter({ it is Box || it is GoalBox })).map { it as Box }
+	/**
+	 * Returns all boxes - if they are on top of a goal or not
+	 */
+	fun getBoxes(): List<Box> {
+		return map.values.filter({ it is Box}).map({ it as Box }) +
+				map.values.filter({ it is GoalBox}).map({ (it as GoalBox).box })
+	}
 
 	fun getGoalBoxess(): List<GoalBox> = (map.values.filter { it is GoalBox }).map { it as GoalBox }
 
