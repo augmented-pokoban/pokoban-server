@@ -2,6 +2,7 @@ package controllers
 
 import com.github.salomonbrys.kotson.jsonObject
 import com.google.gson.Gson
+import exceptions.ImpossibleActionException
 import model.PokobanAction
 import services.PokobanService
 import javax.ws.rs.*
@@ -64,9 +65,13 @@ class PokobanController {
 		val pokobanAction = PokobanAction.valueOf(action.toUpperCase().replace("-", "_"))
 
 		val beforeTransition = PokobanService.instance.get(id)
-		var (reward, afterTransition )= PokobanService.instance.transition(id, pokobanAction)
+		var success = true
+		var (reward, afterTransition) = try {
+			PokobanService.instance.transition(id, pokobanAction)
+		} catch (e: ImpossibleActionException) {
+			PokobanService.instance.transition(id, pokobanAction)
+		}
 
-		val success = beforeTransition != afterTransition
 		val done = afterTransition.isDone()
 		if (done) reward += 100
 

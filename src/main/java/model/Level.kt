@@ -1,5 +1,6 @@
 package model
 
+import exceptions.ImpossibleActionException
 import model.objects.*
 import services.LevelService
 
@@ -23,7 +24,7 @@ class Level(val mapfile: String,
 				is Agent -> GoalAgent(objectAtPosition, pokobanObject) // move agent into goal
 				is GoalBox -> GoalBox(objectAtPosition, pokobanObject.box) // move box from one goal to another
 				is GoalAgent -> GoalAgent(objectAtPosition, pokobanObject.agent) // move agent from one goal to another
-				else -> throw RuntimeException("Are you trying to move a wall?")
+				else -> throw ImpossibleActionException()
 			}
 		}
 
