@@ -59,10 +59,7 @@ class Level(val mapfile: String,
 	 * Returns the position (x, y) of objectToFind on the map
 	 */
 	fun get(objectToFind: PokobanObject): Pair<Int, Int> {
-		val entry = map.entries.filter {
-			it.value === objectToFind
-					|| it.value.id.split(":").first() === objectToFind.id
-		}
+		val entry = map.entries.filter { it.value === objectToFind }
 		if (entry.size > 1) throw RuntimeException("Multiple map entries exist for: " + objectToFind)
 		if (entry.isEmpty()) throw RuntimeException("Object does not exist")
 		return LevelService.instance.decantor(entry.first().key)

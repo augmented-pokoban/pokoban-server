@@ -4,9 +4,12 @@ import com.google.gson.annotations.SerializedName
 
 abstract class PokobanObject(val id: String, val name: String) {
 
-	override fun hashCode(): Int = id.toInt()
-
-	override fun equals(other: Any?): Boolean = super.equals(other)
+	override fun equals(other: Any?): Boolean {
+		if (other !is PokobanObject) return false
+		return other.id == this.id ||
+				other.id.split(":").first() == this.id ||
+				other.id.split(":").last() == this.id
+	}
 
 	override fun toString(): String = name
 }
