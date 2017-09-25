@@ -60,7 +60,8 @@ class Level(val mapfile: String,
 	 */
 	fun get(objectToFind: PokobanObject): Pair<Int, Int> {
 		val entry = map.entries.filter {
-			it.value === objectToFind || it.value.id.split(":").first() === objectToFind.id
+			it.value === objectToFind
+					|| it.value.id.split(":").first() === objectToFind.id
 		}
 		if (entry.size > 1) throw RuntimeException("Multiple map entries exist for: " + objectToFind)
 		if (entry.isEmpty()) throw RuntimeException("Object does not exist")
