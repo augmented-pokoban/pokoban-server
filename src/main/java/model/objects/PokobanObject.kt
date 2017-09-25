@@ -5,10 +5,11 @@ import com.google.gson.annotations.SerializedName
 abstract class PokobanObject(val id: String, val name: String) {
 
 	override fun equals(other: Any?): Boolean {
-		if (other !is PokobanObject) return false
-		return other.id == this.id ||
+		return (other as PokobanObject).id == this.id ||
 				other.id.split(":").first() == this.id ||
-				other.id.split(":").last() == this.id
+				other.id.split(":").last() == this.id||
+				other.id == this.id.split(":").first() ||
+				other.id == this.id.split(":").last()
 	}
 
 	override fun toString(): String = name

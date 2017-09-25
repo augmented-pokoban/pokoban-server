@@ -15,6 +15,7 @@ class Level(val mapfile: String,
 	 */
 	fun update(pokobanObject: PokobanObject, x: Int, y: Int) {
 		val objectAtPosition = get(x, y)
+		val currentPosition = get(pokobanObject)
 		var objectToPut: PokobanObject = pokobanObject
 
 		// check if we are putting something on a goal
@@ -30,14 +31,13 @@ class Level(val mapfile: String,
 
 		// check if we need to split a GoalBox or GoalAgent
 		when (pokobanObject) {
-			is GoalBox,
-			is GoalAgent -> {
+			is GoalObject -> {
 				// add the empty goal back at current position
-				map.put(LevelService.instance.cantor(get(pokobanObject)), (pokobanObject as GoalObject).goal)
+				map.put(LevelService.instance.cantor(currentPosition), pokobanObject.goal)
 			}
 			else -> {
 				// remove object from it's current position
-				map.remove(LevelService.instance.cantor(get(pokobanObject)))
+				map.remove(LevelService.instance.cantor(currentPosition))
 			}
 		}
 
@@ -59,9 +59,11 @@ class Level(val mapfile: String,
 	 * Returns the position (x, y) of objectToFind on the map
 	 */
 	fun get(objectToFind: PokobanObject): Pair<Int, Int> {
-		val entry = map.entries.filter { it.value === objectToFind }
+		val entry = map.entries.filter { it.value == objectToFind }
 		if (entry.size > 1) throw RuntimeException("Multiple map entries exist for: " + objectToFind)
-		if (entry.isEmpty()) throw RuntimeException("Object does not exist")
+		if (entry.isEmpty()) {
+			throw RuntimeException("Object does not exist")
+        }
 		return LevelService.instance.decantor(entry.first().key)
 	}
 
@@ -78,8 +80,7 @@ class Level(val mapfile: String,
 	 */
 	fun getGoals(): List<Goal> {
 		return map.values.filter({ it is Goal }).map({ it as Goal }) +
-				map.values.filter({ it is GoalAgent }).map({ (it as GoalAgent).goal }) +
-				map.values.filter({ it is GoalBox }).map({ (it as GoalBox).goal })
+				map.values.filter({ it is GoalObject }).map({ (it as GoalObject).goal })
 	}
 
 	/**

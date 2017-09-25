@@ -72,6 +72,9 @@
       <option name="BuildArtifacts" enabled="true">
         <artifact name="pokoban-server" />
       </option>
+      <option name="BuildArtifacts" enabled="true">
+        <artifact name="pokoban-server" />
+      </option>
     </method>
   </configuration>
 </component>
