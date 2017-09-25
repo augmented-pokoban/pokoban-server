@@ -1,3 +1,3 @@
 package exceptions
 
-class ImpossibleActionException : Exception()
+class ImpossibleActionException(message: String) : Exception(message)

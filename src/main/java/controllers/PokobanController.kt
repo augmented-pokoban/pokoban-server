@@ -69,7 +69,7 @@ class PokobanController {
 			PokobanService.instance.transition(id, pokobanAction)
 		} catch (e: ImpossibleActionException) {
 			success = false
-			PokobanService.instance.transition(id, pokobanAction)
+			Pair(-1, PokobanService.instance.get(id)) // return the same game state
 		}
 
 		val done = afterTransition.isDone()

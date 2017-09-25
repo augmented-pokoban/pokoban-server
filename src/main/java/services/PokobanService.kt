@@ -1,5 +1,6 @@
 package services
 
+import exceptions.ImpossibleActionException
 import model.Direction
 import model.Pokoban
 import model.PokobanAction
@@ -98,10 +99,10 @@ class PokobanService private constructor() {
 	private fun move(game: Pokoban, agent: Agent, direction: Direction): Pokoban {
 		val (newX, newY) = getRelativePosition(game.level.get(agent), direction)
 
-		if (isValidPosition(game, newX, newY)) {
-			// Perform the move
-			game.level.update(agent, newX, newY)
-		}
+		if (!isValidPosition(game, newX, newY)) throw ImpossibleActionException("Impossible move action.")
+
+		// Perform the move
+		game.level.update(agent, newX, newY)
 
 		return game
 	}
@@ -115,12 +116,12 @@ class PokobanService private constructor() {
 		val box = game.level.get(boxX, boxY) ?: return game
 		val (boxNewX, boxNewY) = getRelativePosition(boxX, boxY, direction)
 
-		if (isValidPosition(game, boxNewX, boxNewY)) {
-			// move the box
-			game.level.update(box, boxNewX, boxNewY)
-			// move the agent into the box's old position
-			game.level.update(agent, boxX, boxY)
-		}
+		if (isValidPosition(game, boxNewX, boxNewY)) throw ImpossibleActionException("Impossible push action.")
+
+		// move the box
+		game.level.update(box, boxNewX, boxNewY)
+		// move the agent into the box's old position
+		game.level.update(agent, boxX, boxY)
 
 		return game
 	}
@@ -136,12 +137,12 @@ class PokobanService private constructor() {
 		val (boxX, boxY) = getRelativePosition(game.level.get(agent), direction.inverse())
 		val box = game.level.get(boxX, boxY) ?: return game
 
-		if (isValidPosition(game, agentNewX, agentNewY)) {
-			// move the agent
-			game.level.update(agent, agentNewX, agentNewY)
-			// move the box into the agents's old position
-			game.level.update(box, agentX, agentY)
-		}
+		if (!isValidPosition(game, agentNewX, agentNewY)) throw ImpossibleActionException("Impossible pull action.")
+
+		// move the agent
+		game.level.update(agent, agentNewX, agentNewY)
+		// move the box into the agents's old position
+		game.level.update(box, agentX, agentY)
 
 		return game
 	}

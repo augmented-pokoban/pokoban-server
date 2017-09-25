@@ -24,7 +24,7 @@ class Level(val mapfile: String,
 				is Agent -> GoalAgent(objectAtPosition, pokobanObject) // move agent into goal
 				is GoalBox -> GoalBox(objectAtPosition, pokobanObject.box) // move box from one goal to another
 				is GoalAgent -> GoalAgent(objectAtPosition, pokobanObject.agent) // move agent from one goal to another
-				else -> throw ImpossibleActionException()
+				else -> throw ImpossibleActionException("Trying to move a wall?")
 			}
 		}
 
