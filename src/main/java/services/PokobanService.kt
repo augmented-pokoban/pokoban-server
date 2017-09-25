@@ -115,7 +115,7 @@ class PokobanService private constructor() {
 		val box = game.level.get(boxX, boxY) ?: return game
 		val (boxNewX, boxNewY) = getRelativePosition(boxX, boxY, direction)
 
-		if (isValidPosition(game, boxNewX, boxNewY)) throw ImpossibleActionException("Impossible push action.")
+		if (!isValidPosition(game, boxNewX, boxNewY)) throw ImpossibleActionException("Impossible push action.")
 
 		// move the box
 		game.level.update(box, boxNewX, boxNewY)
