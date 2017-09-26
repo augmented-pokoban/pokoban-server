@@ -39,7 +39,12 @@ class PokobanService private constructor() {
 	/**
 	 * Returns given game
 	 */
-	fun get(id: String): Pokoban = instance.games.getValue(id);
+	fun get(id: String): Pokoban = instance.games.getValue(id)
+
+	/**
+	 * Removes given game
+	 */
+	fun remove(id: String) = instance.games.remove(id)
 
 	/**
 	 * Returns all games
