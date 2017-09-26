@@ -83,4 +83,15 @@ class PokobanController {
 				"success" to success
 		).toString()
 	}
+
+	/**
+	 * Deletes a Pokoban game instance
+	 */
+	@DELETE
+	@Path("{id}")
+	@Produces(MediaType.APPLICATION_JSON)
+	fun destroy(@PathParam("id") id: String): String {
+		PokobanService.instance.remove(id)
+		return jsonObject("success" to true).toString()
+	}
 }
