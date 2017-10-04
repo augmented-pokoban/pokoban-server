@@ -8,6 +8,8 @@ import services.PokobanService
 import javax.ws.rs.*
 import javax.ws.rs.core.MediaType
 
+operator fun Number.plusAssign(d: Double) { this.toDouble() + d }
+
 @Path("/")
 class PokobanController {
 
@@ -69,11 +71,11 @@ class PokobanController {
 			PokobanService.instance.transition(id, pokobanAction)
 		} catch (e: ImpossibleActionException) {
 			success = false
-			Pair(-1, PokobanService.instance.get(id)) // return the same game state
+			Pair(-0.5, PokobanService.instance.get(id)) // return the same game state
 		}
 
 		val done = game.isDone()
-		if (done) reward += 100
+		if (done) reward += 1.0
 
 		return jsonObject(
 				"state" to Gson().toJsonTree(game.getState()),

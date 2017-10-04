@@ -55,7 +55,7 @@ class PokobanService private constructor() {
 	 * Transitions given game into a new state
 	 * Returns (reward, game)
 	 */
-	fun transition(gameId: String, action: PokobanAction): Pair<Int, Pokoban> {
+	fun transition(gameId: String, action: PokobanAction): Pair<Number, Pokoban> {
 
 		var game = instance.get(gameId)
 		val agent: Agent = game.level.getAgents().first() // We assume only 1 agent
@@ -81,10 +81,10 @@ class PokobanService private constructor() {
 
 		// calculate reward
 		val solvedGoalsAfter = game.numberOfSolvedGoals()
-		val reward: Int = when {
-			solvedGoalsBefore > solvedGoalsAfter -> -10 // we suck!
-			solvedGoalsBefore < solvedGoalsAfter -> 10 // we solved a goal!
-			else -> -1
+		val reward: Number = when {
+			solvedGoalsBefore > solvedGoalsAfter -> -0.5 // we suck!
+			solvedGoalsBefore < solvedGoalsAfter -> 0.5 // we solved a goal!
+			else -> -0.1
 		}
 
 		return Pair(reward, game)
