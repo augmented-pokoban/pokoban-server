@@ -1,6 +1,6 @@
 import {AfterContentInit, Component, OnInit, ViewChild} from '@angular/core';
+import {ActivatedRoute} from "@angular/router";
 import {Pokoban} from "../../models/Pokoban";
-import {ActivatedRoute, Router} from "@angular/router";
 
 @Component({
     selector: 'visualizer',
@@ -13,16 +13,11 @@ export class VisualizerComponent implements OnInit, AfterContentInit {
 
     pokoban: Pokoban;
 
-    constructor(private route: ActivatedRoute,
-                private router: Router) {
-
-        console.log("hej");
+    constructor(private route: ActivatedRoute) {
     }
 
     ngOnInit() {
-        console.log("hej");
-
-        // this.pokoban = this.route.snapshot.data['pokoban'];
+        this.pokoban = this.route.snapshot.data['pokoban'];
 
         console.log(this.pokoban);
     }

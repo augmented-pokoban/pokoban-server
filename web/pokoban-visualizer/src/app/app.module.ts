@@ -29,7 +29,6 @@ const COMPONENTS = [
     imports: [
         BrowserModule,
         HttpModule,
-        RouterModule,
         RouterModule.forRoot(appRoutes, {enableTracing: false})
     ],
     providers: [

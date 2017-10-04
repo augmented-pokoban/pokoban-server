@@ -7,4 +7,7 @@ export class PokobanTransition {
     reward: number;
     action: string;
     state: PokobanState;
+
+    constructor() {
+    }
 }

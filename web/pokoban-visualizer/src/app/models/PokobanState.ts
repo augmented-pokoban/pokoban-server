@@ -7,4 +7,7 @@ export class PokobanState {
     agents: PokobanObject[];
     walls: PokobanObject[];
     boxes: PokobanObject[];
+
+    constructor() {
+    }
 }

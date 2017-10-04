@@ -1,4 +1,4 @@
-import {RouterModule, Routes} from "@angular/router";
+import {Routes} from "@angular/router";
 import {VisualizerComponent} from "./components/visualizer/visualizer.component";
 import {PokobanGuard} from "./guards/PokobanGuard";
 

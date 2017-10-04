@@ -1,4 +1,3 @@
-
 import {DataService} from "./DataService";
 import {Http} from "@angular/http";
 import {Injectable} from "@angular/core";
@@ -11,7 +10,7 @@ export class PokobanService extends DataService {
         super(http);
     }
 
-    one(id: string):Promise<Pokoban> {
+    one(id: string): Promise<Pokoban> {
         return super.get<Pokoban>(`${id}`);
     }
 }
