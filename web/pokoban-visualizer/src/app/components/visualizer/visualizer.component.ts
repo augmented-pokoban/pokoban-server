@@ -2,6 +2,8 @@ import {AfterContentInit, Component, OnInit, ViewChild} from '@angular/core';
 import {ActivatedRoute} from "@angular/router";
 import {Pokoban} from "../../models/Pokoban";
 import {PokobanState} from "../../models/PokobanState";
+import {PokobanTransition} from "../../models/PokobanTransition";
+import {PokobanObject} from "../../models/PokobanObject";
 
 @Component({
     selector: 'visualizer',
@@ -12,6 +14,10 @@ export class VisualizerComponent implements OnInit, AfterContentInit {
 
     @ViewChild('canvas') canvas;
 
+    ctx: CanvasRenderingContext2D;
+    baseWidth: number;
+    baseHeight: number;
+
     pokoban: Pokoban;
 
     constructor(private route: ActivatedRoute) {
@@ -19,16 +25,21 @@ export class VisualizerComponent implements OnInit, AfterContentInit {
 
     ngOnInit() {
         this.pokoban = this.route.snapshot.data['pokoban'];
-
-        console.log(this.pokoban);
     }
 
     ngAfterContentInit() {
         // state to draw
         let state = this.pokoban.initial;
         let canvas = this.canvas.nativeElement;
+
+        this.baseWidth = canvas.width / state.dimensions;
+        this.baseHeight = canvas.height / state.dimensions;
+        this.ctx = canvas.getContext('2d');
+
         this.drawState(canvas, state);
-        this.moveAgent(canvas, this.pokoban.transitions[0].state);
+
+        // recursively perform transition
+        this.transition(state, this.pokoban.transitions);
     }
 
     /**
@@ -39,82 +50,142 @@ export class VisualizerComponent implements OnInit, AfterContentInit {
      */
     drawState(canvas: HTMLCanvasElement, state: PokobanState) {
 
-        let ctx = canvas.getContext('2d');
         // clear the canvas
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        this.ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-        let baseWidth = canvas.width / state.dimensions;
-        let baseHeight = canvas.height / state.dimensions;
-
-        ctx.font = '24px monospace';
-        ctx.textAlign = "center";
-        ctx.textBaseline = "middle";
-        ctx.fillStyle = 'rgba(0, 0, 0, 0.5)';
+        this.ctx.font = '18px monospace';
+        this.ctx.textAlign = "center";
+        this.ctx.textBaseline = "middle";
+        this.ctx.fillStyle = 'rgba(0, 0, 0, 0.5)';
 
         // draw all cells
-        for (let x = 0; x < canvas.width; x += baseWidth) {
-            for (let y = 0; y < canvas.height; y += baseHeight) {
-                ctx.strokeRect(x, y, baseWidth, baseHeight);
+        for (let x = 0; x < canvas.width; x += this.baseWidth) {
+            for (let y = 0; y < canvas.height; y += this.baseHeight) {
+                this.ctx.strokeRect(x, y, this.baseWidth, this.baseHeight);
             }
         }
 
         // draw the walls
         state.walls.forEach(wall => {
-            ctx.fillStyle = 'rgba(0, 0, 0, 1)';
-            ctx.fillRect(baseWidth * wall.col, baseHeight * wall.row, baseWidth, baseHeight);
+            this.ctx.fillStyle = 'rgba(0, 0, 0, 1)';
+            this.ctx.fillRect(this.baseWidth * wall.col, this.baseHeight * wall.row, this.baseWidth, this.baseHeight);
         });
 
         // draw the goals
-        state.goals.forEach(goal => {
-            ctx.fillStyle = 'rgba(0, 0, 255, 0.7)';
-            ctx.fillRect(baseWidth * goal.col, baseHeight * goal.row, baseWidth, baseHeight);
-
-            ctx.fillStyle = 'rgba(255, 255, 255, 1)';
-            ctx.fillText(
-                goal.letter,
-                baseWidth * goal.col + baseWidth / 2,
-                baseHeight * goal.row + baseHeight / 2
-            );
-        });
+        state.goals.forEach(goal => this.drawGoal(goal));
 
         // draw the boxes
-        state.boxes.forEach(box => {
-            ctx.fillStyle = 'rgba(0, 0, 255, 0.7)';
-            ctx.fillRect(baseWidth * box.col, baseHeight * box.row, baseWidth, baseHeight);
-
-            ctx.fillStyle = 'rgba(255, 255, 255, 1)';
-            ctx.fillText(
-                box.letter,
-                baseWidth * box.col + baseWidth / 2,
-                baseHeight * box.row + baseHeight / 2
-            );
-        });
+        state.boxes.forEach(box => this.drawBox(box));
 
         // draw the agents
-        state.agents.forEach(agent => {
-            ctx.fillStyle = 'rgba(0, 0, 255, 1)';
-            ctx.beginPath();
-            ctx.arc(
-                baseWidth * agent.col + baseWidth / 2,
-                baseWidth * agent.row + baseHeight / 2,
-                baseHeight / 3,
-                0,
-                Math.PI * 2,
-                false
-            );
-            ctx.fill();
-            ctx.stroke();
-        });
+        state.agents.forEach(agent => this.drawAgent(agent));
     }
 
     /**
-     * Moves the agent in the existing canvas
      *
-     * @param {HTMLCanvasElement} canvas
-     * @param {PokobanState} state
+     * @param {PokobanState} currentState
+     * @param {PokobanTransition[]} transitions
+     * @returns {PokobanState}
      */
-    moveAgent(canvas: HTMLCanvasElement, state: PokobanState) {
+    transition(currentState: PokobanState, transitions: PokobanTransition[]): PokobanState {
+        if (transitions.length == 0) return currentState;
+        setTimeout(() => {
+            return this.transition(this.drawTransition(currentState, transitions.shift().state), transitions)
+        }, (1000 / 60) * 10);
+    }
 
-        let ctx = canvas.getContext('2d');
+    /**
+     * Transitions canvas into new state
+     *
+     * @param currentState
+     * @param {PokobanState} nextState
+     */
+    private drawTransition(currentState: PokobanState,
+                   nextState: PokobanState): PokobanState {
+
+        // remove agents & boxes from old position
+        currentState.agents.concat(currentState.boxes).forEach(agent => {
+            this.ctx.clearRect(this.baseWidth * agent.col, this.baseHeight * agent.row, this.baseWidth, this.baseHeight);
+            this.ctx.strokeRect(this.baseWidth * agent.col, this.baseHeight * agent.row, this.baseWidth, this.baseHeight);
+        });
+
+        // insert gaols (might have been removed)
+        nextState.goals.forEach(goal => {
+            this.drawGoal(goal);
+        });
+
+        // insert agents at new position
+        nextState.agents.forEach(agent => {
+            this.drawAgent(agent);
+        });
+
+        // insert boxes at new position
+        nextState.boxes.forEach(box => {
+            this.drawBox(box);
+        });
+
+        return nextState;
+    }
+
+    /**
+     * Draws a goal
+     *
+     * @param {PokobanObject} goal
+     */
+    private drawGoal(goal: PokobanObject) {
+        this.ctx.fillStyle = 'rgba(0, 0, 255, 1)';
+        this.ctx.fillRect(this.baseWidth * goal.col, this.baseHeight * goal.row, this.baseWidth, this.baseHeight);
+
+        this.ctx.fillStyle = 'rgba(255, 255, 255, 1)';
+        this.ctx.fillText(
+            goal.letter,
+            this.baseWidth * goal.col + this.baseWidth / 2,
+            this.baseHeight * goal.row + this.baseHeight / 2
+        );
+    }
+
+    /**
+     * Draws a box
+     *
+     * @param {PokobanObject} box
+     */
+    private drawBox(box: PokobanObject) {
+        this.ctx.fillStyle = 'rgba(0, 0, 255, 0.5)';
+        this.ctx.fillRect(this.baseWidth * box.col, this.baseHeight * box.row, this.baseWidth, this.baseHeight);
+
+        this.ctx.fillStyle = 'rgba(255, 255, 255, 0.5)';
+        this.ctx.fillText(
+            box.letter,
+            this.baseWidth * box.col + this.baseWidth / 2,
+            this.baseHeight * box.row + this.baseHeight / 2
+        );
+    }
+
+    /**
+     * Draws an agent
+     *
+     * @param agent
+     */
+    private drawAgent(agent: PokobanObject) {
+        // circle
+        this.ctx.fillStyle = 'rgba(0, 0, 255, 1)';
+        this.ctx.beginPath();
+        this.ctx.arc(
+            this.baseWidth * agent.col + this.baseWidth / 2,
+            this.baseWidth * agent.row + this.baseHeight / 2,
+            this.baseHeight / 3,
+            0,
+            Math.PI * 2,
+            false
+        );
+        this.ctx.fill();
+
+        // text
+        this.ctx.fillStyle = 'rgba(255, 255, 255, 1)';
+        this.ctx.fillText(
+            agent.letter,
+            this.baseWidth * agent.col + this.baseWidth / 2,
+            this.baseHeight * agent.row + this.baseHeight / 2
+        );
     }
 }
