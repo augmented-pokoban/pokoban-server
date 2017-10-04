@@ -1,16 +1,30 @@
-import {Component, ViewChild} from '@angular/core';
+import {AfterContentInit, Component, OnInit, ViewChild} from '@angular/core';
+import {Pokoban} from "../../models/Pokoban";
+import {ActivatedRoute, Router} from "@angular/router";
 
 @Component({
     selector: 'visualizer',
     templateUrl: './visualizer.component.html',
     styleUrls: ['./visualizer.component.css']
 })
-export class VisualizerComponent {
+export class VisualizerComponent implements OnInit, AfterContentInit {
 
     @ViewChild('canvas') canvas;
 
-    constructor() {
+    pokoban: Pokoban;
 
+    constructor(private route: ActivatedRoute,
+                private router: Router) {
+
+        console.log("hej");
+    }
+
+    ngOnInit() {
+        console.log("hej");
+
+        // this.pokoban = this.route.snapshot.data['pokoban'];
+
+        console.log(this.pokoban);
     }
 
     ngAfterContentInit() {
