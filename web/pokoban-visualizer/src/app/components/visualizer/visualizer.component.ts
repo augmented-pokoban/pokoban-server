@@ -75,7 +75,7 @@ export class VisualizerComponent implements OnInit, AfterContentInit {
         state.goals.forEach(goal => this.drawGoal(goal));
 
         // draw the boxes
-        state.boxes.forEach(box => this.drawBox(box));
+        state.boxes.forEach(box => this.drawBox(box, this.isSolved(box, state)));
 
         // draw the agents
         state.agents.forEach(agent => this.drawAgent(agent));
@@ -101,7 +101,7 @@ export class VisualizerComponent implements OnInit, AfterContentInit {
      * @param {PokobanState} nextState
      */
     private drawTransition(currentState: PokobanState,
-                   nextState: PokobanState): PokobanState {
+                           nextState: PokobanState): PokobanState {
 
         // remove agents & boxes from old position
         currentState.agents.concat(currentState.boxes).forEach(agent => {
@@ -121,7 +121,7 @@ export class VisualizerComponent implements OnInit, AfterContentInit {
 
         // insert boxes at new position
         nextState.boxes.forEach(box => {
-            this.drawBox(box);
+            this.drawBox(box, this.isSolved(box, nextState));
         });
 
         return nextState;
@@ -148,12 +148,13 @@ export class VisualizerComponent implements OnInit, AfterContentInit {
      * Draws a box
      *
      * @param {PokobanObject} box
+     * @param isSolved
      */
-    private drawBox(box: PokobanObject) {
-        this.ctx.fillStyle = 'rgba(0, 0, 255, 0.5)';
+    private drawBox(box: PokobanObject, isSolved: boolean) {
+        this.ctx.fillStyle = isSolved ? 'rgba(0, 255, 0, 0.8)' : 'rgba(0, 0, 255, 1)';
         this.ctx.fillRect(this.baseWidth * box.col, this.baseHeight * box.row, this.baseWidth, this.baseHeight);
 
-        this.ctx.fillStyle = 'rgba(255, 255, 255, 0.5)';
+        this.ctx.fillStyle = 'rgba(255, 255, 255, 1)';
         this.ctx.fillText(
             box.letter,
             this.baseWidth * box.col + this.baseWidth / 2,
@@ -187,5 +188,19 @@ export class VisualizerComponent implements OnInit, AfterContentInit {
             this.baseWidth * agent.col + this.baseWidth / 2,
             this.baseHeight * agent.row + this.baseHeight / 2
         );
+    }
+
+    /**
+     * Returns true if given box solves a goal
+     *
+     * @param {PokobanObject} box
+     * @param state
+     */
+    private isSolved(box: PokobanObject, state: PokobanState): boolean {
+        return state.goals.some(goal => {
+            return goal.row == box.row &&
+                goal.col == box.col &&
+                goal.letter === box.letter.toLowerCase();
+        });
     }
 }
