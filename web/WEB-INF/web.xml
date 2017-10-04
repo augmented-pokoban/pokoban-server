@@ -5,6 +5,6 @@
          version="3.1">
 
     <welcome-file-list>
-        <welcome-file>pokoban-visualizer/src/index.html</welcome-file>
+        <welcome-file>pokoban-visualizer/dist/index.html</welcome-file>
     </welcome-file-list>
 </web-app>
