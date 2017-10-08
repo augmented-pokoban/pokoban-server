@@ -60,7 +60,7 @@ class LevelService private constructor() {
 			}() // executes this block
 		}
 
-		return Level(mapfile, wallMap, goalMap, collisionMap, width, height)
+		return Level(filename, mapfile, wallMap, goalMap, collisionMap, width, height)
 	}
 
 	/**

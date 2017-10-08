@@ -3,7 +3,8 @@ package model
 import model.objects.*
 import services.LevelService
 
-class Level(val mapfile: String,
+class Level(val filename: String,
+			val mapfile: String,
 			private val wallMap: MutableMap<Int, Wall>,
 			private val goalMap: MutableMap<Int, Goal>,
 			private val collisionMap: MutableMap<Int, PokobanObject>,

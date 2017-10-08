@@ -5,6 +5,7 @@ import com.google.gson.Gson
 import exceptions.ImpossibleActionException
 import model.PokobanAction
 import services.PokobanService
+import java.io.File
 import javax.ws.rs.*
 import javax.ws.rs.core.MediaType
 
@@ -92,8 +93,22 @@ class PokobanController {
 	@DELETE
 	@Path("{id}")
 	@Produces(MediaType.APPLICATION_JSON)
-	fun destroy(@PathParam("id") id: String): String {
-		PokobanService.instance.remove(id)
+	fun destroy(@PathParam("id") id: String,
+				@QueryParam("filename") filename: String): String {
+		val game = PokobanService.instance.remove(id)
+
+		if (!filename.isEmpty() && game != null) {
+			// save the game before removing
+			val filename = filename + "_" + game.id
+			File(javaClass.classLoader.getResource("saves/" + filename).toURI()).writeText(
+					jsonObject(
+							"id" to game.id,
+							"level" to game.level.filename,
+							"initial" to Gson().toJsonTree(game.getState())
+					).toString()
+			)
+		}
+
 		return jsonObject("success" to true).toString()
 	}
 }

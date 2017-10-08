@@ -20,6 +20,8 @@ class PokobanService private constructor() {
 		val instance: PokobanService by lazy { Holder.INSTANCE }
 	}
 
+	// TODO: Keep transition history - create a wrapper object for transitions
+
 	// Games currently being played
 	private val games: MutableMap<String, Pokoban> = HashMap()
 
@@ -44,7 +46,7 @@ class PokobanService private constructor() {
 	/**
 	 * Removes given game
 	 */
-	fun remove(id: String) = instance.games.remove(id)
+	fun remove(id: String): Pokoban? = instance.games.remove(id)
 
 	/**
 	 * Returns all games
@@ -75,6 +77,8 @@ class PokobanService private constructor() {
 			PokobanAction.PULL_EAST -> pull(game, agent, Direction.EAST)
 			PokobanAction.PULL_WEST -> pull(game, agent, Direction.WEST)
 		}
+
+		// TODO: Store this transition!
 
 		// update the game in singleton instance
 		instance.update(gameId, game)
