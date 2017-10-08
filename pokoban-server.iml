@@ -42,6 +42,8 @@
       <sourceFolder url="file://$MODULE_DIR$/src/test/resources" type="java-test-resource" />
       <excludeFolder url="file://$MODULE_DIR$/target" />
       <excludeFolder url="file://$MODULE_DIR$/web/node_modules" />
+      <excludeFolder url="file://$MODULE_DIR$/web/pokoban-visualizer/dist" />
+      <excludeFolder url="file://$MODULE_DIR$/web/pokoban-visualizer/tmp" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />

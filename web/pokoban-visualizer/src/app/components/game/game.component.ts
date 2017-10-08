@@ -6,11 +6,11 @@ import {PokobanTransition} from "../../models/PokobanTransition";
 import {PokobanObject} from "../../models/PokobanObject";
 
 @Component({
-    selector: 'visualizer',
-    templateUrl: './visualizer.component.html',
-    styleUrls: ['./visualizer.component.css']
+    selector: 'game',
+    templateUrl: './game.component.html',
+    styleUrls: ['./game.component.css']
 })
-export class VisualizerComponent implements OnInit, AfterContentInit {
+export class GameComponent implements OnInit, AfterContentInit {
 
     @ViewChild('canvas') canvas;
 
@@ -133,7 +133,7 @@ export class VisualizerComponent implements OnInit, AfterContentInit {
      * @param {PokobanObject} goal
      */
     private drawGoal(goal: PokobanObject) {
-        this.ctx.fillStyle = 'rgba(0, 0, 255, 1)';
+        this.ctx.fillStyle = 'rgba(0, 255, 255, 1)';
         this.ctx.fillRect(this.baseWidth * goal.col, this.baseHeight * goal.row, this.baseWidth, this.baseHeight);
 
         this.ctx.fillStyle = 'rgba(255, 255, 255, 1)';

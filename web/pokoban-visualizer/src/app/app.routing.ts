@@ -1,13 +1,38 @@
 import {Routes} from "@angular/router";
-import {VisualizerComponent} from "./components/visualizer/visualizer.component";
 import {PokobanGuard} from "./guards/PokobanGuard";
+import {HomeComponent} from "./components/home/home.component";
+import {PokobansGuard} from "./guards/PokobansGuard";
+import {GameComponent} from "./components/game/game.component";
+import {GamesComponent} from "./components/games/games.component";
+import {LevelsComponent} from "./components/levels/levels.component";
+import {LevelsGuard} from "./guards/LevelsGuard";
 
 export const appRoutes: Routes = [
     {
-        path: 'visualize/:id',
-        component: VisualizerComponent,
+        path: '',
+        component: HomeComponent,
+    },
+    {
+        path: 'levels',
+        component: LevelsComponent,
         resolve: {
-            pokoban: PokobanGuard
-        }
+            levels: LevelsGuard
+        },
+    },
+    {
+        path: 'games',
+        component: GamesComponent,
+        resolve: {
+            pokobans: PokobansGuard
+        },
+        children: [
+            {
+                path: 'games/:id',
+                component: GameComponent,
+                resolve: {
+                    pokoban: PokobanGuard
+                }
+            }
+        ]
     },
 ];
