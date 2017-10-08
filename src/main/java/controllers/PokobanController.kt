@@ -5,7 +5,6 @@ import com.google.gson.Gson
 import exceptions.ImpossibleActionException
 import model.PokobanAction
 import services.PokobanService
-import java.io.File
 import javax.ws.rs.*
 import javax.ws.rs.core.MediaType
 
@@ -100,13 +99,14 @@ class PokobanController {
 		if (!filename.isEmpty() && game != null) {
 			// save the game before removing
 			val filename = filename + "_" + game.id
-			File(javaClass.classLoader.getResource("saves/" + filename).toURI()).writeText(
+			// TODO correctly store JSON object for a full game
+			/*File(javaClass.classLoader.getResource("saves/" + filename).toURI()).writeText(
 					jsonObject(
 							"id" to game.id,
 							"level" to game.level.filename,
 							"initial" to Gson().toJsonTree(game.getState())
 					).toString()
-			)
+			)*/
 		}
 
 		return jsonObject("success" to true).toString()
