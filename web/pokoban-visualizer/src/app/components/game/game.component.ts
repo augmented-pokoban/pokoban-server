@@ -17,6 +17,7 @@ export class GameComponent implements OnInit, AfterContentInit {
     ctx: CanvasRenderingContext2D;
     baseWidth: number;
     baseHeight: number;
+    secondsPerAction: number = 10;
 
     pokoban: Pokoban;
 
@@ -82,6 +83,7 @@ export class GameComponent implements OnInit, AfterContentInit {
     }
 
     /**
+     * Animates a single transition
      *
      * @param {PokobanState} currentState
      * @param {PokobanTransition[]} transitions
@@ -91,7 +93,7 @@ export class GameComponent implements OnInit, AfterContentInit {
         if (transitions.length == 0) return currentState;
         setTimeout(() => {
             return this.transition(this.drawTransition(currentState, transitions.shift().state), transitions)
-        }, (1000 / 60) * 10);
+        }, (1000 / 60) * this.secondsPerAction);
     }
 
     /**

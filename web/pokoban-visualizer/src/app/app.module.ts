@@ -14,6 +14,7 @@ import {GamesComponent} from "./components/games/games.component";
 import {LevelsComponent} from "./components/levels/levels.component";
 import {LevelsGuard} from "./guards/LevelsGuard";
 import {LevelService} from "./services/LevelService";
+import {FormsModule} from "@angular/forms";
 
 const GUARDS = [
     PokobanGuard,
@@ -41,7 +42,8 @@ const COMPONENTS = [
     imports: [
         BrowserModule,
         HttpModule,
-        RouterModule.forRoot(appRoutes, {enableTracing: false})
+        RouterModule.forRoot(appRoutes, {enableTracing: false}),
+        FormsModule
     ],
     providers: [
         ...SERVICES,

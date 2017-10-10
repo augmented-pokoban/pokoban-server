@@ -24,7 +24,7 @@ class LevelController {
 		val levels = levelFiles.map {
 			val level = LevelService.instance.loadLevel(it.name)
 			jsonObject(
-					"filename" to it.name,
+					"filename" to it.name.replace(".lvl", ""),
 					"contents" to level.mapfile,
 					"width" to level.width,
 					"height" to level.height
