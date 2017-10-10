@@ -50,8 +50,12 @@ class PokobanController {
 	@POST
 	@Path("{filename}")
 	@Produces(MediaType.APPLICATION_JSON)
-	fun create(@PathParam("filename") filename: String): String {
-		val game = PokobanService.instance.start(filename + ".lvl")
+	fun create(@PathParam("filename") filename: String,
+			   @Context context: ServletContext): String {
+		val game = PokobanService.instance.start(
+				filename + ".lvl",
+				context.getRealPath(UPLOAD_PATH + "saves/")
+		)
 		return jsonObject(
 				"state" to Gson().toJsonTree(game.getState()),
 				"map" to game.level.mapfile,
