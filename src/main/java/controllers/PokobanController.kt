@@ -98,7 +98,6 @@ class PokobanController {
 		val (initalState, game, transitions) = PokobanService.instance.remove(id)
 
 		if (store && initalState != null && game != null && transitions != null) {
-			transitions.reverse()
 
 			// store JSON object for a full game
 			Files.write(
@@ -107,7 +106,7 @@ class PokobanController {
 							"id" to game.id,
 							"date" to Date().time,
 							"level" to game.level.filename.replace(".lvl", ""),
-							"initial" to Gson().toJsonTree(initalState.getState()),
+							"initial" to Gson().toJsonTree(initalState),
 							"transitions" to Gson().toJsonTree(transitions)
 					).toString().toByteArray()
 			)
