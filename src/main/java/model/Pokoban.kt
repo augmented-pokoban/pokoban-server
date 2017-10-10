@@ -40,3 +40,9 @@ data class PokobanState(@SerializedName("agents") val agents: List<PokobanObject
 						@SerializedName("goals") val goals: List<PokobanObjectState>,
 						@SerializedName("walls") val walls: List<PokobanObjectState>,
 						@SerializedName("dimensions") val dimensions: Int)
+
+data class PokobanTransition(@SerializedName("reward") val reward: Number,
+							 @SerializedName("success") val success: Boolean,
+							 @SerializedName("done") val done: Boolean,
+							 @SerializedName("action") val action: PokobanAction,
+							 @SerializedName("state") val state: PokobanState)

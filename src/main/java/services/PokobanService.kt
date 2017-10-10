@@ -4,6 +4,7 @@ import exceptions.ImpossibleActionException
 import model.Direction
 import model.Pokoban
 import model.PokobanAction
+import model.PokobanTransition
 import model.objects.Agent
 import java.util.*
 import kotlin.collections.HashMap
@@ -20,7 +21,8 @@ class PokobanService private constructor() {
 		val instance: PokobanService by lazy { Holder.INSTANCE }
 	}
 
-	// TODO: Keep transition history - create a wrapper object for transitions
+	// Transitions in games currently being played
+	private val transitions: MutableMap<String, Stack<PokobanTransition>> = HashMap()
 
 	// Games currently being played
 	private val games: MutableMap<String, Pokoban> = HashMap()
@@ -31,9 +33,10 @@ class PokobanService private constructor() {
 	fun start(filename: String): Pokoban {
 		val level = LevelService.instance.loadLevel(filename)
 		val gameId = UUID.randomUUID().toString()
-		val newGame = Pokoban(gameId, level);
+		val newGame = Pokoban(gameId, level)
 
-		instance.games.put(gameId, newGame);
+		instance.games.put(gameId, newGame)
+		instance.transitions[gameId] = Stack()
 
 		return newGame;
 	}
@@ -44,9 +47,9 @@ class PokobanService private constructor() {
 	fun get(id: String): Pokoban = instance.games.getValue(id)
 
 	/**
-	 * Removes given game
+	 * Removes given game and it's associated transitions
 	 */
-	fun remove(id: String): Pokoban? = instance.games.remove(id)
+	fun remove(id: String): Pair<Pokoban?, Stack<PokobanTransition>?> = Pair(instance.games.remove(id), instance.transitions.remove(id))
 
 	/**
 	 * Returns all games
@@ -57,42 +60,55 @@ class PokobanService private constructor() {
 	 * Transitions given game into a new state
 	 * Returns (reward, game)
 	 */
-	fun transition(gameId: String, action: PokobanAction): Pair<Number, Pokoban> {
+	fun transition(gameId: String, action: PokobanAction): Triple<Boolean, Number, Pokoban> {
 
 		var game = instance.get(gameId)
 		val agent: Agent = game.level.getAgents().first() // We assume only 1 agent
 		val solvedGoalsBefore = game.numberOfSolvedGoals()
 
-		game = when (action) { // kotlin is awesome
-			PokobanAction.MOVE_NORTH -> move(game, agent, Direction.NORTH)
-			PokobanAction.MOVE_SOUTH -> move(game, agent, Direction.SOUTH)
-			PokobanAction.MOVE_EAST -> move(game, agent, Direction.EAST)
-			PokobanAction.MOVE_WEST -> move(game, agent, Direction.WEST)
-			PokobanAction.PUSH_NORTH -> push(game, agent, Direction.NORTH)
-			PokobanAction.PUSH_SOUTH -> push(game, agent, Direction.SOUTH)
-			PokobanAction.PUSH_EAST -> push(game, agent, Direction.EAST)
-			PokobanAction.PUSH_WEST -> push(game, agent, Direction.WEST)
-			PokobanAction.PULL_NORTH -> pull(game, agent, Direction.NORTH)
-			PokobanAction.PULL_SOUTH -> pull(game, agent, Direction.SOUTH)
-			PokobanAction.PULL_EAST -> pull(game, agent, Direction.EAST)
-			PokobanAction.PULL_WEST -> pull(game, agent, Direction.WEST)
+		var success = true
+		try {
+			game = when (action) { // kotlin is awesome
+				PokobanAction.MOVE_NORTH -> move(game, agent, Direction.NORTH)
+				PokobanAction.MOVE_SOUTH -> move(game, agent, Direction.SOUTH)
+				PokobanAction.MOVE_EAST -> move(game, agent, Direction.EAST)
+				PokobanAction.MOVE_WEST -> move(game, agent, Direction.WEST)
+				PokobanAction.PUSH_NORTH -> push(game, agent, Direction.NORTH)
+				PokobanAction.PUSH_SOUTH -> push(game, agent, Direction.SOUTH)
+				PokobanAction.PUSH_EAST -> push(game, agent, Direction.EAST)
+				PokobanAction.PUSH_WEST -> push(game, agent, Direction.WEST)
+				PokobanAction.PULL_NORTH -> pull(game, agent, Direction.NORTH)
+				PokobanAction.PULL_SOUTH -> pull(game, agent, Direction.SOUTH)
+				PokobanAction.PULL_EAST -> pull(game, agent, Direction.EAST)
+				PokobanAction.PULL_WEST -> pull(game, agent, Direction.WEST)
+			}
+		} catch (e: ImpossibleActionException) {
+			success = false
 		}
-
-		// TODO: Store this transition!
-
-		// update the game in singleton instance
-		instance.update(gameId, game)
 
 		// calculate reward
 		val solvedGoalsAfter = game.numberOfSolvedGoals()
 		val reward: Number = when {
 			solvedGoalsBefore > solvedGoalsAfter -> -0.5 // we suck!
 			solvedGoalsBefore < solvedGoalsAfter -> 0.5 // we solved a goal!
+			!success -> -0.5 // impossible action
 			else -> -0.1
 		}
 
-		return Pair(reward, game)
+		// Store this transition
+		val transition = PokobanTransition(reward, success, game.isDone(), action, game.getState())
+		instance.store(gameId, transition)
+
+		// update the game in singleton instance
+		instance.update(gameId, game)
+
+		return Triple(success, reward, game)
 	}
+
+	/**
+	 * Stores a new transition associated with given game id
+	 */
+	private fun store(id: String, transition: PokobanTransition) = instance.transitions[id]!!.push(transition)
 
 	/**
 	 * Updates given game in hashmap
