@@ -29,7 +29,7 @@ class PokobanController {
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	fun index(@Context context: ServletContext): String {
-		val gameFiles = File(context.getRealPath(UPLOAD_PATH + "saves/")).listFiles()
+		val gameFiles = File(context.getRealPath(UPLOAD_PATH + "saves")).listFiles()
 		return Gson().toJson(gameFiles.map { Gson().fromJson<JsonObject>(File(it.toURI()).readText()) })
 	}
 
@@ -53,8 +53,7 @@ class PokobanController {
 	fun create(@PathParam("filename") filename: String,
 			   @Context context: ServletContext): String {
 		val game = PokobanService.instance.start(
-				filename + ".lvl",
-				context.getRealPath(UPLOAD_PATH + "saves/")
+				context.getRealPath(UPLOAD_PATH + "levels") + "/$filename.lvl"
 		)
 		return jsonObject(
 				"state" to Gson().toJsonTree(game.getState()),

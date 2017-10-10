@@ -21,7 +21,7 @@ class LevelService private constructor() {
 		val instance: LevelService by lazy { Holder.INSTANCE }
 	}
 
-	fun loadLevel(filename: String, levelsPath: String): Level {
+	fun loadLevel(filePath: String): Level {
 
 		val wallMap: MutableMap<Int, Wall> = HashMap()
 		val goalMap: MutableMap<Int, Goal> = HashMap()
@@ -33,7 +33,7 @@ class LevelService private constructor() {
 		var mapfile = ""
 
 		// iterate over lines in level file
-		File(levelsPath + filename).readLines().forEachIndexed { y, line ->
+		File(filePath).readLines().forEachIndexed { y, line ->
 			{
 				mapfile += line + "\n"
 				if (y > height) height = y
@@ -60,7 +60,7 @@ class LevelService private constructor() {
 			}() // executes this block
 		}
 
-		return Level(filename, mapfile, wallMap, goalMap, collisionMap, width, height)
+		return Level(filePath, mapfile, wallMap, goalMap, collisionMap, width, height)
 	}
 
 	/**

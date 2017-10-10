@@ -27,7 +27,7 @@ class LevelController {
 		val levelFiles = File(levelsPath).listFiles()
 
 		val levels = levelFiles.map {
-			val level = LevelService.instance.loadLevel(it.name, levelsPath)
+			val level = LevelService.instance.loadLevel(it.absolutePath)
 			jsonObject(
 					"filename" to it.name.replace(".lvl", ""),
 					"contents" to level.mapfile,
@@ -48,7 +48,7 @@ class LevelController {
 	fun show(@PathParam("filename") filename: String,
 			 @Context context: ServletContext): String {
 		val levelsPath = context.getRealPath(UPLOAD_PATH + "levels")
-		val level = LevelService.instance.loadLevel(filename + ".lvl", levelsPath)
+		val level = LevelService.instance.loadLevel(levelsPath + filename + ".lvl")
 		return jsonObject(
 				"filename" to filename,
 				"contents" to level.mapfile,
