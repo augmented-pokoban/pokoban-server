@@ -1,7 +1,6 @@
 import {DataService} from "./DataService";
 import {Http} from "@angular/http";
 import {Injectable} from "@angular/core";
-import {Pokoban} from "../models/Pokoban";
 import {PokobanLevel} from "../models/PokobanLevel";
 
 @Injectable()

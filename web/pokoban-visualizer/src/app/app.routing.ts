@@ -1,6 +1,5 @@
 import {Routes} from "@angular/router";
 import {PokobanGuard} from "./guards/PokobanGuard";
-import {HomeComponent} from "./components/home/home.component";
 import {PokobansGuard} from "./guards/PokobansGuard";
 import {GameComponent} from "./components/game/game.component";
 import {GamesComponent} from "./components/games/games.component";
@@ -10,7 +9,8 @@ import {LevelsGuard} from "./guards/LevelsGuard";
 export const appRoutes: Routes = [
     {
         path: '',
-        component: HomeComponent,
+        redirectTo: 'games',
+        pathMatch: 'full'
     },
     {
         path: 'levels',
