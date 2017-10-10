@@ -1,5 +1,6 @@
 package controllers
 
+import PokobanServer.constants.UPLOAD_PATH
 import com.github.salomonbrys.kotson.fromJson
 import com.github.salomonbrys.kotson.jsonObject
 import com.google.gson.Gson
@@ -10,7 +11,9 @@ import java.io.File
 import java.nio.file.Files
 import java.nio.file.Paths
 import java.util.*
+import javax.servlet.ServletContext
 import javax.ws.rs.*
+import javax.ws.rs.core.Context
 import javax.ws.rs.core.MediaType
 
 operator fun Number.plusAssign(d: Double) {
@@ -25,11 +28,9 @@ class PokobanController {
 	 */
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
-	fun index(): String {
-		val gameFiles = File(javaClass.classLoader.getResource("saves/").toURI()).listFiles()
-		return Gson().toJson(
-				gameFiles.map { Gson().fromJson<JsonObject>(File(it.toURI()).readText()) }
-		)
+	fun index(@Context context: ServletContext): String {
+		val gameFiles = File(context.getRealPath(UPLOAD_PATH + "saves/")).listFiles()
+		return Gson().toJson(gameFiles.map { Gson().fromJson<JsonObject>(File(it.toURI()).readText()) })
 	}
 
 	/**
@@ -38,8 +39,9 @@ class PokobanController {
 	@GET
 	@Path("{id}")
 	@Produces(MediaType.APPLICATION_JSON)
-	fun show(@PathParam("id") id: String): String {
-		return File(javaClass.classLoader.getResource("saves/$id.json").toURI()).readText()
+	fun show(@PathParam("id") id: String,
+			 @Context context: ServletContext): String {
+		return File(context.getRealPath(UPLOAD_PATH + "saves/$id.json")).readText()
 	}
 
 	/**
@@ -88,13 +90,14 @@ class PokobanController {
 	@Path("{id}")
 	@Produces(MediaType.APPLICATION_JSON)
 	fun destroy(@PathParam("id") id: String,
-				@QueryParam("store") store: Boolean): String {
+				@QueryParam("store") store: Boolean,
+				@Context context: ServletContext): String {
 		val (game, transitions) = PokobanService.instance.remove(id)
 
 		if (store && game != null && transitions != null) {
 			// store JSON object for a full game
 			Files.write(
-					Paths.get(javaClass.classLoader.getResource("saves/").toExternalForm() + game.id + ".json"),
+					Paths.get(context.getRealPath(UPLOAD_PATH + "saves/" + game.id + ".json")),
 					jsonObject(
 							"id" to game.id,
 							"date" to Date().time,

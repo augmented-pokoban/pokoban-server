@@ -12,6 +12,10 @@ import javax.ws.rs.ext.Provider
 @ApplicationPath("/api")
 class PokobanServer : Application() {
 
+	object constants {
+		val UPLOAD_PATH = "../../../data/"
+	}
+
 	/**
 	 * @return a non-empty collection with classes, that must be included in the published JAX-RS application
 	 */
