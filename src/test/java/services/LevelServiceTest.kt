@@ -25,7 +25,7 @@ class LevelServiceTest {
     @Test
     fun testLoadLevel() {
 
-        val level = LevelService.instance.loadLevel("easy_1_box_1.lvl")
+        val level = LevelService.instance.loadLevel("easy_1_box_1.lvl", "../../../data/")
 
         assertEquals("0", level.get(1, 1).toString())
     }
