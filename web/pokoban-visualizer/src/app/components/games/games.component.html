@@ -4,11 +4,15 @@
     <th>Date</th>
     <th>Level</th>
     <th>GameID</th>
+    <th># Transitions</th>
+    <th>Completed</th>
   </tr>
   </thead>
   <tr *ngFor="let pokoban of pokobans">
-    <td>{{pokoban.date | date: 'medium'}}</td>
-    <td>{{pokoban.level}}</td>
     <td><a [routerLink]="[pokoban.id]">{{pokoban.id}}</a></td>
+    <td>{{pokoban.level}}</td>
+    <td>{{pokoban.date | date: 'medium'}}</td>
+    <td>{{pokoban.transitions.length}}</td>
+    <td>{{pokoban.transitions[pokoban.transitions.length - 1].done + '' | uppercase }}</td>
   </tr>
 </table>

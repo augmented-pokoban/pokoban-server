@@ -4,6 +4,7 @@ import PokobanServer.constants.UPLOAD_PATH
 import com.github.salomonbrys.kotson.jsonObject
 import com.google.gson.Gson
 import model.Pokoban
+import model.PokobanTransition
 import services.LevelService
 import java.io.File
 import javax.servlet.ServletContext
@@ -49,7 +50,7 @@ class LevelController {
 	fun show(@PathParam("filename") filename: String,
 			 @Context context: ServletContext): String {
 		val levelsPath = context.getRealPath(UPLOAD_PATH + "levels")
-		val level = LevelService.instance.loadLevel(levelsPath + filename + ".lvl")
+		val level = LevelService.instance.loadLevel("$levelsPath/$filename.lvl")
 		return jsonObject(
 				"filename" to filename,
 				"contents" to level.mapfile,
@@ -67,10 +68,11 @@ class LevelController {
     fun state(@PathParam("filename") filename: String,
              @Context context: ServletContext): String {
         val levelsPath = context.getRealPath(UPLOAD_PATH + "levels")
-        val level = LevelService.instance.loadLevel(levelsPath + filename + ".lvl")
+        val level = LevelService.instance.loadLevel("$levelsPath/$filename.lvl")
 		val state = Pokoban(filename, level)
         return jsonObject(
-				"state" to Gson().toJsonTree(state.getState())
+				"initial" to Gson().toJsonTree(state.getState()),
+				"transitions" to Gson().toJsonTree(emptyList<PokobanTransition>())
 		).toString()
     }
 }

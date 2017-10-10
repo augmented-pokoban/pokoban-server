@@ -1,5 +1,14 @@
-<ul>
-    <li *ngFor="let level of levels">
-        {{level.filename}}
-    </li>
-</ul>
+<table class="table">
+  <thead>
+  <tr>
+    <th>Filename</th>
+    <th>Height</th>
+    <th>Width</th>
+  </tr>
+  </thead>
+  <tr *ngFor="let level of levels">
+    <td><a [routerLink]="['/games/state/' + level.filename]">{{level.filename}}</a></td>
+    <td>{{level.height}}</td>
+    <td>{{level.width}}</td>
+  </tr>
+</table>

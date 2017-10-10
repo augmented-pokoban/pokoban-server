@@ -15,11 +15,13 @@ import {LevelsComponent} from "./components/levels/levels.component";
 import {LevelsGuard} from "./guards/LevelsGuard";
 import {LevelService} from "./services/LevelService";
 import {FormsModule} from "@angular/forms";
+import {PokobanStateGuard} from './guards/PokobanStateGuard';
 
 const GUARDS = [
     PokobanGuard,
     PokobansGuard,
     LevelsGuard,
+    PokobanStateGuard
 ];
 
 const SERVICES = [

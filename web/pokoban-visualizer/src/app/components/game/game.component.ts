@@ -4,7 +4,6 @@ import {Pokoban} from "../../models/Pokoban";
 import {PokobanState} from "../../models/PokobanState";
 import {PokobanTransition} from "../../models/PokobanTransition";
 import {PokobanObject} from "../../models/PokobanObject";
-import {current} from "codelyzer/util/syntaxKind";
 
 @Component({
     selector: 'game',
@@ -44,11 +43,12 @@ export class GameComponent implements OnInit, AfterContentInit {
         // draw initial state
         this.drawState(canvas, state);
 
-        let test = new PokobanTransition();
-        test.state = state;
-        test.action = 'INIT';
-        test.success = true;
-        this.pokoban.transitions.unshift(test);
+        // Insert initial state into transition list as first element
+        let init = new PokobanTransition();
+        init.state = state;
+        init.action = 'INIT';
+        init.success = true;
+        this.pokoban.transitions.unshift(init);
 
         if(this.play){
           // recursively perform transition
@@ -57,19 +57,25 @@ export class GameComponent implements OnInit, AfterContentInit {
     }
 
     playOnOff(){
+      // this.play has been updated here
+      // restart playing, or clear the timer
       if(this.play){
           this.transition(this.pokoban.transitions[this.nextIndex - 1].state, this.nextIndex);
-      } else {
-        if(this.timer) clearTimeout(this.timer);
+      } else if(this.timer) {
+         clearTimeout(this.timer);
       }
     }
 
     selectState(index){
+      //Stop timer or else we can get some weird state inteference
       if(this.timer) clearTimeout(this.timer);
 
+      // Get current state which is the previous index
       let curState = this.pokoban.transitions[this.nextIndex - 1].state;
       this.nextIndex = index + 1;
 
+      // Restart playing, or draw the new state which is a transitions
+      // from the current state (no matter how different they are) and the new state
       if(this.play){
         this.transition(curState, this.nextIndex);
       } else {

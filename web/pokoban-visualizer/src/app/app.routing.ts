@@ -5,38 +5,46 @@ import {GameComponent} from "./components/game/game.component";
 import {GamesComponent} from "./components/games/games.component";
 import {LevelsComponent} from "./components/levels/levels.component";
 import {LevelsGuard} from "./guards/LevelsGuard";
+import {PokobanStateGuard} from "./guards/PokobanStateGuard";
 
 export const appRoutes: Routes = [
-    {
+  {
+    path: '',
+    redirectTo: 'games',
+    pathMatch: 'full'
+  },
+  {
+    path: 'levels',
+    component: LevelsComponent,
+    resolve: {
+      levels: LevelsGuard
+    },
+  },
+  {
+    path: 'games',
+    children: [
+      {
         path: '',
-        redirectTo: 'games',
-        pathMatch: 'full'
-    },
-    {
-        path: 'levels',
-        component: LevelsComponent,
+        pathMatch: 'full',
+        component: GamesComponent,
         resolve: {
-            levels: LevelsGuard
+          pokobans: PokobansGuard
         },
-    },
-    {
-        path: 'games',
-        children: [
-            {
-                path: '',
-                pathMatch: 'full',
-                component: GamesComponent,
-                resolve: {
-                    pokobans: PokobansGuard
-                },
-            },
-            {
-                path: ':id',
-                component: GameComponent,
-                resolve: {
-                    pokoban: PokobanGuard
-                }
-            }
-        ]
-    },
+      },
+      {
+        path: ':id',
+        component: GameComponent,
+        resolve: {
+          pokoban: PokobanGuard
+        }
+      },
+      {
+        path: 'state/:file',
+        component: GameComponent,
+        resolve: {
+          pokoban: PokobanStateGuard
+        }
+      }
+    ]
+  },
 ];
