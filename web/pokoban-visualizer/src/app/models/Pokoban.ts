@@ -3,8 +3,9 @@ import {PokobanTransition} from "./PokobanTransition";
 
 export class Pokoban {
 
-    level: string;
     id: string;
+    date: Date;
+    level: string;
     initial: PokobanState;
     transitions: PokobanTransition[];
 

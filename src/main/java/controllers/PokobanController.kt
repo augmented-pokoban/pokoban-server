@@ -9,6 +9,7 @@ import services.PokobanService
 import java.io.File
 import java.nio.file.Files
 import java.nio.file.Paths
+import java.util.*
 import javax.ws.rs.*
 import javax.ws.rs.core.MediaType
 
@@ -93,9 +94,10 @@ class PokobanController {
 		if (store && game != null && transitions != null) {
 			// store JSON object for a full game
 			Files.write(
-					Paths.get(javaClass.classLoader.getResource("saves/" + game.id + ".json").toURI()),
+					Paths.get(javaClass.classLoader.getResource("saves/").toExternalForm() + game.id + ".json"),
 					jsonObject(
 							"id" to game.id,
+							"date" to Date().time,
 							"level" to game.level.filename.replace(".lvl", ""),
 							"initial" to Gson().toJsonTree(game.getState()),
 							"transitions" to Gson().toJsonTree(transitions.reverse())

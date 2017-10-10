@@ -16,8 +16,7 @@ export class GamesComponent implements OnInit {
 
     ngOnInit() {
         this.pokobans = this.route.snapshot.data['pokobans'];
-        this.pokobans.sort((a, b) => {
-            return a.level.toUpperCase() > b.level.toUpperCase() ? 1 : -1
-        });
+        // sort by filename
+        this.pokobans.sort((a, b) => a.level.toUpperCase() > b.level.toUpperCase() ? 1 : -1);
     }
 }
