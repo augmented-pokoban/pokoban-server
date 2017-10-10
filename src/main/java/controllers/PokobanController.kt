@@ -93,7 +93,7 @@ class PokobanController {
 			File(javaClass.classLoader.getResource("saves/" + game.id + ".json").toURI()).writeText(
 					jsonObject(
 							"id" to game.id,
-							"level" to game.level.filename,
+							"level" to game.level.filename.replace(".lvl", ""),
 							"initial" to Gson().toJsonTree(game.getState()),
 							"transitions" to Gson().toJsonTree(transitions.reverse())
 					).toString()
