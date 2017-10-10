@@ -21,13 +21,17 @@ export const appRoutes: Routes = [
     },
     {
         path: 'games',
-        component: GamesComponent,
-        resolve: {
-            pokobans: PokobansGuard
-        },
         children: [
             {
-                path: 'games/:id',
+                path: '',
+                pathMatch: 'full',
+                component: GamesComponent,
+                resolve: {
+                    pokobans: PokobansGuard
+                },
+            },
+            {
+                path: ':id',
                 component: GameComponent,
                 resolve: {
                     pokoban: PokobanGuard

@@ -13,12 +13,6 @@ export class PokobanGuard implements Resolve<Pokoban> {
     }
 
     resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Promise<Pokoban> {
-        return new Promise<Pokoban>((resolve, reject) => {
-            this.http.get(`assets/data/${route.params['id']}.json`).subscribe(response => {
-                resolve(response.json() as Pokoban);
-            });
-        });
-
-        // return this.pokobanService.one(route.params['id']);
+        return this.pokobanService.one(route.params['id']);
     }
 }

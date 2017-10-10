@@ -1,5 +1,5 @@
 <ul>
     <li *ngFor="let pokoban of pokobans">
-        <a [routerLink]="[pokoban.id]">{{pokoban.id}}</a>
+        {{pokoban.level}} <a [routerLink]="[pokoban.id]">{{pokoban.id}}</a>
     </li>
 </ul>

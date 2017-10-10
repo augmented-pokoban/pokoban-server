@@ -1,30 +1,32 @@
 package controllers
 
+import com.github.salomonbrys.kotson.fromJson
 import com.github.salomonbrys.kotson.jsonObject
 import com.google.gson.Gson
+import com.google.gson.JsonObject
 import model.PokobanAction
 import services.PokobanService
 import java.io.File
 import javax.ws.rs.*
 import javax.ws.rs.core.MediaType
 
-operator fun Number.plusAssign(d: Double) { this.toDouble() + d }
+operator fun Number.plusAssign(d: Double) {
+	this.toDouble() + d
+}
 
 @Path("/")
 class PokobanController {
 
 	/**
-	 * Returns all games
+	 * Returns all finished games
 	 */
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	fun index(): String {
-		return Gson().toJson(PokobanService.instance.all().map {
-			jsonObject(
-					"state" to Gson().toJsonTree(it.getState()),
-					"gameID" to it.id
-			)
-		})
+		val gameFiles = File(javaClass.classLoader.getResource("saves/").toURI()).listFiles()
+		return Gson().toJson(
+				gameFiles.map { Gson().fromJson<JsonObject>(File(it.toURI()).readText()) }
+		)
 	}
 
 	/**
@@ -34,11 +36,7 @@ class PokobanController {
 	@Path("{id}")
 	@Produces(MediaType.APPLICATION_JSON)
 	fun show(@PathParam("id") id: String): String {
-		val game = PokobanService.instance.get(id)
-		return jsonObject(
-				"state" to Gson().toJsonTree(game.getState()),
-				"gameID" to game.id
-		).toString()
+		return File(javaClass.classLoader.getResource("saves/$id.json").toURI()).readText()
 	}
 
 	/**
@@ -92,7 +90,7 @@ class PokobanController {
 
 		if (!filename.isEmpty() && game != null) {
 			// store JSON object for a full game
-			File(javaClass.classLoader.getResource("saves/" + filename + "_" + game.id).toURI()).writeText(
+			File(javaClass.classLoader.getResource("saves/" + game.id + ".json").toURI()).writeText(
 					jsonObject(
 							"id" to game.id,
 							"level" to game.level.filename,
