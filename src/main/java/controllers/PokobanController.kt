@@ -100,7 +100,7 @@ class PokobanController {
 		if (store && game != null && transitions != null) {
 			// store JSON object for a full game
 			Files.write(
-					Paths.get(context.getRealPath(UPLOAD_PATH + "saves/" + game.id + ".json")),
+					Paths.get(context.getRealPath(UPLOAD_PATH) + "/saves/" + game.id + ".json"),
 					jsonObject(
 							"id" to game.id,
 							"date" to Date().time,
