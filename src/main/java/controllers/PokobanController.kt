@@ -7,6 +7,8 @@ import com.google.gson.JsonObject
 import model.PokobanAction
 import services.PokobanService
 import java.io.File
+import java.nio.file.Files
+import java.nio.file.Paths
 import javax.ws.rs.*
 import javax.ws.rs.core.MediaType
 
@@ -90,13 +92,14 @@ class PokobanController {
 
 		if (store && game != null && transitions != null) {
 			// store JSON object for a full game
-			File(javaClass.classLoader.getResource("saves/" + game.id + ".json").toURI()).writeText(
+			Files.write(
+					Paths.get(javaClass.classLoader.getResource("saves/" + game.id + ".json").toURI()),
 					jsonObject(
 							"id" to game.id,
 							"level" to game.level.filename.replace(".lvl", ""),
 							"initial" to Gson().toJsonTree(game.getState()),
 							"transitions" to Gson().toJsonTree(transitions.reverse())
-					).toString()
+					).toString().toByteArray()
 			)
 		}
 

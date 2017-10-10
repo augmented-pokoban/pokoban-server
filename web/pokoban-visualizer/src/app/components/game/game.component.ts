@@ -37,6 +37,7 @@ export class GameComponent implements OnInit, AfterContentInit {
         this.baseHeight = canvas.height / state.dimensions;
         this.ctx = canvas.getContext('2d');
 
+        // draw initial state
         this.drawState(canvas, state);
 
         // recursively perform transition
