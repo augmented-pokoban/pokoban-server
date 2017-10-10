@@ -1,3 +1,7 @@
 canvas {
 
 }
+
+.trans-selected {
+  background-color: lightgreen;
+}

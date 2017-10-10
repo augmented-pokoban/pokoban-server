@@ -4,6 +4,7 @@ import {Pokoban} from "../../models/Pokoban";
 import {PokobanState} from "../../models/PokobanState";
 import {PokobanTransition} from "../../models/PokobanTransition";
 import {PokobanObject} from "../../models/PokobanObject";
+import {current} from "codelyzer/util/syntaxKind";
 
 @Component({
     selector: 'game',
@@ -18,6 +19,9 @@ export class GameComponent implements OnInit, AfterContentInit {
     baseWidth: number;
     baseHeight: number;
     msPerAction: number = 250;
+    play: boolean = true;
+    nextIndex: number = 1;
+    timer: any;
 
     pokoban: Pokoban;
 
@@ -40,8 +44,37 @@ export class GameComponent implements OnInit, AfterContentInit {
         // draw initial state
         this.drawState(canvas, state);
 
-        // recursively perform transition
-        this.transition(state, this.pokoban.transitions);
+        let test = new PokobanTransition();
+        test.state = state;
+        test.action = 'INIT';
+        test.success = true;
+        this.pokoban.transitions.unshift(test);
+
+        if(this.play){
+          // recursively perform transition
+          this.transition(state, this.nextIndex);
+        }
+    }
+
+    playOnOff(){
+      if(this.play){
+          this.transition(this.pokoban.transitions[this.nextIndex - 1].state, this.nextIndex);
+      } else {
+        if(this.timer) clearTimeout(this.timer);
+      }
+    }
+
+    selectState(index){
+      if(this.timer) clearTimeout(this.timer);
+
+      let curState = this.pokoban.transitions[this.nextIndex - 1].state;
+      this.nextIndex = index + 1;
+
+      if(this.play){
+        this.transition(curState, this.nextIndex);
+      } else {
+        this.drawTransition(curState, this.pokoban.transitions[this.nextIndex-1].state)
+      }
     }
 
     /**
@@ -87,13 +120,16 @@ export class GameComponent implements OnInit, AfterContentInit {
      * Animates a single transition
      *
      * @param {PokobanState} currentState
-     * @param {PokobanTransition[]} transitions
+     * @param currentIndex
      * @returns {PokobanState}
      */
-    transition(currentState: PokobanState, transitions: PokobanTransition[]): PokobanState {
-        if (transitions.length == 0) return currentState;
-        setTimeout(() => {
-            return this.transition(this.drawTransition(currentState, transitions.shift().state), transitions)
+    transition(currentState: PokobanState, currentIndex: number): PokobanState {
+        if(this.pokoban.transitions.length <= currentIndex) return currentState;
+
+        this.timer = setTimeout(() => {
+            return this.transition(
+              this.drawTransition(currentState, this.pokoban.transitions[currentIndex].state),
+              this.nextIndex = currentIndex + 1)
         }, this.msPerAction);
     }
 

@@ -1,21 +1,28 @@
 <div class="col-md-8">
-    <canvas #canvas height="750" width="750"></canvas>
+  <canvas #canvas height="750" width="750"></canvas>
 </div>
 <div class="col-md-4">
-<form class="form-horizontal">
-  <div class="form-group">
-    <label for="seconds" class="col-md-2 control-label">Speed</label>
-    <div class="col-md-4">
-      <input type="text" class="form-control" id="seconds" [(ngModel)]="msPerAction" [ngModelOptions]="{standalone: true}"/>
+  <form class="form-horizontal">
+    <div class="form-group">
+      <label for="seconds" class="col-md-2 control-label">Speed</label>
+      <div class="col-md-4">
+        <input type="text" class="form-control" id="seconds" [(ngModel)]="msPerAction"
+               [ngModelOptions]="{standalone: true}"/>
+      </div>
+      <label for="play" class="col-md-3 control-label">Play <input type="checkbox" id="play"
+                                                                   [(ngModel)]="play"
+                                                                   [ngModelOptions]="{standalone: true}"
+                                                                   (ngModelChange)="playOnOff()"/>
+      </label>
     </div>
-    <label for="play" class="col-md-3 control-label">Play <input type="checkbox" id="play" [(ngModel)]="play" [ngModelOptions]="{standalone: true}"/></label>
-  </div>
-</form>
+  </form>
 
 
   <div class="card" style="overflow-y: auto; height: 700px">
     <ul class="list-group">
-      <li class="list-group-item" style="height: 40px" *ngFor="let transition of pokoban.transitions; let i = index">
+      <li class="list-group-item" style="height: 40px"
+          *ngFor="let transition of pokoban.transitions; let i = index" [class.trans-selected]="i == (nextIndex-1)"
+        (click)="selectState(i)">
         <span class="col-md-2">{{i + 1 | number:'3.0-0'}}</span>
         <span class="col-md-5">{{transition.action}}</span>
         <span class="col-md-5">{{transition.success ? 'Success' : 'Failure'}}</span>

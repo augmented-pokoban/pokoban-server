@@ -38,10 +38,11 @@ class LevelService private constructor() {
 				mapfile += line + "\n"
 				if (y > height) height = y
 				// iterate over each character in line
+
+				width = maxOf(line.replace("\n", "").length, width)
+
 				line.split(Regex("")).forEachIndexed { x, field ->
 					{
-						if (x > width) width = x
-
 						val fieldId = UUID.randomUUID().toString()
 						val coordinate = cantor(x, y)
 
@@ -60,7 +61,7 @@ class LevelService private constructor() {
 			}() // executes this block
 		}
 
-		return Level(File(filePath).name, mapfile, wallMap, goalMap, collisionMap, width, height)
+		return Level(File(filePath).name, mapfile, wallMap, goalMap, collisionMap, width, height + 1)
 	}
 
 	/**

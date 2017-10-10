@@ -3,6 +3,7 @@ package controllers
 import PokobanServer.constants.UPLOAD_PATH
 import com.github.salomonbrys.kotson.jsonObject
 import com.google.gson.Gson
+import model.Pokoban
 import services.LevelService
 import java.io.File
 import javax.servlet.ServletContext
@@ -56,4 +57,20 @@ class LevelController {
 				"height" to level.height
 		).toString()
 	}
+
+    /**
+     * Returns a level file by name
+     */
+    @GET
+    @Path("{filename}/state")
+    @Produces(MediaType.APPLICATION_JSON)
+    fun state(@PathParam("filename") filename: String,
+             @Context context: ServletContext): String {
+        val levelsPath = context.getRealPath(UPLOAD_PATH + "levels")
+        val level = LevelService.instance.loadLevel(levelsPath + filename + ".lvl")
+		val state = Pokoban(filename, level)
+        return jsonObject(
+				"state" to Gson().toJsonTree(state.getState())
+		).toString()
+    }
 }
