@@ -95,9 +95,11 @@ class PokobanController {
 	fun destroy(@PathParam("id") id: String,
 				@QueryParam("store") store: Boolean,
 				@Context context: ServletContext): String {
-		val (game, transitions) = PokobanService.instance.remove(id)
+		val (initalState, game, transitions) = PokobanService.instance.remove(id)
 
-		if (store && game != null && transitions != null) {
+		if (store && initalState != null && game != null && transitions != null) {
+			transitions.reverse()
+
 			// store JSON object for a full game
 			Files.write(
 					Paths.get(context.getRealPath(UPLOAD_PATH) + "/saves/" + game.id + ".json"),
@@ -105,8 +107,8 @@ class PokobanController {
 							"id" to game.id,
 							"date" to Date().time,
 							"level" to game.level.filename.replace(".lvl", ""),
-							"initial" to Gson().toJsonTree(game.getState()),
-							"transitions" to Gson().toJsonTree(transitions.reverse())
+							"initial" to Gson().toJsonTree(initalState.getState()),
+							"transitions" to Gson().toJsonTree(transitions)
 					).toString().toByteArray()
 			)
 		}

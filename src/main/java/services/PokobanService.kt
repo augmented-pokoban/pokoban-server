@@ -24,6 +24,9 @@ class PokobanService private constructor() {
 	// Transitions in games currently being played
 	private val transitions: MutableMap<String, Stack<PokobanTransition>> = HashMap()
 
+	// Initial states for all current games
+	private val initialStates: MutableMap<String, Pokoban> = HashMap()
+
 	// Games currently being played
 	private val games: MutableMap<String, Pokoban> = HashMap()
 
@@ -35,6 +38,7 @@ class PokobanService private constructor() {
 		val gameId = UUID.randomUUID().toString()
 		val newGame = Pokoban(gameId, level)
 
+		instance.initialStates.put(gameId, newGame.copy())
 		instance.games.put(gameId, newGame)
 		instance.transitions[gameId] = Stack()
 
@@ -49,7 +53,11 @@ class PokobanService private constructor() {
 	/**
 	 * Removes given game and it's associated transitions
 	 */
-	fun remove(id: String): Pair<Pokoban?, Stack<PokobanTransition>?> = Pair(instance.games.remove(id), instance.transitions.remove(id))
+	fun remove(id: String): Triple<Pokoban?, Pokoban?, Stack<PokobanTransition>?> = Triple(
+			instance.initialStates.remove(id),
+			instance.games.remove(id),
+			instance.transitions.remove(id)
+	)
 
 	/**
 	 * Returns all games

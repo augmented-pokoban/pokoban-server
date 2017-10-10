@@ -4,7 +4,7 @@ import com.google.gson.annotations.SerializedName
 import model.objects.PokobanObjectState
 import java.io.Serializable
 
-class Pokoban(val id: String, val level: Level) : Serializable {
+data class Pokoban(val id: String, val level: Level) : Serializable {
 
 	/**
 	 * Returns the current state of the game
