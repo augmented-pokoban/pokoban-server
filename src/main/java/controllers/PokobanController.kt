@@ -85,17 +85,17 @@ class PokobanController {
 	@Path("{id}")
 	@Produces(MediaType.APPLICATION_JSON)
 	fun destroy(@PathParam("id") id: String,
-				@QueryParam("filename") filename: String): String {
+				@QueryParam("store") store: Boolean): String {
 		val (game, transitions) = PokobanService.instance.remove(id)
 
-		if (!filename.isEmpty() && game != null) {
+		if (store && game != null && transitions != null) {
 			// store JSON object for a full game
 			File(javaClass.classLoader.getResource("saves/" + game.id + ".json").toURI()).writeText(
 					jsonObject(
 							"id" to game.id,
 							"level" to game.level.filename,
 							"initial" to Gson().toJsonTree(game.getState()),
-							"transitions" to Gson().toJsonTree(transitions!!.reverse())
+							"transitions" to Gson().toJsonTree(transitions.reverse())
 					).toString()
 			)
 		}
