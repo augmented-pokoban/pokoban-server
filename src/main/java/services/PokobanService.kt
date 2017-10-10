@@ -50,7 +50,7 @@ class PokobanService private constructor() {
 	/**
 	 * Removes given game and it's associated transitions
 	 */
-	fun remove(id: String): Triple<PokobanState?, Pokoban?, Stack<PokobanTransition>?> = Triple(
+	fun remove(id: String): Triple<PokobanState?, Pokoban?, MutableList<PokobanTransition>?> = Triple(
 			instance.initialStates.remove(id),
 			instance.games.remove(id),
 			instance.transitions.remove(id)
@@ -113,7 +113,7 @@ class PokobanService private constructor() {
 	/**
 	 * Stores a new transition associated with given game id
 	 */
-	private fun store(id: String, transition: PokobanTransition) = instance.transitions[id]!!.push(transition)
+	private fun store(id: String, transition: PokobanTransition) = instance.transitions[id]!!.add(transition)
 
 	/**
 	 * Updates given game in hashmap
