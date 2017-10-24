@@ -41,8 +41,9 @@ class PokobanController {
     @Path("{id}")
     @Produces(MediaType.APPLICATION_JSON)
     fun show(@PathParam("id") id: String,
+             @DefaultValue("") @QueryParam("folder") folder: String,
              @Context context: ServletContext): String {
-        return File(context.getRealPath(UPLOAD_PATH + "saves/$id.json")).readText()
+        File(context.getRealPath("$UPLOAD_PATH$folder/$id.json")).readText()
     }
 
     /**
