@@ -4,13 +4,13 @@ import {PokobanService} from "../services/PokobanService";
 import {Injectable} from "@angular/core";
 
 @Injectable()
-export class PokobansGuard implements Resolve<Pokoban[]> {
+export class PokobanGamesGuard implements Resolve<Pokoban[]> {
 
     constructor(private pokobanService: PokobanService) {
 
     }
 
     resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Promise<Pokoban[]> {
-        return this.pokobanService.all();
+        return this.pokobanService.experts();
     }
 }

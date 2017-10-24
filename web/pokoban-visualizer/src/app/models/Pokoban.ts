@@ -8,6 +8,7 @@ export class Pokoban {
     level: string;
     initial: PokobanState;
     transitions: PokobanTransition[];
+    description: string;
 
     constructor() {
     }

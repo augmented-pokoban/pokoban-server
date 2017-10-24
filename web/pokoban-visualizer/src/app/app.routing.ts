@@ -1,11 +1,13 @@
 import {Routes} from "@angular/router";
 import {PokobanGuard} from "./guards/PokobanGuard";
-import {PokobansGuard} from "./guards/PokobansGuard";
+import {PokobanGamesGuard} from "./guards/PokobanGamesGuard";
 import {GameComponent} from "./components/game/game.component";
 import {GamesComponent} from "./components/games/games.component";
 import {LevelsComponent} from "./components/levels/levels.component";
 import {LevelsGuard} from "./guards/LevelsGuard";
 import {PokobanStateGuard} from "./guards/PokobanStateGuard";
+import {ReplaysComponent} from "./components/replays/replays.component";
+import {PokobanReplaysGuard} from "./guards/PokobanReplaysGuard";
 
 export const appRoutes: Routes = [
   {
@@ -28,7 +30,7 @@ export const appRoutes: Routes = [
         pathMatch: 'full',
         component: GamesComponent,
         resolve: {
-          pokobans: PokobansGuard
+          pokobans: PokobanGamesGuard
         },
       },
       {
@@ -47,4 +49,13 @@ export const appRoutes: Routes = [
       }
     ]
   },
+  {
+    path: 'replays',
+    pathMatch: 'full',
+    component: ReplaysComponent,
+    resolve: {
+      pokobans: PokobanReplaysGuard
+    }
+
+  }
 ];

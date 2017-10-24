@@ -8,7 +8,7 @@ import {PokobanService} from "./services/PokobanService";
 import {PokobanGuard} from "./guards/PokobanGuard";
 import {HttpModule} from "@angular/http";
 import {HomeComponent} from "./components/home/home.component";
-import {PokobansGuard} from "./guards/PokobansGuard";
+import {PokobanGamesGuard} from "./guards/PokobanGamesGuard";
 import {GameComponent} from "./components/game/game.component";
 import {GamesComponent} from "./components/games/games.component";
 import {LevelsComponent} from "./components/levels/levels.component";
@@ -16,10 +16,12 @@ import {LevelsGuard} from "./guards/LevelsGuard";
 import {LevelService} from "./services/LevelService";
 import {FormsModule} from "@angular/forms";
 import {PokobanStateGuard} from './guards/PokobanStateGuard';
+import {PokobanReplaysGuard} from './guards/PokobanReplaysGuard';
 
 const GUARDS = [
     PokobanGuard,
-    PokobansGuard,
+    PokobanGamesGuard,
+    PokobanReplaysGuard,
     LevelsGuard,
     PokobanStateGuard
 ];
