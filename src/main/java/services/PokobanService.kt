@@ -190,9 +190,10 @@ class PokobanService private constructor() {
 	 * Returns true otherwise
 	 */
 	private fun isValidPosition(game: Pokoban, x: Int, y: Int): Boolean {
-		return !(game.level.height <= y || y == 0)
-				|| (game.level.width <= x || x == 0)
-				|| (game.level.get(x, y) != null)
+		return (game.level.height >= y && y >= 0)
+				&& (game.level.width >= x && x >= 0)
+				&& (game.level.get(x, y) == null)
+				&& (game.level.getWall(x, y) == null)
 	}
 
 	/**
