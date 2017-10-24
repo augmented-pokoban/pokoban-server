@@ -1,4 +1,4 @@
-import {AfterContentInit, Component, OnInit, ViewChild} from '@angular/core';
+import {AfterContentInit, Component, HostListener, OnInit, ViewChild} from '@angular/core';
 import {ActivatedRoute} from "@angular/router";
 import {Pokoban} from "../../models/Pokoban";
 import {PokobanState} from "../../models/PokobanState";
@@ -11,6 +11,14 @@ import {PokobanObject} from "../../models/PokobanObject";
     styleUrls: ['./game.component.css']
 })
 export class GameComponent implements OnInit, AfterContentInit {
+
+    @HostListener('document:keypress', ['$event'])
+    handleKeyboardEvent(event: KeyboardEvent) {
+      if(event.keyCode == 32){ // space bar
+        this.play = !this.play;
+        this.playOnOff();
+      }
+    }
 
     @ViewChild('canvas') canvas;
 
