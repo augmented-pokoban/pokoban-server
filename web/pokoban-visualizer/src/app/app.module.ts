@@ -17,6 +17,8 @@ import {LevelService} from "./services/LevelService";
 import {FormsModule} from "@angular/forms";
 import {PokobanStateGuard} from './guards/PokobanStateGuard';
 import {PokobanReplaysGuard} from './guards/PokobanReplaysGuard';
+import {ReplaysComponent} from "./components/replays/replays.component";
+
 
 const GUARDS = [
     PokobanGuard,
@@ -37,6 +39,7 @@ const COMPONENTS = [
     GameComponent,
     GamesComponent,
     LevelsComponent,
+    ReplaysComponent
 ];
 
 @NgModule({

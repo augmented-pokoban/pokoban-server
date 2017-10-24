@@ -11,14 +11,14 @@ export class PokobanService extends DataService {
     }
 
     experts(): Promise<Pokoban[]> {
-        return super.get<Pokoban[]>('?folder=replays');
+        return super.get<Pokoban[]>('?folder=saves');
     }
 
     replays(): Promise<Pokoban[]> {
       return super.get<Pokoban[]>('?folder=replays');
     }
 
-    one(id: string): Promise<Pokoban> {
-        return super.get<Pokoban>(`${id}`);
+    one(id: string, folder: string): Promise<Pokoban> {
+        return super.get<Pokoban>(`${id}?folder=${folder}`);
     }
 }
