@@ -10,8 +10,12 @@ export class PokobanService extends DataService {
         super(http);
     }
 
-    all(): Promise<Pokoban[]> {
-        return super.get<Pokoban[]>('');
+    experts(): Promise<Pokoban[]> {
+        return super.get<Pokoban[]>('?folder=replays');
+    }
+
+    replays(): Promise<Pokoban[]> {
+      return super.get<Pokoban[]>('?folder=replays');
     }
 
     one(id: string): Promise<Pokoban> {
