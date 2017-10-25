@@ -35,6 +35,16 @@ class PokobanController {
     }
 
     /**
+     * Returns all running games
+     */
+    @GET
+    @Path("running")
+    @Produces(MediaType.APPLICATION_JSON)
+    fun index(@Context context: ServletContext): String {
+        return Gson().toJson(PokobanService.instance.all().map { it.id })
+    }
+
+    /**
      * Returns the state of game id
      */
     @GET
@@ -101,12 +111,11 @@ class PokobanController {
                 @Context context: ServletContext): String {
         val (initalState, game, transitions) = PokobanService.instance.remove(id)
 
+        println("Destroying game: $id. There are ${PokobanService.instance.all().size} games running at the moment.")
+
         if (store && initalState != null && game != null && transitions != null) {
 
-            val folder = when (isPlanner) {
-                true -> "saves"
-                false -> "replays"
-            }
+            val folder = if (isPlanner) "saves" else "replays"
             val storePath = Paths.get(context.getRealPath(UPLOAD_PATH) + "/$folder/" + game.id + ".json")
 
             // store JSON object for a full game
