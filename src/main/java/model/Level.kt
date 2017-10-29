@@ -84,5 +84,12 @@ class Level(val filename: String,
      * Returns all walls
      */
     fun getWalls(): List<Wall> = wallMap.values.map { it }
+
+    /**
+     * Returns a copy of the level
+     */
+    fun copy(): Level {
+        return Level(filename, mapfile, HashMap(wallMap), HashMap(goalMap), HashMap(collisionMap), width, height)
+    }
 }
 

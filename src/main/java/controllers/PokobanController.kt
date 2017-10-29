@@ -84,6 +84,22 @@ class PokobanController {
     }
 
     /**
+     * Copies an existing Pokoban game instance into a new game
+     */
+    @POST
+    @Path("{id}")
+    @Produces(MediaType.APPLICATION_JSON)
+    fun copy(@PathParam("id") id: String,
+             @QueryParam("copy") copy: Boolean,
+               @Context context: ServletContext): String {
+        val game = PokobanService.instance.copy(id)
+
+        return jsonObject(
+                "gameID" to game.id
+        ).toString()
+    }
+
+    /**
      * Takes given action in given game
      */
     @POST

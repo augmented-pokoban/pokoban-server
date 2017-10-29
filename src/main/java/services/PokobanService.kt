@@ -39,7 +39,17 @@ class PokobanService private constructor() {
         instance.games.put(gameId, newGame)
         instance.transitions[gameId] = Stack()
 
-        return newGame;
+        return newGame
+    }
+
+    fun copy(id: String): Pokoban {
+        val copyId = UUID.randomUUID().toString()
+        val copy = Pokoban(copyId, get(id).level.copy())
+
+        instance.initialStates.put(copyId, copy.getState())
+        instance.games.put(copyId, copy)
+        instance.transitions[copyId] = Stack()
+        return copy
     }
 
     /**
