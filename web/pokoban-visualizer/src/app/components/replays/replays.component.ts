@@ -16,7 +16,7 @@ export class ReplaysComponent implements OnInit {
 
   ngOnInit() {
     this.pokobans = this.route.snapshot.data['pokobans'];
-    // sort by filename
-    this.pokobans.sort((a, b) => a.date > b.date ? 1 : -1);
+    // sort by date
+    this.pokobans.sort((a, b) => a.date < b.date ? 1 : -1);
   }
 }

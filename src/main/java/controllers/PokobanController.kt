@@ -5,6 +5,7 @@ import com.github.salomonbrys.kotson.fromJson
 import com.github.salomonbrys.kotson.jsonObject
 import com.google.gson.Gson
 import com.google.gson.JsonObject
+import model.Pokoban
 import model.PokobanAction
 import services.PokobanService
 import java.io.File
@@ -31,7 +32,15 @@ class PokobanController {
     fun index(@DefaultValue("saves") @QueryParam("folder") folder: String,
               @Context context: ServletContext): String {
         val gameFiles = File(context.getRealPath(UPLOAD_PATH + folder)).listFiles()
-        return Gson().toJson(gameFiles.map { Gson().fromJson<JsonObject>(File(it.toURI()).readText()) })
+        return Gson().toJson(gameFiles.map {
+            val game = Gson().fromJson<JsonObject>(File(it.toURI()).readText())
+            jsonObject(
+                    "id" to game["id"],
+                    "date" to game["date"],
+                    "level" to game["level"],
+                    "initial" to game["initial"]
+            )
+        })
     }
 
     /**
@@ -87,7 +96,7 @@ class PokobanController {
         var (success, reward, game) = PokobanService.instance.transition(id, pokobanAction)
 
         val done = game.isDone()
-        if (done) reward += 1.0
+        if (done) reward = 10.0
 
         return jsonObject(
                 "state" to Gson().toJsonTree(game.getState()),

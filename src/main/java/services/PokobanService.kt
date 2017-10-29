@@ -94,9 +94,9 @@ class PokobanService private constructor() {
         // calculate reward
         val solvedGoalsAfter = game.numberOfSolvedGoals()
         val reward: Number = when {
-            solvedGoalsBefore > solvedGoalsAfter -> -0.5 // we suck!
-            solvedGoalsBefore < solvedGoalsAfter -> 0.5 // we solved a goal!
-            !success -> -0.5 // impossible action
+            solvedGoalsBefore > solvedGoalsAfter -> -1.0 // we suck!
+            solvedGoalsBefore < solvedGoalsAfter -> 1.0 // we solved a goal!
+            !success -> -1.0 // impossible action
             else -> -0.1
         }
 
