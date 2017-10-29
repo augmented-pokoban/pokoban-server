@@ -36,9 +36,9 @@ class PokobanController {
             val game = Gson().fromJson<JsonObject>(File(it.toURI()).readText())
             jsonObject(
                     "id" to game["id"],
+                    "description" to game["description"],
                     "date" to game["date"],
-                    "level" to game["level"],
-                    "initial" to game["initial"]
+                    "level" to game["level"]
             )
         })
     }

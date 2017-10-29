@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/pokoban-server.iml" filepath="$PROJECT_DIR$/pokoban-server.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/pokoban-server.iml" filepath="$PROJECT_DIR$/.idea/pokoban-server.iml" />
     </modules>
   </component>
 </project>
