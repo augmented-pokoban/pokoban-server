@@ -42,6 +42,9 @@ class PokobanService private constructor() {
         return newGame
     }
 
+    /**
+     * Copies the state of an active game, into a new game
+     */
     fun copy(id: String): Pokoban {
         val copyId = UUID.randomUUID().toString()
         val copy = Pokoban(copyId, get(id).level.copy())
