@@ -21,7 +21,7 @@ operator fun Number.plusAssign(d: Double) {
     this.toDouble() + d
 }
 
-@Path("/")
+@Path("/pokoban")
 class PokobanController {
 
     /**
@@ -69,12 +69,14 @@ class PokobanController {
      * Creates a new Pokoban game instance
      */
     @POST
-    @Path("{filename}")
+    @Path("{folder}/{filename}")
     @Produces(MediaType.APPLICATION_JSON)
-    fun create(@PathParam("filename") filename: String,
+    fun create(@PathParam("folder") folder: String,
+               @PathParam("filename") filename: String,
                @Context context: ServletContext): String {
+
         val game = PokobanService.instance.start(
-                context.getRealPath(UPLOAD_PATH + "levels") + "/$filename.lvl"
+                context.getRealPath(UPLOAD_PATH + "levels/$folder") + "/$filename.lvl"
         )
         return jsonObject(
                 "state" to Gson().toJsonTree(game.getState()),

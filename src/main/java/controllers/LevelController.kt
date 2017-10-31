@@ -8,71 +8,73 @@ import model.PokobanTransition
 import services.LevelService
 import java.io.File
 import javax.servlet.ServletContext
-import javax.ws.rs.GET
-import javax.ws.rs.Path
-import javax.ws.rs.PathParam
-import javax.ws.rs.Produces
+import javax.ws.rs.*
 import javax.ws.rs.core.Context
 import javax.ws.rs.core.MediaType
 
 @Path("/levels")
 class LevelController {
 
-	/**
-	 * Returns all level files
-	 */
-	@GET
-	@Produces(MediaType.APPLICATION_JSON)
-	fun index(@Context context: ServletContext): String {
+    /**
+     * Returns all level files
+     */
+    @GET
+    @Path("{folder}")
+    @Produces(MediaType.APPLICATION_JSON)
+    fun index(@PathParam("folder") folder: String,
+              @DefaultValue("0") @QueryParam("skip") skip: Int,
+              @DefaultValue("1000000") @QueryParam("limit") limit: Int,
+              @Context context: ServletContext): String {
 
-		val levelsPath = context.getRealPath(UPLOAD_PATH + "levels")
-		val levelFiles = File(levelsPath).listFiles()
+        val levelsPath = context.getRealPath(UPLOAD_PATH + "levels/$folder")
+        var levelFiles = File(levelsPath).listFiles()
 
-		val levels = levelFiles.map {
-			val level = LevelService.instance.loadLevel(it.absolutePath)
-			jsonObject(
-					"filename" to it.name.replace(".lvl", ""),
-					"contents" to level.mapfile,
-					"width" to level.width,
-					"height" to level.height
-			)
-		}
+        // slice files list
+        levelFiles = if (levelFiles.size < limit) {
+            levelFiles.sliceArray(skip..levelFiles.size)
+        }
+        else {
+            levelFiles.sliceArray(skip..limit)
+        }
 
-		return Gson().toJson(levels)
-	}
-
-	/**
-	 * Returns a level file by name
-	 */
-	@GET
-	@Path("{filename}")
-	@Produces(MediaType.APPLICATION_JSON)
-	fun show(@PathParam("filename") filename: String,
-			 @Context context: ServletContext): String {
-		val levelsPath = context.getRealPath(UPLOAD_PATH + "levels")
-		val level = LevelService.instance.loadLevel("$levelsPath/$filename.lvl")
-		return jsonObject(
-				"filename" to filename,
-				"contents" to level.mapfile,
-				"width" to level.width,
-				"height" to level.height
-		).toString()
-	}
+        return Gson().toJson(levelFiles.map { it.name.replace(".lvl", "") })
+    }
 
     /**
      * Returns a level file by name
      */
     @GET
-    @Path("{filename}/state")
+    @Path("{folder}/{filename}")
     @Produces(MediaType.APPLICATION_JSON)
-    fun state(@PathParam("filename") filename: String,
+    fun show(@PathParam("folder") folder: String,
+             @PathParam("filename") filename: String,
              @Context context: ServletContext): String {
-        val levelsPath = context.getRealPath(UPLOAD_PATH + "levels")
+
+        val levelsPath = context.getRealPath(UPLOAD_PATH + "levels/$folder")
         val level = LevelService.instance.loadLevel("$levelsPath/$filename.lvl")
-		val state = Pokoban(filename, level)
         return jsonObject(
-				"initial" to Gson().toJsonTree(state.getState()),
-				"transitions" to Gson().toJsonTree(emptyList<PokobanTransition>())
-		).toString()
+                "filename" to filename,
+                "contents" to level.mapfile,
+                "width" to level.width,
+                "height" to level.height
+        ).toString()
+    }
+
+    /**
+     * Returns a level state by name
+     */
+    @GET
+    @Path("{folder}/{filename}/state")
+    @Produces(MediaType.APPLICATION_JSON)
+    fun state(@PathParam("folder") folder: String,
+              @PathParam("filename") filename: String,
+              @Context context: ServletContext): String {
+        val levelsPath = context.getRealPath(UPLOAD_PATH + "levels/$folder")
+        val level = LevelService.instance.loadLevel("$levelsPath/$filename.lvl")
+        val state = Pokoban(filename, level)
+        return jsonObject(
+                "initial" to Gson().toJsonTree(state.getState()),
+                "transitions" to Gson().toJsonTree(emptyList<PokobanTransition>())
+        ).toString()
     }
 }
