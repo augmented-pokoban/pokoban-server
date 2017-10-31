@@ -23,7 +23,7 @@ class LevelController {
     @Produces(MediaType.APPLICATION_JSON)
     fun index(@PathParam("folder") folder: String,
               @DefaultValue("0") @QueryParam("skip") skip: Int,
-              @DefaultValue("1000000") @QueryParam("limit") limit: Int,
+              @DefaultValue("1000") @QueryParam("limit") limit: Int,
               @Context context: ServletContext): String {
 
         val levelsPath = context.getRealPath(UPLOAD_PATH + "levels/$folder")
@@ -31,7 +31,7 @@ class LevelController {
 
         // slice files list
         levelFiles = if (levelFiles.size < limit) {
-            levelFiles.sliceArray(skip..levelFiles.size-1)
+            levelFiles.sliceArray(skip until levelFiles.size)
         }
         else {
             levelFiles.sliceArray(skip..limit)

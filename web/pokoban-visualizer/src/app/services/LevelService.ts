@@ -20,6 +20,6 @@ export class LevelService extends DataService {
     }
 
     state(filename: string): Promise<Pokoban> {
-      return super.get<Pokoban>(`levels/${filename}/state`);
+      return super.get<Pokoban>(`levels/unsupervised/${filename}/state`);
     }
 }

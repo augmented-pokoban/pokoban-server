@@ -39,7 +39,7 @@ class PokobanController {
 
         // slice files list
         gameFiles = if (gameFiles.size < limit) {
-            gameFiles.sliceArray(skip..gameFiles.size)
+            gameFiles.sliceArray(skip until gameFiles.size)
         } else {
             gameFiles.sliceArray(skip..limit)
         }
