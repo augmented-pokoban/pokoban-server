@@ -85,8 +85,10 @@ class PokobanController {
 
     /**
      * Copies an existing Pokoban game instance into a new game
-     * This is totally not the right way to do it.
      */
+    @POST
+    @Path("{id}/action/copy")
+    @Produces(MediaType.APPLICATION_JSON)
     fun copy(@PathParam("id") id: String): String {
         val game = PokobanService.instance.copy(id)
 
@@ -103,8 +105,6 @@ class PokobanController {
     @Produces(MediaType.APPLICATION_JSON)
     fun transition(@PathParam("id") id: String,
                    @PathParam("action") action: String): String {
-
-        if(action == "copy") return copy(id)
 
         val pokobanAction = PokobanAction.valueOf(action.toUpperCase().replace("-", "_"))
         var (success, reward, game) = PokobanService.instance.transition(id, pokobanAction)
