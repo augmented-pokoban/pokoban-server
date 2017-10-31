@@ -32,7 +32,7 @@ class PokobanController {
     @Produces(MediaType.APPLICATION_JSON)
     fun index(@PathParam("folder") folder: String,
               @DefaultValue("0") @QueryParam("skip") skip: Int,
-              @DefaultValue("1000000") @QueryParam("limit") limit: Int,
+              @DefaultValue("1000") @QueryParam("limit") limit: Int,
               @Context context: ServletContext): String {
 
         var gameFiles = File(context.getRealPath(UPLOAD_PATH + folder)).listFiles()
