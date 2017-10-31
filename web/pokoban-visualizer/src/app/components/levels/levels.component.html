@@ -7,8 +7,8 @@
   </tr>
   </thead>
   <tr *ngFor="let level of levels">
-    <td><a [routerLink]="['/games/state/' + level.filename]">{{level.filename}}</a></td>
-    <td>{{level.height}}</td>
-    <td>{{level.width}}</td>
+    <td><a [routerLink]="['/games/state/' + level]">{{level}}</a></td>
+    <!--<td>{{level.height}}</td>-->
+    <!--<td>{{level.width}}</td>-->
   </tr>
 </table>

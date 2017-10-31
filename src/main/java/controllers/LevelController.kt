@@ -31,7 +31,7 @@ class LevelController {
 
         // slice files list
         levelFiles = if (levelFiles.size < limit) {
-            levelFiles.sliceArray(skip..levelFiles.size)
+            levelFiles.sliceArray(skip..levelFiles.size-1)
         }
         else {
             levelFiles.sliceArray(skip..limit)

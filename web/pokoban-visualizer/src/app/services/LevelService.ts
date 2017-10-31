@@ -11,8 +11,8 @@ export class LevelService extends DataService {
         super(http);
     }
 
-    all(): Promise<PokobanLevel[]> {
-        return super.get<PokobanLevel[]>('levels');
+    all(): Promise<string[]> {
+        return super.get<string[]>('levels/unsupervised');
     }
 
     one(filename: string): Promise<PokobanLevel> {

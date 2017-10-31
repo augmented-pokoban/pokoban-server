@@ -6,19 +6,21 @@ import {Pokoban} from "../models/Pokoban";
 @Injectable()
 export class PokobanService extends DataService {
 
+    private baseUrl: string = 'pokoban';
+
     constructor(http: Http) {
         super(http);
     }
 
     experts(): Promise<Pokoban[]> {
-        return super.get<Pokoban[]>('?folder=saves');
+        return super.get<Pokoban[]>(`${this.baseUrl}/saves`);
     }
 
     replays(): Promise<Pokoban[]> {
-      return super.get<Pokoban[]>('?folder=replays');
+      return super.get<Pokoban[]>(`${this.baseUrl}/replays`);
     }
 
     one(id: string, folder: string): Promise<Pokoban> {
-        return super.get<Pokoban>(`${id}?folder=${folder}`);
+        return super.get<Pokoban>(`${this.baseUrl}/${folder}/${id}`);
     }
 }
