@@ -28,10 +28,22 @@ class PokobanController {
      * Returns all finished games
      */
     @GET
+    @Path("{folder}")
     @Produces(MediaType.APPLICATION_JSON)
-    fun index(@DefaultValue("saves") @QueryParam("folder") folder: String,
+    fun index(@PathParam("folder") folder: String,
+              @DefaultValue("0") @QueryParam("skip") skip: Int,
+              @DefaultValue("1000000") @QueryParam("limit") limit: Int,
               @Context context: ServletContext): String {
-        val gameFiles = File(context.getRealPath(UPLOAD_PATH + folder)).listFiles()
+
+        var gameFiles = File(context.getRealPath(UPLOAD_PATH + folder)).listFiles()
+
+        // slice files list
+        gameFiles = if (gameFiles.size < limit) {
+            gameFiles.sliceArray(skip..gameFiles.size)
+        } else {
+            gameFiles.sliceArray(skip..limit)
+        }
+
         return Gson().toJson(gameFiles.map {
             val game = Gson().fromJson<JsonObject>(File(it.toURI()).readText())
             jsonObject(
@@ -57,10 +69,10 @@ class PokobanController {
      * Returns the state of game id
      */
     @GET
-    @Path("{id}")
+    @Path("{folder}/{id}")
     @Produces(MediaType.APPLICATION_JSON)
-    fun show(@PathParam("id") id: String,
-             @DefaultValue("saves") @QueryParam("folder") folder: String,
+    fun show(@PathParam("folder") folder: String,
+             @PathParam("id") id: String,
              @Context context: ServletContext): String {
         return File(context.getRealPath("$UPLOAD_PATH$folder/$id.json")).readText()
     }
