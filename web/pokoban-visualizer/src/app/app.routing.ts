@@ -19,7 +19,7 @@ export const appRoutes: Routes = [
     path: 'levels',
     component: LevelsComponent,
     resolve: {
-      levels: LevelsGuard
+      paginationResp: LevelsGuard
     },
   },
   {

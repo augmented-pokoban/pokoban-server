@@ -3,6 +3,7 @@ import {Http} from "@angular/http";
 import {Injectable} from "@angular/core";
 import {PokobanLevel} from "../models/PokobanLevel";
 import {Pokoban} from "../models/Pokoban";
+import {PaginationResponse} from "../models/PaginationResponse";
 
 @Injectable()
 export class LevelService extends DataService {
@@ -11,8 +12,8 @@ export class LevelService extends DataService {
         super(http);
     }
 
-    all(): Promise<string[]> {
-        return super.get<string[]>('levels/unsupervised');
+    getPage(page: number, pageSize: number): Promise<PaginationResponse<string>> {
+      return super.paginate<string>('levels/unsupervised?', page, pageSize);
     }
 
     one(filename: string): Promise<PokobanLevel> {

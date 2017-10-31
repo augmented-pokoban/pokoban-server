@@ -1,22 +1,37 @@
 import {Component, OnInit} from '@angular/core';
 import {ActivatedRoute} from "@angular/router";
-import {PokobanLevel} from "../../models/PokobanLevel";
+import {LevelService} from "../../services/LevelService";
 
 @Component({
     selector: 'levels',
-    templateUrl: './levels.component.html',
-    styleUrls: []
+    templateUrl: './levels.component.html'
 })
 export class LevelsComponent implements OnInit {
 
     levels: string[];
+    pageSize: number = 20;
+    curPage: number = 1;
+    total: number = 0;
 
-    constructor(private route: ActivatedRoute) {
+    constructor(private route: ActivatedRoute,
+                private levelService: LevelService) {
     }
 
     ngOnInit() {
-        this.levels = this.route.snapshot.data['levels'];
-        // sort by filename
-        // this.levels.sort((a, b) => a.filename.toUpperCase() > b.filename.toUpperCase() ? 1 : -1);
+        let resp =  this.route.snapshot.data['paginationResp'];
+        console.log(resp);
+        this.levels = resp.data;
+        this.total = resp.total;
+    }
+
+    pageChange($event){
+      this.levelService.getPage($event, this.pageSize)
+        .then(resp => {
+          console.log(resp);
+          this.levels = resp.data;
+          this.total = resp.total;
+          this.curPage = $event;
+        })
+
     }
 }

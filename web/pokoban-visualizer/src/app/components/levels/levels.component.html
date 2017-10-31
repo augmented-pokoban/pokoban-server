@@ -1,3 +1,4 @@
+<pagination-controls style="display: flex;justify-content: center;" (pageChange)="pageChange($event)"></pagination-controls>
 <table class="table">
   <thead>
   <tr>
@@ -6,7 +7,7 @@
     <!--<th>Width</th>-->
   </tr>
   </thead>
-  <tr *ngFor="let level of levels">
+  <tr *ngFor="let level of levels | paginate: { itemsPerPage: pageSize, currentPage: curPage, totalItems: total}">
     <td><a [routerLink]="['/games/state/' + level]">{{level}}</a></td>
     <!--<td>{{level.height}}</td>-->
     <!--<td>{{level.width}}</td>-->

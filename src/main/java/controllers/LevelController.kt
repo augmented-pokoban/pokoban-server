@@ -16,7 +16,7 @@ import javax.ws.rs.core.MediaType
 class LevelController {
 
     /**
-     * Returns all level files
+     * Returns getPage level files
      */
     @GET
     @Path("{folder}")
@@ -28,6 +28,7 @@ class LevelController {
 
         val levelsPath = context.getRealPath(UPLOAD_PATH + "levels/$folder")
         var levelFiles = File(levelsPath).listFiles()
+        val total = levelFiles.size
 
         // slice files list
         levelFiles = if (levelFiles.size < limit) {
@@ -37,7 +38,12 @@ class LevelController {
             levelFiles.sliceArray(skip..limit)
         }
 
-        return Gson().toJson(levelFiles.map { it.name.replace(".lvl", "") })
+        return jsonObject(
+                "data" to Gson().toJsonTree(levelFiles.map { it.name.replace(".lvl", "") }),
+                "total" to total
+        ).toString()
+
+//        return Gson().toJson(levelFiles.map { it.name.replace(".lvl", "") })
     }
 
     /**

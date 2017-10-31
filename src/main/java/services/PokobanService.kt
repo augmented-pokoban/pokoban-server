@@ -7,7 +7,7 @@ import java.util.*
 import kotlin.collections.HashMap
 
 /**
- * Singleton PokobanService which holds all current games in-memory
+ * Singleton PokobanService which holds getPage current games in-memory
  */
 class PokobanService private constructor() {
     private object Holder {
@@ -21,7 +21,7 @@ class PokobanService private constructor() {
     // Transitions in games currently being played
     private val transitions: MutableMap<String, Stack<PokobanTransition>> = HashMap()
 
-    // Initial states for all current games
+    // Initial states for getPage current games
     private val initialStates: MutableMap<String, PokobanState> = HashMap()
 
     // Games currently being played
@@ -70,7 +70,7 @@ class PokobanService private constructor() {
     )
 
     /**
-     * Returns all games
+     * Returns getPage games
      */
     fun all(): List<Pokoban> = instance.games.values.toList()
 

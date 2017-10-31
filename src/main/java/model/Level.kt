@@ -66,22 +66,22 @@ class Level(val filename: String,
     }
 
     /**
-     * Returns all agents
+     * Returns getPage agents
      */
     fun getAgents(): List<Agent> = collisionMap.values.filter({ it is Agent }).map { it as Agent }
 
     /**
-     * Returns all boxes
+     * Returns getPage boxes
      */
     fun getBoxes(): List<Box> = collisionMap.values.filter({ it is Box }).map { it as Box }
 
     /**
-     * Returns all goals
+     * Returns getPage goals
      */
     fun getGoals(): List<Goal> = goalMap.values.map { it }
 
     /**
-     * Returns all walls
+     * Returns getPage walls
      */
     fun getWalls(): List<Wall> = wallMap.values.map { it }
 

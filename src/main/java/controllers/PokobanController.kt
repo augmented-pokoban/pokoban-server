@@ -25,7 +25,7 @@ operator fun Number.plusAssign(d: Double) {
 class PokobanController {
 
     /**
-     * Returns all finished games
+     * Returns getPage finished games
      */
     @GET
     @Path("{folder}")
@@ -56,7 +56,7 @@ class PokobanController {
     }
 
     /**
-     * Returns all running games
+     * Returns getPage running games
      */
     @GET
     @Path("running")

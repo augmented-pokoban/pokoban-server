@@ -107,7 +107,7 @@ export class GameComponent implements OnInit, AfterContentInit {
         this.ctx.textBaseline = "middle";
         this.ctx.fillStyle = 'rgba(0, 0, 0, 0.5)';
 
-        // draw all cells
+        // draw getPage cells
         for (let x = 0; x < canvas.width; x += this.baseWidth) {
             for (let y = 0; y < canvas.height; y += this.baseHeight) {
                 this.ctx.strokeRect(x, y, this.baseWidth, this.baseHeight);

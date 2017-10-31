@@ -18,7 +18,7 @@ import {FormsModule} from "@angular/forms";
 import {PokobanStateGuard} from './guards/PokobanStateGuard';
 import {PokobanReplaysGuard} from './guards/PokobanReplaysGuard';
 import {ReplaysComponent} from "./components/replays/replays.component";
-
+import {NgxPaginationModule} from "ngx-pagination";
 
 const GUARDS = [
     PokobanGuard,
@@ -50,7 +50,8 @@ const COMPONENTS = [
         BrowserModule,
         HttpModule,
         RouterModule.forRoot(appRoutes, {enableTracing: false}),
-        FormsModule
+        FormsModule,
+        NgxPaginationModule
     ],
     providers: [
         ...SERVICES,
