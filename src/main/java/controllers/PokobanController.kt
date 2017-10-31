@@ -102,7 +102,7 @@ class PokobanController {
     /**
      * Takes given action in given game
      */
-    @POST
+    @PUT
     @Path("{id}/{action}")
     @Produces(MediaType.APPLICATION_JSON)
     fun transition(@PathParam("id") id: String,
