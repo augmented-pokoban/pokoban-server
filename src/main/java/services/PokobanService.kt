@@ -109,7 +109,7 @@ class PokobanService private constructor() {
         val reward: Number = when {
             solvedGoalsBefore > solvedGoalsAfter -> -1.0 // we suck!
             solvedGoalsBefore < solvedGoalsAfter -> 1.0 // we solved a goal!
-            !success -> -1.0 // impossible action
+            !success -> -0.1 // impossible action
             else -> -0.1
         }
 

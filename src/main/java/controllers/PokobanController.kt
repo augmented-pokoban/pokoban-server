@@ -148,8 +148,6 @@ class PokobanController {
                 @Context context: ServletContext): String {
         val (initalState, game, transitions) = PokobanService.instance.remove(id)
 
-        println("Destroying game: $id. There are ${PokobanService.instance.all().size} games running at the moment.")
-
         if (store && initalState != null && game != null && transitions != null) {
 
             val folder = if (isPlanner) "saves" else "replays"
