@@ -33,7 +33,7 @@ class PokobanControllerTest {
             times--
         }
     }
-
+/*
     @Ignore("Requires running server")
     @Test
     fun testMove() {
@@ -109,5 +109,5 @@ class PokobanControllerTest {
         assertEquals(15, (response.getJSONObject("state").getJSONArray("boxes").first() as JSONObject).get("col"))
 
         assertEquals(110, (response.get("reward")))
-    }
+    }*/
 }

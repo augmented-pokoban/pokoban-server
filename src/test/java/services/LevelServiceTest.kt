@@ -1,6 +1,8 @@
 package services
 
+import org.junit.Ignore
 import org.junit.Test
+import server.services.LevelService
 import kotlin.test.assertEquals
 
 class LevelServiceTest {
@@ -22,6 +24,7 @@ class LevelServiceTest {
         ))
     }
 
+    @Ignore("file no longer exists")
     @Test
     fun testLoadLevel() {
 

@@ -1,5 +1,5 @@
 <component name="ArtifactManager">
-  <artifact type="jar" build-on-make="true" name="pokoban-server:jar">
+  <artifact type="jar" name="pokoban-server:jar">
     <output-path>$PROJECT_DIR$/out/artifacts/pokoban_server_jar</output-path>
     <root id="archive" name="pokoban-server.jar">
       <element id="module-output" name="pokoban-server" />

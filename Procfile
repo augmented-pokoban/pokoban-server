@@ -1,0 +1,1 @@
+web: java -jar target/pokoban-server-0.0.1.jar
