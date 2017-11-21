@@ -1,1 +1,1 @@
-web: java -jar target/pokoban-server-0.0.1.jar
+web: java $JAVA_OPTS -Dserver.port=$PORT -jar target/pokoban-server-0.0.1.jar
