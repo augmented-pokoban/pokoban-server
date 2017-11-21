@@ -7,6 +7,7 @@ import com.google.gson.Gson
 import com.google.gson.JsonObject
 import model.Pokoban
 import model.PokobanAction
+import org.springframework.stereotype.Component
 import services.PokobanService
 import java.io.File
 import java.nio.file.Files
@@ -21,8 +22,9 @@ operator fun Number.plusAssign(d: Double) {
     this.toDouble() + d
 }
 
+@Component
 @Path("/pokoban")
-class PokobanController {
+public class PokobanController {
 
     /**
      * Returns getPage finished games

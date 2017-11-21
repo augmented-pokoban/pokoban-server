@@ -5,6 +5,7 @@ import com.github.salomonbrys.kotson.jsonObject
 import com.google.gson.Gson
 import model.Pokoban
 import model.PokobanTransition
+import org.springframework.stereotype.Component
 import services.LevelService
 import java.io.File
 import javax.servlet.ServletContext
@@ -12,8 +13,9 @@ import javax.ws.rs.*
 import javax.ws.rs.core.Context
 import javax.ws.rs.core.MediaType
 
+@Component
 @Path("/levels")
-class LevelController {
+public class LevelController {
 
     /**
      * Returns all level files
