@@ -36,7 +36,11 @@
             <version>${kotlin.version}</version>
             <scope>test</scope>
         </dependency>
-
+        <dependency>
+            <groupId>org.litote.kmongo</groupId>
+            <artifactId>kmongo</artifactId>
+            <version>3.5.1</version>
+        </dependency>
         <dependency>
             <groupId>javax</groupId>
             <artifactId>javaee-api</artifactId>

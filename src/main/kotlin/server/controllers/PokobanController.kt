@@ -34,22 +34,17 @@ class PokobanController {
               @DefaultValue("1000") @QueryParam("limit") limit: Int,
               @Context context: ServletContext): String {
 
-        var gameFiles = File(context.getRealPath(UPLOAD_PATH + folder)).listFiles()
-
-        // slice files list
-        gameFiles = if (gameFiles.size < limit) {
-            gameFiles.sliceArray(skip until gameFiles.size)
-        } else {
-            gameFiles.sliceArray(skip..limit)
-        }
+        val repo = Repository(folder)
+        val total = repo.count()
+        val gameFiles = repo.paginate(skip, limit)
 
         return Gson().toJson(gameFiles.map {
-            val game = Gson().fromJson<JsonObject>(File(it.toURI()).readText())
+
             jsonObject(
-                    "id" to game["id"],
-                    "description" to game["description"],
-                    "date" to game["date"],
-                    "level" to game["level"]
+                    "id" to it["id"],
+                    "description" to it["description"],
+                    "date" to it["date"],
+                    "level" to it["level"]
             )
         })
     }
@@ -73,7 +68,8 @@ class PokobanController {
     fun show(@PathParam("folder") folder: String,
              @PathParam("id") id: String,
              @Context context: ServletContext): String {
-        return File(context.getRealPath("$UPLOAD_PATH$folder/$id.json")).readText()
+
+        return Repository(folder).one(id).toString()
     }
 
     /**
@@ -150,20 +146,15 @@ class PokobanController {
         if (store && initalState != null && game != null && transitions != null) {
 
             val folder = if (isPlanner) "saves" else "replays"
-            val storePath = Paths.get(context.getRealPath(UPLOAD_PATH) + "/$folder/" + game.id + ".json")
 
-            // store JSON object for a full game
-            Files.write(
-                    storePath,
-                    jsonObject(
+            Repository(folder)
+                    .insert(jsonObject(
                             "id" to game.id,
                             "description" to description,
                             "date" to Date().time,
                             "level" to game.level.filename.replace(".lvl", ""),
                             "initial" to Gson().toJsonTree(initalState),
-                            "transitions" to Gson().toJsonTree(transitions)
-                    ).toString().toByteArray()
-            )
+                            "transitions" to Gson().toJsonTree(transitions)))
         }
 
         return jsonObject("success" to true).toString()
