@@ -1,16 +1,20 @@
 package server.controllers
 
-import server.PokobanServer.constants.UPLOAD_PATH
-import com.github.salomonbrys.kotson.fromJson
+import com.github.salomonbrys.kotson.get
 import com.github.salomonbrys.kotson.jsonObject
 import com.google.gson.Gson
-import com.google.gson.JsonObject
+import com.sun.xml.internal.messaging.saaj.util.ByteOutputStream
+import server.PokobanServer.constants.UPLOAD_PATH
 import server.model.PokobanAction
+import server.repositories.Repository
 import server.services.PokobanService
-import java.io.File
-import java.nio.file.Files
+import java.io.ByteArrayInputStream
+import java.io.FileOutputStream
+import java.io.InputStream
 import java.nio.file.Paths
 import java.util.*
+import java.util.zip.ZipEntry
+import java.util.zip.ZipOutputStream
 import javax.servlet.ServletContext
 import javax.ws.rs.*
 import javax.ws.rs.core.Context
@@ -31,22 +35,25 @@ class PokobanController {
     @Produces(MediaType.APPLICATION_JSON)
     fun index(@PathParam("folder") folder: String,
               @DefaultValue("0") @QueryParam("skip") skip: Int,
-              @DefaultValue("1000") @QueryParam("limit") limit: Int,
-              @Context context: ServletContext): String {
+              @DefaultValue("1000") @QueryParam("limit") limit: Int): String {
 
         val repo = Repository(folder)
+
         val total = repo.count()
         val gameFiles = repo.paginate(skip, limit)
 
-        return Gson().toJson(gameFiles.map {
-
-            jsonObject(
-                    "id" to it["id"],
-                    "description" to it["description"],
-                    "date" to it["date"],
-                    "level" to it["level"]
-            )
-        })
+        return jsonObject(
+                "data" to Gson().toJsonTree(gameFiles.map {
+                    jsonObject(
+                            "id" to it["_id"],
+                            "description" to it["description"],
+                            "date" to it["date"],
+                            "level" to it["level"],
+                            "steps" to it["steps"],
+                            "fileRef" to it["fileRef"]
+                    )}),
+                "total" to total
+        ).toString()
     }
 
     /**
@@ -55,7 +62,7 @@ class PokobanController {
     @GET
     @Path("running")
     @Produces(MediaType.APPLICATION_JSON)
-    fun index(@Context context: ServletContext): String {
+    fun index(): String {
         return Gson().toJson(PokobanService.instance.all().map { it.id })
     }
 
@@ -66,8 +73,7 @@ class PokobanController {
     @Path("{folder}/{id}")
     @Produces(MediaType.APPLICATION_JSON)
     fun show(@PathParam("folder") folder: String,
-             @PathParam("id") id: String,
-             @Context context: ServletContext): String {
+             @PathParam("id") id: String): String {
 
         return Repository(folder).one(id).toString()
     }
@@ -82,6 +88,7 @@ class PokobanController {
                @PathParam("filename") filename: String,
                @Context context: ServletContext): String {
 
+        //TODO: Ref to blob api instead
         val game = PokobanService.instance.start(
                 context.getRealPath(UPLOAD_PATH + "levels/$folder") + "/$filename.lvl"
         )
@@ -141,20 +148,50 @@ class PokobanController {
                 @DefaultValue("false") @QueryParam("is_planner") isPlanner: Boolean,
                 @DefaultValue("") @QueryParam("description") description: String,
                 @Context context: ServletContext): String {
+
         val (initalState, game, transitions) = PokobanService.instance.remove(id)
 
         if (store && initalState != null && game != null && transitions != null) {
 
             val folder = if (isPlanner) "saves" else "replays"
 
+            // Save transition in file system, get path back
+            val fileName = game.id + ".zip"
+            val lookupUrl = "path_to_file_in_blob_storage/" + fileName
+
+            val jsonToBeZipped = jsonObject(
+                    "id" to game.id,
+                    "description" to description,
+                    "level" to game.level.filename.replace(".lvl", ""),
+                    "initial" to Gson().toJsonTree(initalState),
+                    "transitions" to Gson().toJsonTree(transitions)
+            ).toString().toByteArray()
+
+            try{
+                val byteStream = ByteOutputStream()
+                val zipStream = ZipOutputStream(byteStream)
+                val entry = ZipEntry(game.id + ".json")
+                zipStream.putNextEntry(entry)
+                zipStream.write(jsonToBeZipped)
+                zipStream.closeEntry()
+                val inputStream = ByteArrayInputStream(byteStream.bytes)
+
+                //TODO: Write this input stream to storage
+
+//                byteStream.writeTo(FileOutputStream(storePath.toString()))
+            } catch (e: Exception){
+                print(e)
+            }
+
+            //Write meta-data to db
             Repository(folder)
                     .insert(jsonObject(
-                            "id" to game.id,
+                            "_id" to game.id,
                             "description" to description,
                             "date" to Date().time,
                             "level" to game.level.filename.replace(".lvl", ""),
-                            "initial" to Gson().toJsonTree(initalState),
-                            "transitions" to Gson().toJsonTree(transitions)))
+                            "steps" to transitions.size,
+                            "fileRef" to lookupUrl))
         }
 
         return jsonObject("success" to true).toString()

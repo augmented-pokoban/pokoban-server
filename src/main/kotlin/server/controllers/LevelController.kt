@@ -1,12 +1,13 @@
 package server.controllers
 
+import com.github.salomonbrys.kotson.get
 import server.PokobanServer.constants.UPLOAD_PATH
 import com.github.salomonbrys.kotson.jsonObject
 import com.google.gson.Gson
 import server.model.Pokoban
 import server.model.PokobanTransition
+import server.repositories.Repository
 import server.services.LevelService
-import java.io.File
 import javax.servlet.ServletContext
 import javax.ws.rs.*
 import javax.ws.rs.core.Context
@@ -26,20 +27,22 @@ class LevelController {
               @DefaultValue("1000") @QueryParam("limit") limit: Int,
               @Context context: ServletContext): String {
 
-        val levelsPath = context.getRealPath(UPLOAD_PATH + "levels/$folder")
-        var levelFiles = File(levelsPath).listFiles()
-        val total = levelFiles.size
-
-        // slice files list
-        levelFiles = if (total < limit) {
-            levelFiles.sliceArray(skip until total)
-        }
-        else {
-            levelFiles.sliceArray(skip..limit)
-        }
+        val repo = Repository(folder)
+        val levels = repo
+                .paginate(skip, limit)
+        val total = repo.count()
 
         return jsonObject(
-                "data" to Gson().toJsonTree(levelFiles.map { it.name.replace(".lvl", "") }),
+                "data" to Gson().toJsonTree(levels.map {
+                    jsonObject(
+                            "fileRef" to it["fileRef"],
+                            "height" to it["height"],
+                            "width" to it["width"],
+                            "countWalls" to it["countWalls"],
+                            "countBoxes" to it["countBoxes"],
+                            "countGoals" to it["countGoals"]
+                            )
+                }),
                 "total" to total
         ).toString()
     }
@@ -53,6 +56,8 @@ class LevelController {
     fun show(@PathParam("folder") folder: String,
              @PathParam("filename") filename: String,
              @Context context: ServletContext): String {
+
+        //TODO: Obsolete? This is in the meta-data, file should be downloaded from blob storage
 
         val levelsPath = context.getRealPath(UPLOAD_PATH + "levels/$folder")
         val level = LevelService.instance.loadLevel("$levelsPath/$filename.lvl")
@@ -68,14 +73,18 @@ class LevelController {
      * Returns a level state by name
      */
     @GET
-    @Path("{folder}/{filename}/state")
+    @Path("{folder}/{id}/state")
     @Produces(MediaType.APPLICATION_JSON)
     fun state(@PathParam("folder") folder: String,
-              @PathParam("filename") filename: String,
+              @PathParam("id") id: String,
               @Context context: ServletContext): String {
-        val levelsPath = context.getRealPath(UPLOAD_PATH + "levels/$folder")
-        val level = LevelService.instance.loadLevel("$levelsPath/$filename.lvl")
-        val state = Pokoban(filename, level)
+
+        val levelData = Repository(folder).one(id)
+
+        //TODO: Get level from blob storage
+        val levelPath = "url_to_blob_storage"
+        val level = LevelService.instance.loadLevel(levelPath)
+        val state = Pokoban(id, level)
         return jsonObject(
                 "initial" to Gson().toJsonTree(state.getState()),
                 "transitions" to Gson().toJsonTree(emptyList<PokobanTransition>())
