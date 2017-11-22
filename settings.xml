@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<settings xmlns="http://maven.apache.org/SETTINGS/1.0.0"
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:schemaLocation="http://maven.apache.org/SETTINGS/1.0.0 http://maven.apache.org/xsd/settings-1.0.0.xsd">
+
+    <profiles>
+        <profile>
+            <id>pokoban-server</id>
+            <properties>
+                <azureFtpUrl>ftps://waws-prod-db3-093.ftp.azurewebsites.windows.net</azureFtpUrl>
+            </properties>
+        </profile>
+    </profiles>
+
+    <servers>
+        <server>
+            <id>pokoban-server</id>
+
+            <username>ttsoftware</username>
+            <password>78puSENbkeJcDzjS</password>
+
+            <configuration>
+                <client>ad114b9d-316f-4622-9e47-741d779c9f46</client>
+                <tenant>e416c4f5-59f3-4fa3-a06b-04c2b881bd9b</tenant>
+                <key>78puSENbkeJcDzjS</key>
+                <environment>AZURE</environment>
+            </configuration>
+        </server>
+    </servers>
+
+    <activeProfiles>
+        <activeProfile>pokoban-server</activeProfile>
+    </activeProfiles>
+</settings>
