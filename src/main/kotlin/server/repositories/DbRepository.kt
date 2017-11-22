@@ -25,6 +25,7 @@ class DbRepository(table: String){
         fun getSupervisedLevelsRepo(): DbRepository = DbRepository("supervised")
         fun getUnsupervisedLevelsRepo(): DbRepository = DbRepository("unsupervised")
         fun validateLevelFolder(folder: String): Boolean = listOf("supervised", "unsupervised").contains(folder)
+        fun validatePokobanFolder(folder: String): Boolean = listOf("plays", "saves").contains(folder)
     }
 
     private val collection = db.getCollection(table)

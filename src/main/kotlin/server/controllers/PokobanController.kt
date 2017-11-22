@@ -34,6 +34,8 @@ class PokobanController {
               @DefaultValue("0") @QueryParam("skip") skip: Int,
               @DefaultValue("1000") @QueryParam("limit") limit: Int): String {
 
+        if(!DbRepository.validatePokobanFolder(folder)) throw BadRequestException("Folder: $folder not found.")
+
         val repo = DbRepository(folder)
 
         val total = repo.count()
@@ -161,14 +163,14 @@ class PokobanController {
 
             try{
                 val byteStream = ByteOutputStream()
-                val zipStream = ZipOutputStream(byteStream)
-                val entry = ZipEntry(game.id + ".json")
-                zipStream.putNextEntry(entry)
-                zipStream.write(jsonToBeZipped)
-                zipStream.closeEntry()
-                val inputStream = ByteArrayInputStream(byteStream.bytes)
+                ZipOutputStream(byteStream).use {
+                    val entry = ZipEntry(game.id + ".json")
+                    it.putNextEntry(entry)
+                    it.write(jsonToBeZipped)
+                    it.closeEntry()
+                }
 
-                val lookupUrl =FileRepository().insertPlay(inputStream, fileName)
+                val lookupUrl =FileRepository().insertPlay(byteStream.newInputStream(), fileName)
 
                 //Write meta-data to db
                 DbRepository(folder)
