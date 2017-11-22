@@ -9,7 +9,7 @@ export abstract class DataService {
     endPoint: string;
 
     constructor(private http: Http) {
-        this.endPoint = 'http://localhost:8080/api'
+        this.endPoint = 'http://localhost:5000/api'
     }
 
     /**
