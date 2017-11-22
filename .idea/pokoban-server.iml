@@ -52,6 +52,8 @@
       <excludeFolder url="file://$MODULE_DIR$/data" />
       <excludeFolder url="file://$MODULE_DIR$/target" />
       <excludeFolder url="file://$MODULE_DIR$/web/pokoban-visualizer/dist" />
+      <excludeFolder url="file://$MODULE_DIR$/web/pokoban-visualizer/node" />
+      <excludeFolder url="file://$MODULE_DIR$/web/pokoban-visualizer/node_modules" />
       <excludeFolder url="file://$MODULE_DIR$/web/pokoban-visualizer/tmp" />
     </content>
     <orderEntry type="inheritedJdk" />

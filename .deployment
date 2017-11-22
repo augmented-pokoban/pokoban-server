@@ -1,2 +1,2 @@
 [config]
-command = mvn clean install -U
+command = mvnw.cmd
