@@ -83,8 +83,7 @@ class PokobanController {
     fun create(@PathParam("filename") filename: String,
                @Context context: ServletContext): String {
 
-        val game = PokobanService.instance.start(
-                FileRepository().getLevel(filename.replace("_","/")), filename)
+        val game = PokobanService.instance.start(filename.replace("_","/"))
 
         return jsonObject(
                 "state" to Gson().toJsonTree(game.getState()),
