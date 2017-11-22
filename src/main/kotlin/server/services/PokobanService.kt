@@ -91,10 +91,6 @@ class PokobanService private constructor() {
                 PokobanAction.MOVE_SOUTH -> moveOrPush(game, agent, Direction.SOUTH)
                 PokobanAction.MOVE_EAST -> moveOrPush(game, agent, Direction.EAST)
                 PokobanAction.MOVE_WEST -> moveOrPush(game, agent, Direction.WEST)
-//                PokobanAction.PUSH_NORTH -> push(game, agent, Direction.NORTH)
-//                PokobanAction.PUSH_SOUTH -> push(game, agent, Direction.SOUTH)
-//                PokobanAction.PUSH_EAST -> push(game, agent, Direction.EAST)
-//                PokobanAction.PUSH_WEST -> push(game, agent, Direction.WEST)
                 PokobanAction.PULL_NORTH -> pull(game, agent, Direction.NORTH)
                 PokobanAction.PULL_SOUTH -> pull(game, agent, Direction.SOUTH)
                 PokobanAction.PULL_EAST -> pull(game, agent, Direction.EAST)
@@ -133,6 +129,9 @@ class PokobanService private constructor() {
      */
     private fun update(id: String, game: Pokoban) = instance.games.put(id, game)
 
+    /**
+     * Checks if a Push-action is applicable or else it applies the move action
+     */
     private fun moveOrPush(game: Pokoban, agent: Agent, direction: Direction): Pokoban {
         val (boxX, boxY) = getRelativePosition(game.level.get(agent), direction)
         return when {
