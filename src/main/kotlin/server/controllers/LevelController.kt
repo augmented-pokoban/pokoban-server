@@ -1,12 +1,11 @@
 package server.controllers
 
-import com.github.salomonbrys.kotson.get
-import server.PokobanServer.constants.UPLOAD_PATH
 import com.github.salomonbrys.kotson.jsonObject
 import com.google.gson.Gson
 import server.model.Pokoban
 import server.model.PokobanTransition
-import server.repositories.Repository
+import server.repositories.DbRepository
+import server.repositories.FileRepository
 import server.services.LevelService
 import javax.servlet.ServletContext
 import javax.ws.rs.*
@@ -27,22 +26,15 @@ class LevelController {
               @DefaultValue("1000") @QueryParam("limit") limit: Int,
               @Context context: ServletContext): String {
 
-        val repo = Repository(folder)
+        if(!DbRepository.validateLevelFolder(folder)) throw BadRequestException("Folder: $folder not found")
+
+        val repo = DbRepository(folder)
         val levels = repo
                 .paginate(skip, limit)
         val total = repo.count()
 
         return jsonObject(
-                "data" to Gson().toJsonTree(levels.map {
-                    jsonObject(
-                            "fileRef" to it["fileRef"],
-                            "height" to it["height"],
-                            "width" to it["width"],
-                            "countWalls" to it["countWalls"],
-                            "countBoxes" to it["countBoxes"],
-                            "countGoals" to it["countGoals"]
-                            )
-                }),
+                "data" to Gson().toJsonTree(levels),
                 "total" to total
         ).toString()
     }
@@ -59,14 +51,16 @@ class LevelController {
 
         //TODO: Obsolete? This is in the meta-data, file should be downloaded from blob storage
 
-        val levelsPath = context.getRealPath(UPLOAD_PATH + "levels/$folder")
-        val level = LevelService.instance.loadLevel("$levelsPath/$filename.lvl")
-        return jsonObject(
-                "filename" to filename,
-                "contents" to level.mapfile,
-                "width" to level.width,
-                "height" to level.height
-        ).toString()
+//        val levelsPath = context.getRealPath(UPLOAD_PATH + "levels/$folder")
+//        val level = LevelService.instance.loadLevel(, filename)
+//        return jsonObject(
+//                "filename" to filename,
+//                "contents" to level.mapfile,
+//                "width" to level.width,
+//                "height" to level.height
+//        ).toString()
+
+        return ""
     }
 
     /**
@@ -79,15 +73,31 @@ class LevelController {
               @PathParam("id") id: String,
               @Context context: ServletContext): String {
 
-        val levelData = Repository(folder).one(id)
+        if (!DbRepository.validateLevelFolder(folder)) throw BadRequestException("Folder: $folder not found")
 
-        //TODO: Get level from blob storage
-        val levelPath = "url_to_blob_storage"
-        val level = LevelService.instance.loadLevel(levelPath)
+        val levelData = DbRepository(folder).one(id)
+        val levelFile = FileRepository().getLevel(levelData["relativePath"].asString)
+        val level = LevelService.instance.loadLevel(levelFile, levelData["level"].asString)
         val state = Pokoban(id, level)
         return jsonObject(
                 "initial" to Gson().toJsonTree(state.getState()),
                 "transitions" to Gson().toJsonTree(emptyList<PokobanTransition>())
         ).toString()
+    }
+
+    @GET
+    @Path("update")
+    @Produces(MediaType.APPLICATION_JSON)
+    fun update(): String {
+        val result = listOf(
+                LevelService.instance.updateMetaData(
+                        FileRepository.Unsupervised,
+                        DbRepository.getUnsupervisedLevelsRepo()),
+
+                LevelService.instance.updateMetaData(
+                        FileRepository.Supervised,
+                        DbRepository.getSupervisedLevelsRepo()))
+
+        return Gson().toJson(result).toString()
     }
 }

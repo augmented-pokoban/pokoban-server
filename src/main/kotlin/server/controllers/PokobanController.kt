@@ -4,14 +4,11 @@ import com.github.salomonbrys.kotson.get
 import com.github.salomonbrys.kotson.jsonObject
 import com.google.gson.Gson
 import com.sun.xml.internal.messaging.saaj.util.ByteOutputStream
-import server.PokobanServer.constants.UPLOAD_PATH
 import server.model.PokobanAction
-import server.repositories.Repository
+import server.repositories.DbRepository
+import server.repositories.FileRepository
 import server.services.PokobanService
 import java.io.ByteArrayInputStream
-import java.io.FileOutputStream
-import java.io.InputStream
-import java.nio.file.Paths
 import java.util.*
 import java.util.zip.ZipEntry
 import java.util.zip.ZipOutputStream
@@ -37,7 +34,7 @@ class PokobanController {
               @DefaultValue("0") @QueryParam("skip") skip: Int,
               @DefaultValue("1000") @QueryParam("limit") limit: Int): String {
 
-        val repo = Repository(folder)
+        val repo = DbRepository(folder)
 
         val total = repo.count()
         val gameFiles = repo.paginate(skip, limit)
@@ -62,9 +59,7 @@ class PokobanController {
     @GET
     @Path("running")
     @Produces(MediaType.APPLICATION_JSON)
-    fun index(): String {
-        return Gson().toJson(PokobanService.instance.all().map { it.id })
-    }
+    fun index(): String = Gson().toJson(PokobanService.instance.all().map { it.id })
 
     /**
      * Returns the state of game id
@@ -75,23 +70,22 @@ class PokobanController {
     fun show(@PathParam("folder") folder: String,
              @PathParam("id") id: String): String {
 
-        return Repository(folder).one(id).toString()
+        //TODO: Is this obsolete?
+        return DbRepository(folder).one(id).toString()
     }
 
     /**
      * Creates a new Pokoban game instance
      */
     @POST
-    @Path("{folder}/{filename}")
+    @Path("{filename}")
     @Produces(MediaType.APPLICATION_JSON)
-    fun create(@PathParam("folder") folder: String,
-               @PathParam("filename") filename: String,
+    fun create(@PathParam("filename") filename: String,
                @Context context: ServletContext): String {
 
-        //TODO: Ref to blob api instead
         val game = PokobanService.instance.start(
-                context.getRealPath(UPLOAD_PATH + "levels/$folder") + "/$filename.lvl"
-        )
+                FileRepository().getLevel(filename.replace("_","/")), filename)
+
         return jsonObject(
                 "state" to Gson().toJsonTree(game.getState()),
                 "map" to game.level.mapfile,
@@ -157,7 +151,6 @@ class PokobanController {
 
             // Save transition in file system, get path back
             val fileName = game.id + ".zip"
-            val lookupUrl = "path_to_file_in_blob_storage/" + fileName
 
             val jsonToBeZipped = jsonObject(
                     "id" to game.id,
@@ -176,22 +169,21 @@ class PokobanController {
                 zipStream.closeEntry()
                 val inputStream = ByteArrayInputStream(byteStream.bytes)
 
-                //TODO: Write this input stream to storage
+                val lookupUrl =FileRepository().insertPlay(inputStream, fileName)
 
-//                byteStream.writeTo(FileOutputStream(storePath.toString()))
+                //Write meta-data to db
+                DbRepository(folder)
+                        .insert(jsonObject(
+                                "_id" to game.id,
+                                "description" to description,
+                                "date" to Date().time,
+                                "level" to game.level.filename.replace(".lvl", ""),
+                                "steps" to transitions.size,
+                                "fileRef" to lookupUrl))
+
             } catch (e: Exception){
                 print(e)
             }
-
-            //Write meta-data to db
-            Repository(folder)
-                    .insert(jsonObject(
-                            "_id" to game.id,
-                            "description" to description,
-                            "date" to Date().time,
-                            "level" to game.level.filename.replace(".lvl", ""),
-                            "steps" to transitions.size,
-                            "fileRef" to lookupUrl))
         }
 
         return jsonObject("success" to true).toString()

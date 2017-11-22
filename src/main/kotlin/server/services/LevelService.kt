@@ -1,8 +1,13 @@
 package server.services
 
+import com.github.salomonbrys.kotson.get
+import com.github.salomonbrys.kotson.jsonObject
 import server.model.Level
 import server.model.objects.*
+import server.repositories.DbRepository
+import server.repositories.FileRepository
 import java.io.File
+import java.io.InputStreamReader
 import java.util.*
 
 /**
@@ -21,7 +26,7 @@ class LevelService private constructor() {
 		val instance: LevelService by lazy { Holder.INSTANCE }
 	}
 
-	fun loadLevel(filePath: String): Level {
+	fun loadLevel(file: InputStreamReader, levelName: String): Level {
 
 		val wallMap: MutableMap<Int, Wall> = HashMap()
 		val goalMap: MutableMap<Int, Goal> = HashMap()
@@ -33,7 +38,7 @@ class LevelService private constructor() {
 		var mapfile = ""
 
 		// iterate over lines in level file
-		File(filePath).readLines().forEachIndexed { y, line ->
+		file.readLines().forEachIndexed { y, line ->
 			{
 				mapfile += line + "\n"
 				if (y > height) height = y
@@ -61,8 +66,42 @@ class LevelService private constructor() {
 			}() // executes this block
 		}
 
-		return Level(File(filePath).name, mapfile, wallMap, goalMap, collisionMap, width, height + 1)
+		return Level(levelName, mapfile, wallMap, goalMap, collisionMap, width, height + 1)
 	}
+
+    /**
+     * This method retrieves the list of level files found in the folder in the blob-storage and
+     * compares it to the list of existing meta-data.
+     * The found elements are converted to states and the meta-data is generated through this.
+     */
+    fun updateMetaData(folder: String, repo: DbRepository): String{
+        val existingLevels = repo.paginate(0, 10000000)
+                .map { it["relativePath"].toString() }
+                .toHashSet()
+
+        val fileRepo = FileRepository()
+        val levels = fileRepo
+                .getLevels(folder)
+                .filter { !existingLevels.contains(it) }
+                .map{Pair(fileRepo.getLevel(it), it)}
+                .map {
+                    val state = LevelService.instance.loadLevel(it.first, it.second.split("/").last())
+
+                    jsonObject(
+                            "fileUrl" to "https://pokobanserver.blob.core.windows.net/levels/" + it.second,
+                            "height" to state.height,
+                            "width" to state.width,
+                            "levelName" to state.filename.replace(".lvl", ""),
+                            "relativePath" to it.second,
+                            "countWalls" to state.getWalls().count(),
+                            "countGoals" to state.getGoals().count(),
+                            "countBoxes" to state.getBoxes().count()
+                    ) }
+
+        levels.forEach { repo.insert(it) }
+
+        return "$folder: Total number of levels updated: ${levels.size}"
+    }
 
 	/**
 	 * Helper function for pair instances

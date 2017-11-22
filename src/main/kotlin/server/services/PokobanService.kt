@@ -3,6 +3,7 @@ package server.services
 import server.exceptions.ImpossibleActionException
 import server.model.*
 import server.model.objects.Agent
+import java.io.InputStreamReader
 import java.util.*
 import kotlin.collections.HashMap
 
@@ -30,8 +31,8 @@ class PokobanService private constructor() {
     /**
      * Start a new game
      */
-    fun start(filePath: String): Pokoban {
-        val level = LevelService.instance.loadLevel(filePath)
+    fun start(file: InputStreamReader, levelName: String): Pokoban {
+        val level = LevelService.instance.loadLevel(file, levelName)
         val gameId = UUID.randomUUID().toString()
         val newGame = Pokoban(gameId, level)
 
