@@ -77,7 +77,7 @@ class LevelController {
 
         val levelData = DbRepository(folder).one(id)
         val levelFile = FileRepository().getLevel(levelData["relativePath"].asString)
-        val level = LevelService.instance.loadLevel(levelFile, levelData["_id"].asString)
+        val level = LevelService.instance.loadLevel(levelFile, levelData["id"].asString)
         val state = Pokoban(id, level)
         return jsonObject(
                 "initial" to Gson().toJsonTree(state.getState()),

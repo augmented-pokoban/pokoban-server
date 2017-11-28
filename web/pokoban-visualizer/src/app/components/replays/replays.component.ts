@@ -1,6 +1,6 @@
 import {Component, OnInit} from '@angular/core';
 import {ActivatedRoute} from "@angular/router";
-import {Pokoban} from "../../models/Pokoban";
+import {PokobanMeta} from "../../models/PokobanMeta";
 
 @Component({
   selector: 'replays',
@@ -9,14 +9,15 @@ import {Pokoban} from "../../models/Pokoban";
 })
 export class ReplaysComponent implements OnInit {
 
-  pokobans: Pokoban[];
+  pokobans: PokobanMeta[];
+  total: number;
 
   constructor(private route: ActivatedRoute) {
   }
 
   ngOnInit() {
-    this.pokobans = this.route.snapshot.data['pokobans'];
-    // sort by date
-    this.pokobans.sort((a, b) => a.date < b.date ? 1 : -1);
+    let response = this.route.snapshot.data['pokobans'];
+    this.pokobans = response.data;
+    this.total = response.total;
   }
 }

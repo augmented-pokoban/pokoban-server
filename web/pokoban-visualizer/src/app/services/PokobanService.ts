@@ -2,6 +2,11 @@ import {DataService} from "./DataService";
 import {Http} from "@angular/http";
 import {Injectable} from "@angular/core";
 import {Pokoban} from "../models/Pokoban";
+import {PaginationResponse} from "../models/PaginationResponse";
+import {PokobanMeta} from "../models/PokobanMeta";
+import * as JSZIP from 'jszip';
+import {JSZipObject} from "jszip";
+import {Observable} from "rxjs/Observable";
 
 @Injectable()
 export class PokobanService extends DataService {
@@ -12,15 +17,37 @@ export class PokobanService extends DataService {
         super(http);
     }
 
-    experts(): Promise<Pokoban[]> {
-        return super.get<Pokoban[]>(`${this.baseUrl}/saves`);
+    experts(page: number, pageSize: number): Promise<PaginationResponse<PokobanMeta>> {
+        return super.paginate<PokobanMeta>(`${this.baseUrl}/saves`, page, pageSize);
     }
 
-    replays(): Promise<Pokoban[]> {
-      return super.get<Pokoban[]>(`${this.baseUrl}/replays`);
+    replays(page: number, pageSize: number): Promise<PaginationResponse<PokobanMeta>> {
+      return super.paginate<PokobanMeta>(`${this.baseUrl}/replays`, page, pageSize);
     }
 
-    one(id: string, folder: string): Promise<Pokoban> {
+    oneMeta(id: string, folder: string): Promise<Pokoban> {
         return super.get<Pokoban>(`${this.baseUrl}/${folder}/${id}`);
     }
+
+    onePokoban(fileRef: string): Observable<Pokoban>{
+      return new Observable<Pokoban>(observer => {
+        let zipper = new JSZIP();
+        window.fetch(fileRef)
+          .then(response => {
+            return Promise.resolve(response.arrayBuffer())
+          })
+          .then(data => zipper.loadAsync(data))
+          .then(zip => {
+            let result: JSZipObject[] = [];
+            zip.forEach((name, file) => result.push(file));
+            return result;
+          })
+          .then(data => data[0].async('text')
+            .then(content => {
+              observer.next(<Pokoban> JSON.parse(content));
+              observer.complete();
+            }))
+      });
+    }
+
 }

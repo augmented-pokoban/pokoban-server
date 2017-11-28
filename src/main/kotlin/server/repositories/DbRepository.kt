@@ -49,9 +49,9 @@ class DbRepository(table: String){
     }
 
     /**
-     * Retrieves one element based on the id
+     * Retrieves oneMeta element based on the id
      */
-    fun one(id: String): JsonObject = Gson().fromJson(collection.find("{_id:${id.json}}").first().toJson())
+    fun one(id: String): JsonObject = Gson().fromJson(collection.find("{id:${id.json}}").first().toJson())
 
 
     /**

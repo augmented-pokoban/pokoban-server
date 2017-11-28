@@ -164,7 +164,7 @@ class PokobanController {
                 //Write meta-data to db
                 DbRepository(folder)
                         .insert(jsonObject(
-                                "_id" to game.id,
+                                "id" to game.id,
                                 "description" to description,
                                 "date" to Date().time,
                                 "level" to game.level.filename.replace(".lvl", ""),
