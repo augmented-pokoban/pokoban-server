@@ -27,7 +27,7 @@ export class LevelsComponent implements OnInit {
     }
 
     pageChange($event){
-      this.levelService.getPage($event, this.pageSize, this.folder)
+      this.levelService.getPage($event, this.pageSize, this.folder.toLowerCase())
         .then(resp => {
           console.log(resp);
           this.levels = resp.data;
