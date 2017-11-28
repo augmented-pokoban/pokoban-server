@@ -90,14 +90,10 @@ class PokobanService private constructor() {
         var success = true
         try {
             game = when (action) { // kotlin is awesome
-                PokobanAction.MOVE_NORTH -> move(game, agent, Direction.NORTH)
-                PokobanAction.MOVE_SOUTH -> move(game, agent, Direction.SOUTH)
-                PokobanAction.MOVE_EAST -> move(game, agent, Direction.EAST)
-                PokobanAction.MOVE_WEST -> move(game, agent, Direction.WEST)
-                PokobanAction.PUSH_NORTH -> push(game, agent, Direction.NORTH)
-                PokobanAction.PUSH_SOUTH -> push(game, agent, Direction.SOUTH)
-                PokobanAction.PUSH_EAST -> push(game, agent, Direction.EAST)
-                PokobanAction.PUSH_WEST -> push(game, agent, Direction.WEST)
+                PokobanAction.MOVE_NORTH -> moveOrPush(game, agent, Direction.NORTH)
+                PokobanAction.MOVE_SOUTH -> moveOrPush(game, agent, Direction.SOUTH)
+                PokobanAction.MOVE_EAST -> moveOrPush(game, agent, Direction.EAST)
+                PokobanAction.MOVE_WEST -> moveOrPush(game, agent, Direction.WEST)
                 PokobanAction.PULL_NORTH -> pull(game, agent, Direction.NORTH)
                 PokobanAction.PULL_SOUTH -> pull(game, agent, Direction.SOUTH)
                 PokobanAction.PULL_EAST -> pull(game, agent, Direction.EAST)
@@ -135,6 +131,17 @@ class PokobanService private constructor() {
      * Updates given game in hashmap
      */
     private fun update(id: String, game: Pokoban) = instance.games.put(id, game)
+
+    /**
+     * Checks if a Push-action is applicable or else it applies the move action
+     */
+    private fun moveOrPush(game: Pokoban, agent: Agent, direction: Direction): Pokoban {
+        val (boxX, boxY) = getRelativePosition(game.level.get(agent), direction)
+        return when {
+            game.level.get(boxX, boxY) != null -> push(game, agent, direction)
+            else -> move(game, agent, direction)
+        }
+    }
 
     /**
      * Moves the agent 1 step in given direction - if possible

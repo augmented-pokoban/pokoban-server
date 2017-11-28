@@ -81,7 +81,7 @@
             <artifactId>jersey-bom</artifactId>
             <version>${jersey.version}</version>
             <type>pom</type>
-            <scope>import</scope>
+            <scope>provided</scope>
         </dependency>
 
         <dependency>
@@ -126,10 +126,43 @@
     </dependencies>
 
     <build>
+        <defaultGoal>install</defaultGoal>
         <plugins>
+            <plugin>
+                <groupId>com.microsoft.azure</groupId>
+                <artifactId>azure-webapp-maven-plugin</artifactId>
+                <version>0.1.5</version>
+                <configuration>
+                    <authentication>
+                        <serverId>pokoban-server</serverId>
+                    </authentication>
+                    <resourceGroup>pokoban-server</resourceGroup>
+                    <appName>pokoban-server</appName>
+                    <region>northeurope</region>
+                    <javaVersion>1.8</javaVersion>
+                    <deploymentType>ftp</deploymentType>
+                    <resources>
+                        <resource>
+                            <directory>${project.basedir}/target</directory>
+                            <targetPath>/</targetPath>
+                            <includes>
+                                <include>*.jar</include>
+                            </includes>
+                        </resource>
+                        <resource>
+                            <directory>${project.basedir}</directory>
+                            <targetPath>/</targetPath>
+                            <includes>
+                                <include>web.config</include>
+                            </includes>
+                        </resource>
+                    </resources>
+                </configuration>
+            </plugin>
             <plugin>
                 <groupId>com.github.eirslett</groupId>
                 <artifactId>frontend-maven-plugin</artifactId>
+                <version>1.6</version>
                 <configuration>
                     <workingDirectory>web/pokoban-visualizer</workingDirectory>
                 </configuration>
