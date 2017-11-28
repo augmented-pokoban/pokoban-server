@@ -10,6 +10,6 @@ export class LevelsGuard implements Resolve<PaginationResponse<string>> {
     }
 
     resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Promise<PaginationResponse<string>> {
-        return this.levelService.getPage(1, 20);
+        return this.levelService.getPage(1, 20, "unsupervised");
     }
 }

@@ -12,8 +12,8 @@ export class LevelService extends DataService {
         super(http);
     }
 
-    getPage(page: number, pageSize: number): Promise<PaginationResponse<string>> {
-      return super.paginate<string>('levels/unsupervised?', page, pageSize);
+    getPage(page: number, pageSize: number, folder: string): Promise<PaginationResponse<string>> {
+      return super.paginate<string>(`levels/${folder}?`, page, pageSize);
     }
 
     one(filename: string): Promise<PokobanLevel> {

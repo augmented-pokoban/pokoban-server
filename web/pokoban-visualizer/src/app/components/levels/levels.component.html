@@ -1,4 +1,7 @@
 <pagination-controls style="display: flex;justify-content: center;" (pageChange)="pageChange($event)"></pagination-controls>
+<select [(ngModel)]="folder">
+  <option *ngFor="let folder of folders" [ngValue]="folder">{{folder}}</option>
+</select>
 <table class="table">
   <thead>
   <tr>

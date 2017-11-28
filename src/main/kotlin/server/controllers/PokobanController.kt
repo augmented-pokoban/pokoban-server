@@ -1,6 +1,5 @@
 package server.controllers
 
-import com.github.salomonbrys.kotson.get
 import com.github.salomonbrys.kotson.jsonObject
 import com.google.gson.Gson
 import com.sun.xml.internal.messaging.saaj.util.ByteOutputStream
@@ -8,7 +7,6 @@ import server.model.PokobanAction
 import server.repositories.DbRepository
 import server.repositories.FileRepository
 import server.services.PokobanService
-import java.io.ByteArrayInputStream
 import java.util.*
 import java.util.zip.ZipEntry
 import java.util.zip.ZipOutputStream
@@ -42,15 +40,7 @@ class PokobanController {
         val gameFiles = repo.paginate(skip, limit)
 
         return jsonObject(
-                "data" to Gson().toJsonTree(gameFiles.map {
-                    jsonObject(
-                            "id" to it["_id"],
-                            "description" to it["description"],
-                            "date" to it["date"],
-                            "level" to it["level"],
-                            "steps" to it["steps"],
-                            "fileRef" to it["fileRef"]
-                    )}),
+                "data" to Gson().toJsonTree(gameFiles),
                 "total" to total
         ).toString()
     }
@@ -82,8 +72,7 @@ class PokobanController {
     @POST
     @Path("{filename}")
     @Produces(MediaType.APPLICATION_JSON)
-    fun create(@PathParam("filename") filename: String,
-               @Context context: ServletContext): String {
+    fun create(@PathParam("filename") filename: String): String {
 
         val game = PokobanService.instance.start(filename.replace("_","/"))
 
@@ -170,7 +159,7 @@ class PokobanController {
                     it.closeEntry()
                 }
 
-                val lookupUrl =FileRepository().insertPlay(byteStream.newInputStream(), fileName)
+                val lookupUrl = FileRepository().insertPlay(byteStream.newInputStream(), fileName)
 
                 //Write meta-data to db
                 DbRepository(folder)

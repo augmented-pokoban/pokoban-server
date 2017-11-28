@@ -42,12 +42,12 @@ class LevelController {
     /**
      * Returns a level file by name
      */
-    @GET
-    @Path("{folder}/{filename}")
-    @Produces(MediaType.APPLICATION_JSON)
-    fun show(@PathParam("folder") folder: String,
-             @PathParam("filename") filename: String,
-             @Context context: ServletContext): String {
+//    @GET
+//    @Path("{folder}/{filename}")
+//    @Produces(MediaType.APPLICATION_JSON)
+//    fun show(@PathParam("folder") folder: String,
+//             @PathParam("filename") filename: String,
+//             @Context context: ServletContext): String {
 
         //TODO: Obsolete? This is in the meta-data, file should be downloaded from blob storage
 
@@ -59,9 +59,9 @@ class LevelController {
 //                "width" to level.width,
 //                "height" to level.height
 //        ).toString()
-
-        return ""
-    }
+//
+//        return ""
+//    }
 
     /**
      * Returns a level state by name
@@ -77,7 +77,7 @@ class LevelController {
 
         val levelData = DbRepository(folder).one(id)
         val levelFile = FileRepository().getLevel(levelData["relativePath"].asString)
-        val level = LevelService.instance.loadLevel(levelFile, levelData["level"].asString)
+        val level = LevelService.instance.loadLevel(levelFile, levelData["_id"].asString)
         val state = Pokoban(id, level)
         return jsonObject(
                 "initial" to Gson().toJsonTree(state.getState()),

@@ -35,7 +35,7 @@ export abstract class DataService {
     protected paginate<T>(url: string, page: number, pageSize: number): Promise<PaginationResponse<T>> {
       let params = new URLSearchParams();
       params.set('skip', ((page-1) * pageSize).toString());
-      params.set('limit', (pageSize * page).toString());
+      params.set('limit', pageSize.toString());
 
       return new Promise((resolve, reject) => {
         this.http.get(`${this.endPoint}/${url}?${params.toString()}`).subscribe(response => {

@@ -12,6 +12,8 @@ export class LevelsComponent implements OnInit {
     pageSize: number = 20;
     curPage: number = 1;
     total: number = 0;
+    folders: string[] = ['Supervised', 'Unsuperised'];
+    folder: string = this.folders[1];
 
     constructor(private route: ActivatedRoute,
                 private levelService: LevelService) {
@@ -25,7 +27,7 @@ export class LevelsComponent implements OnInit {
     }
 
     pageChange($event){
-      this.levelService.getPage($event, this.pageSize)
+      this.levelService.getPage($event, this.pageSize, this.folder)
         .then(resp => {
           console.log(resp);
           this.levels = resp.data;

@@ -88,10 +88,10 @@ class LevelService private constructor() {
                     val state = LevelService.instance.loadLevel(it.first, it.second.split("/").last())
 
                     jsonObject(
+                            "_id" to state.filename.replace(".lvl", ""),
                             "fileUrl" to "https://pokobanserver.blob.core.windows.net/levels/" + it.second,
                             "height" to state.height,
                             "width" to state.width,
-                            "levelName" to state.filename.replace(".lvl", ""),
                             "relativePath" to it.second,
                             "countWalls" to state.getWalls().count(),
                             "countGoals" to state.getGoals().count(),

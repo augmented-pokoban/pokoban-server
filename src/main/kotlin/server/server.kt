@@ -1,5 +1,7 @@
 package server
 
+import org.springframework.boot.autoconfigure.SpringBootApplication
+import org.springframework.context.annotation.Bean
 import server.controllers.LevelController
 import server.controllers.PokobanController
 import java.util.*
@@ -9,7 +11,6 @@ import javax.ws.rs.container.ContainerResponseContext
 import javax.ws.rs.container.ContainerResponseFilter
 import javax.ws.rs.core.Application
 import javax.ws.rs.ext.Provider
-
 
 @ApplicationPath("/api")
 class PokobanServer : Application() {
@@ -28,6 +29,8 @@ class PokobanServer : Application() {
 				LevelController::class.java
 		))
 	}
+
+
 }
 
 @Provider
