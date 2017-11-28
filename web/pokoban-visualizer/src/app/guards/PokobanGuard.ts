@@ -9,10 +9,11 @@ export class PokobanGuard implements Resolve<Pokoban> {
 
     constructor(private http: Http,
                 private pokobanService: PokobanService) {
-
     }
 
     resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Promise<Pokoban> {
-        return this.pokobanService.oneMeta(route.params['id'], route.queryParams['folder']);
+        return this.pokobanService
+          .oneMeta(route.params['id'], route.queryParams['folder'])
+          .then(meta => this.pokobanService.onePokoban(meta.fileRef))
     }
 }

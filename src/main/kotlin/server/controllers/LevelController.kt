@@ -40,30 +40,6 @@ class LevelController {
     }
 
     /**
-     * Returns a level file by name
-     */
-//    @GET
-//    @Path("{folder}/{filename}")
-//    @Produces(MediaType.APPLICATION_JSON)
-//    fun show(@PathParam("folder") folder: String,
-//             @PathParam("filename") filename: String,
-//             @Context context: ServletContext): String {
-
-        //TODO: Obsolete? This is in the meta-data, file should be downloaded from blob storage
-
-//        val levelsPath = context.getRealPath(UPLOAD_PATH + "levels/$folder")
-//        val level = LevelService.instance.loadLevel(, filename)
-//        return jsonObject(
-//                "filename" to filename,
-//                "contents" to level.mapfile,
-//                "width" to level.width,
-//                "height" to level.height
-//        ).toString()
-//
-//        return ""
-//    }
-
-    /**
      * Returns a level state by name
      */
     @GET
@@ -76,8 +52,9 @@ class LevelController {
         if (!DbRepository.validateLevelFolder(folder)) throw BadRequestException("Folder: $folder not found")
 
         val levelData = DbRepository(folder).one(id)
+
         val levelFile = FileRepository().getLevel(levelData["relativePath"].asString)
-        val level = LevelService.instance.loadLevel(levelFile, levelData["id"].asString)
+        val level = LevelService.instance.loadLevel(levelFile, levelData["_id"].asString)
         val state = Pokoban(id, level)
         return jsonObject(
                 "initial" to Gson().toJsonTree(state.getState()),

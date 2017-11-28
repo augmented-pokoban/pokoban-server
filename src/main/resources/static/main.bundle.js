@@ -203,7 +203,7 @@ var appRoutes = [
                 }
             },
             {
-                path: 'state/:file',
+                path: 'state/:folder/:file',
                 component: __WEBPACK_IMPORTED_MODULE_2__components_game_game_component__["a" /* GameComponent */],
                 resolve: {
                     pokoban: __WEBPACK_IMPORTED_MODULE_6__guards_PokobanStateGuard__["a" /* PokobanStateGuard */]
@@ -596,7 +596,7 @@ HomeComponent = __decorate([
 /***/ "../../../../../src/app/components/levels/levels.component.html":
 /***/ (function(module, exports) {
 
-module.exports = "<pagination-controls style=\"display: flex;justify-content: center;\" (pageChange)=\"pageChange($event)\"></pagination-controls>\n<select [(ngModel)]=\"folder\">\n  <option *ngFor=\"let folder of folders\" [ngValue]=\"folder\">{{folder}}</option>\n</select>\n<table class=\"table\">\n  <thead>\n  <tr>\n    <th>Filename</th>\n    <!--<th>Height</th>-->\n    <!--<th>Width</th>-->\n  </tr>\n  </thead>\n  <tr *ngFor=\"let level of levels | paginate: { itemsPerPage: pageSize, currentPage: curPage, totalItems: total}\">\n    <td><a [routerLink]=\"['/games/state/' + level]\">{{level}}</a></td>\n    <!--<td>{{level.height}}</td>-->\n    <!--<td>{{level.width}}</td>-->\n  </tr>\n</table>\n"
+module.exports = "<pagination-controls style=\"display: flex;justify-content: center;\" (pageChange)=\"pageChange($event)\"></pagination-controls>\n<select [(ngModel)]=\"folder\">\n  <option *ngFor=\"let folder of folders\" (change)=\"pageChange(1)\" [ngValue]=\"folder\">{{folder}}</option>\n</select>\n<table class=\"table\">\n  <thead>\n  <tr>\n    <th>Filename</th>\n    <th>Height</th>\n    <th>Width</th>\n    <th>Walls</th>\n    <th>Boxes</th>\n    <th>Goals</th>\n    <th>Zip</th>\n  </tr>\n  </thead>\n  <tr *ngFor=\"let level of levels | paginate: { itemsPerPage: pageSize, currentPage: curPage, totalItems: total}\">\n    <td><a [routerLink]=\"['/games/state/' + level.relativePath.replace('.lvl', '')]\">{{level.relativePath}}</a></td>\n    <td>{{level.height}}</td>\n    <td>{{level.width}}</td>\n    <td>{{level.countWalls}}</td>\n    <td>{{level.countBoxes}}</td>\n    <td>{{level.countGoals}}</td>\n    <td><a href=\"{{level.fileUrl}}\">FILE.zip</a></td>\n  </tr>\n</table>\n"
 
 /***/ }),
 
@@ -664,7 +664,7 @@ var _a, _b;
 /***/ "../../../../../src/app/components/replays/replays.component.html":
 /***/ (function(module, exports) {
 
-module.exports = "<table class=\"table\">\n  <thead>\n  <tr>\n    <th>GameID</th>\n    <th>Description</th>\n    <th>Level</th>\n    <th>Date</th>\n  </tr>\n  </thead>\n  <tr *ngFor=\"let pokoban of pokobans\">\n    <td><a [routerLink]=\"['/games',pokoban.id]\" [queryParams]=\"{folder:'replays'}\">{{pokoban.id}}</a></td>\n    <td>{{pokoban.description}}</td>\n    <td>{{pokoban.level}}</td>\n    <td>{{pokoban.date | date: 'medium'}}</td>\n  </tr>\n</table>\n"
+module.exports = "<table class=\"table\">\n  <thead>\n  <tr>\n    <th>GameID</th>\n    <th>Description</th>\n    <th>Level</th>\n    <th>Date</th>\n  </tr>\n  </thead>\n  <tr *ngFor=\"let pokoban of pokobans\">\n    <td><a [routerLink]=\"['/games',pokoban._id]\" [queryParams]=\"{folder:'replays'}\">{{pokoban._id}}</a></td>\n    <td>{{pokoban.description}}</td>\n    <td>{{pokoban.level}}</td>\n    <td>{{pokoban.date | date: 'medium'}}</td>\n  </tr>\n</table>\n"
 
 /***/ }),
 
@@ -811,7 +811,10 @@ var PokobanGuard = (function () {
         this.pokobanService = pokobanService;
     }
     PokobanGuard.prototype.resolve = function (route, state) {
-        return this.pokobanService.one(route.params['id'], route.queryParams['folder']);
+        var _this = this;
+        return this.pokobanService
+            .oneMeta(route.params['id'], route.queryParams['folder'])
+            .then(function (meta) { return _this.pokobanService.onePokoban(meta.fileRef); });
     };
     return PokobanGuard;
 }());
@@ -888,7 +891,7 @@ var PokobanStateGuard = (function () {
         this.levelService = levelService;
     }
     PokobanStateGuard.prototype.resolve = function (route, state) {
-        return this.levelService.state(route.params['file']);
+        return this.levelService.state(route.params['folder'], route.params['file']);
     };
     return PokobanStateGuard;
 }());
@@ -1025,8 +1028,8 @@ var LevelService = (function (_super) {
     LevelService.prototype.one = function (filename) {
         return _super.prototype.get.call(this, "levels/" + filename);
     };
-    LevelService.prototype.state = function (filename) {
-        return _super.prototype.get.call(this, "levels/unsupervised/" + filename + "/state");
+    LevelService.prototype.state = function (folder, filename) {
+        return _super.prototype.get.call(this, "levels/" + folder + "/" + filename + "/state");
     };
     return LevelService;
 }(__WEBPACK_IMPORTED_MODULE_0__DataService__["a" /* DataService */]));
@@ -1048,6 +1051,12 @@ var _a;
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__DataService__ = __webpack_require__("../../../../../src/app/services/DataService.ts");
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__angular_http__ = __webpack_require__("../../../http/@angular/http.es5.js");
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__angular_core__ = __webpack_require__("../../../core/@angular/core.es5.js");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_jszip__ = __webpack_require__("../../../../jszip/lib/index.js");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_jszip___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_3_jszip__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4_rxjs_Observable__ = __webpack_require__("../../../../rxjs/Observable.js");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4_rxjs_Observable___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_4_rxjs_Observable__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5_rxjs_add_operator_toPromise__ = __webpack_require__("../../../../rxjs/add/operator/toPromise.js");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5_rxjs_add_operator_toPromise___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_5_rxjs_add_operator_toPromise__);
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = Object.setPrototypeOf ||
         ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
@@ -1070,6 +1079,9 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 
 
 
+
+
+
 var PokobanService = (function (_super) {
     __extends(PokobanService, _super);
     function PokobanService(http) {
@@ -1085,6 +1097,26 @@ var PokobanService = (function (_super) {
     };
     PokobanService.prototype.oneMeta = function (id, folder) {
         return _super.prototype.get.call(this, this.baseUrl + "/" + folder + "/" + id);
+    };
+    PokobanService.prototype.onePokoban = function (fileRef) {
+        return new __WEBPACK_IMPORTED_MODULE_4_rxjs_Observable__["Observable"](function (observer) {
+            var zipper = new __WEBPACK_IMPORTED_MODULE_3_jszip__();
+            window.fetch(fileRef)
+                .then(function (response) {
+                return Promise.resolve(response.arrayBuffer());
+            })
+                .then(function (data) { return zipper.loadAsync(data); })
+                .then(function (zip) {
+                var result = [];
+                zip.forEach(function (name, file) { return result.push(file); });
+                return result;
+            })
+                .then(function (data) { return data[0].async('text')
+                .then(function (content) {
+                observer.next(JSON.parse(content));
+                observer.complete();
+            }); });
+        }).toPromise();
     };
     return PokobanService;
 }(__WEBPACK_IMPORTED_MODULE_0__DataService__["a" /* DataService */]));
@@ -1142,6 +1174,13 @@ Object(__WEBPACK_IMPORTED_MODULE_1__angular_platform_browser_dynamic__["a" /* pl
 
 module.exports = __webpack_require__("../../../../../src/main.ts");
 
+
+/***/ }),
+
+/***/ 1:
+/***/ (function(module, exports) {
+
+/* (ignored) */
 
 /***/ })
 

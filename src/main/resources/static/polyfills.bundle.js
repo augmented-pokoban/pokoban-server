@@ -2591,7 +2591,7 @@ var Zone$1 = (function (global) {
                     'has been overwritten.\n' +
                     'Most likely cause is that a Promise polyfill has been loaded ' +
                     'after Zone.js (Polyfilling Promise api is not necessary when zone.js is loaded. ' +
-                    'If you must load oneMeta, do so before loading zone.js.)');
+                    'If you must load one, do so before loading zone.js.)');
             }
         };
         Object.defineProperty(Zone, "root", {
@@ -3548,8 +3548,8 @@ Zone.__load_patch('ZoneAwarePromise', function (global, Zone, api) {
             desc = { configurable: true, enumerable: true };
         }
         desc.get = function () {
-            // if we already set ZoneAwarePromise, use patched oneMeta
-            // otherwise return native oneMeta.
+            // if we already set ZoneAwarePromise, use patched one
+            // otherwise return native one.
             return global[ZONE_AWARE_PROMISE] ? global[ZONE_AWARE_PROMISE] : global[symbolPromise];
         };
         desc.set = function (NewNativePromise) {
@@ -3869,7 +3869,7 @@ function patchClass(className) {
                             this[originalInstanceKey][prop] = Zone.current.wrap(fn, className + '.' + prop);
                             // keep callback in wrapped function so we can
                             // use it in Function.prototype.toString to return
-                            // the native oneMeta.
+                            // the native one.
                             attachOriginToPatched(this[originalInstanceKey][prop], fn);
                         }
                         else {
@@ -4361,7 +4361,7 @@ function patchEventTarget(_global, apis, patchOptions) {
                     source = constructorName + addSource + eventName;
                 }
                 // do not create a new object as task.data to pass those things
-                // just use the global shared oneMeta
+                // just use the global shared one
                 taskData.options = options;
                 if (once) {
                     // if addEventListener with once options, we don't pass it to
@@ -5153,7 +5153,7 @@ function canPatchViaPropertyDescriptor() {
     // without adding enumerable and configurable will cause onreadystatechange
     // non-configurable
     // and if XMLHttpRequest.prototype.onreadystatechange is undefined,
-    // we should set a real desc instead a fake oneMeta
+    // we should set a real desc instead a fake one
     if (xhrDesc) {
         Object.defineProperty(XMLHttpRequest.prototype, 'onreadystatechange', {
             enumerable: true,
@@ -5574,7 +5574,7 @@ Zone.__load_patch('PromiseRejectionEvent', function (global, Zone, api) {
 
 /***/ }),
 
-/***/ 1:
+/***/ 2:
 /***/ (function(module, exports, __webpack_require__) {
 
 module.exports = __webpack_require__("../../../../../src/polyfills.ts");
@@ -5582,5 +5582,5 @@ module.exports = __webpack_require__("../../../../../src/polyfills.ts");
 
 /***/ })
 
-},[1]);
+},[2]);
 //# sourceMappingURL=polyfills.bundle.js.map

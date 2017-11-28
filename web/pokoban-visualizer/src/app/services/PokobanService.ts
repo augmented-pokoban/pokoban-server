@@ -7,6 +7,7 @@ import {PokobanMeta} from "../models/PokobanMeta";
 import * as JSZIP from 'jszip';
 import {JSZipObject} from "jszip";
 import {Observable} from "rxjs/Observable";
+import 'rxjs/add/operator/toPromise';
 
 @Injectable()
 export class PokobanService extends DataService {
@@ -25,11 +26,11 @@ export class PokobanService extends DataService {
       return super.paginate<PokobanMeta>(`${this.baseUrl}/replays`, page, pageSize);
     }
 
-    oneMeta(id: string, folder: string): Promise<Pokoban> {
-        return super.get<Pokoban>(`${this.baseUrl}/${folder}/${id}`);
+    oneMeta(id: string, folder: string): Promise<PokobanMeta> {
+        return super.get<PokobanMeta>(`${this.baseUrl}/${folder}/${id}`);
     }
 
-    onePokoban(fileRef: string): Observable<Pokoban>{
+    onePokoban(fileRef: string): Promise<Pokoban>{
       return new Observable<Pokoban>(observer => {
         let zipper = new JSZIP();
         window.fetch(fileRef)
@@ -47,7 +48,7 @@ export class PokobanService extends DataService {
               observer.next(<Pokoban> JSON.parse(content));
               observer.complete();
             }))
-      });
+      }).toPromise();
     }
 
 }

@@ -41,7 +41,7 @@ export const appRoutes: Routes = [
         }
       },
       {
-        path: 'state/:file',
+        path: 'state/:folder/:file',
         component: GameComponent,
         resolve: {
           pokoban: PokobanStateGuard

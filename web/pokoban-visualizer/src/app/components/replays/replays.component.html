@@ -8,7 +8,7 @@
   </tr>
   </thead>
   <tr *ngFor="let pokoban of pokobans">
-    <td><a [routerLink]="['/games',pokoban.id]" [queryParams]="{folder:'replays'}">{{pokoban.id}}</a></td>
+    <td><a [routerLink]="['/games',pokoban._id]" [queryParams]="{folder:'replays'}">{{pokoban._id}}</a></td>
     <td>{{pokoban.description}}</td>
     <td>{{pokoban.level}}</td>
     <td>{{pokoban.date | date: 'medium'}}</td>
