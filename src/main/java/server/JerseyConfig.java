@@ -12,6 +12,7 @@ import javax.ws.rs.ApplicationPath;
 public class JerseyConfig extends ResourceConfig {
 
     public JerseyConfig() {
+        register(CORSFilter.class);
         register(PokobanServer.class);
         register(PokobanController.class);
         register(LevelController.class);
