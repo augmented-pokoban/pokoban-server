@@ -12,7 +12,7 @@ export class LevelsComponent implements OnInit {
     pageSize: number = 20;
     curPage: number = 1;
     total: number = 0;
-    folders: string[] = ['Supervised', 'Unsuperised'];
+    folders: string[] = ['Supervised', 'Unsupervised'];
     folder: string = this.folders[1];
 
     constructor(private route: ActivatedRoute,
