@@ -60,11 +60,7 @@ class PokobanController {
     @Path("{folder}/{id}")
     @Produces(MediaType.APPLICATION_JSON)
     fun show(@PathParam("folder") folder: String,
-             @PathParam("id") id: String): String {
-
-        //TODO: Is this obsolete?
-        return DbRepository(folder).one(id).toString()
-    }
+             @PathParam("id") id: String): String = DbRepository(folder).one(id).toString()
 
     /**
      * Creates a new Pokoban game instance
@@ -164,7 +160,7 @@ class PokobanController {
                 //Write meta-data to db
                 DbRepository(folder)
                         .insert(jsonObject(
-                                "id" to game.id,
+                                "_id" to game.id,
                                 "description" to description,
                                 "date" to Date().time,
                                 "level" to game.level.filename.replace(".lvl", ""),

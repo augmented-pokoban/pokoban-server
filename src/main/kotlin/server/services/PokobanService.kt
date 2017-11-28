@@ -150,7 +150,9 @@ class PokobanService private constructor() {
     private fun move(game: Pokoban, agent: Agent, direction: Direction): Pokoban {
         val (newX, newY) = getRelativePosition(game.level.get(agent), direction)
 
-        if (!isValidPosition(game, newX, newY)) throw ImpossibleActionException("Impossible move action.")
+        if (!isValidPosition(game, newX, newY)) {
+            throw ImpossibleActionException("Impossible move action.")
+        }
 
         // Perform the move
         game.level.update(agent, newX, newY)
@@ -167,7 +169,9 @@ class PokobanService private constructor() {
         val box = game.level.get(boxX, boxY) ?: throw ImpossibleActionException("Impossible push action.")
         val (boxNewX, boxNewY) = getRelativePosition(boxX, boxY, direction)
 
-        if (!isValidPosition(game, boxNewX, boxNewY)) throw ImpossibleActionException("Impossible push action.")
+        if (!isValidPosition(game, boxNewX, boxNewY)) {
+            throw ImpossibleActionException("Impossible push action.")
+        }
 
         // move the box
         game.level.update(box, boxNewX, boxNewY)
