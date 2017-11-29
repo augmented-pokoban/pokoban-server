@@ -1,4 +1,5 @@
 package server.repositories
+
 import com.microsoft.azure.storage.CloudStorageAccount
 import com.microsoft.azure.storage.blob.CloudBlockBlob
 import java.io.ByteArrayInputStream
@@ -6,7 +7,7 @@ import java.io.ByteArrayOutputStream
 import java.io.InputStreamReader
 
 
-class FileRepository{
+class FileRepository {
     private val storageConnectionString = "DefaultEndpointsProtocol=https;" +
             "AccountName=pokobanserver;" +
             "AccountKey=SKhhvBowGwTysyr0qS9ErLPnsTv4b97J77hwaxCmQFS9Fv3ueY2Jye8gUqKwfgidXoGB7hwckVJ259bzyVfylA=="
@@ -36,7 +37,7 @@ class FileRepository{
 
     fun getPlay(fileName: String): InputStreamReader = getFile("plays", fileName)
 
-    private fun insert(content: ByteArrayInputStream, name: String, containerName: String): String{
+    private fun insert(content: ByteArrayInputStream, name: String, containerName: String): String {
         // Retrieve storage account from connection-string.
         // Create client and get container ref
         val container = CloudStorageAccount

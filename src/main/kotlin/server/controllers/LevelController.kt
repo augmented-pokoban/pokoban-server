@@ -26,7 +26,7 @@ class LevelController {
               @DefaultValue("1000") @QueryParam("limit") limit: Int,
               @Context context: ServletContext): String {
 
-        if(!DbRepository.validateLevelFolder(folder)) throw BadRequestException("Folder: $folder not found")
+        if (!DbRepository.validateLevelFolder(folder)) throw BadRequestException("Folder: $folder not found")
 
         val repo = DbRepository(folder)
         val levels = repo

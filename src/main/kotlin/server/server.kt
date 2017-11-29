@@ -1,7 +1,5 @@
 package server
 
-import org.springframework.boot.autoconfigure.SpringBootApplication
-import org.springframework.context.annotation.Bean
 import server.controllers.LevelController
 import server.controllers.PokobanController
 import java.util.*

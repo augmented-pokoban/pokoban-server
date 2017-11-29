@@ -1,26 +1,27 @@
 package server.repositories
 
 import com.github.salomonbrys.kotson.fromJson
+import com.github.salomonbrys.kotson.jsonObject
 import com.google.gson.Gson
 import com.google.gson.JsonObject
 import com.mongodb.MongoClientOptions
 import com.mongodb.MongoClientURI
+import com.mongodb.client.model.UpdateOptions
 import org.bson.Document
-import org.litote.kmongo.KMongo
-import org.litote.kmongo.find
-import org.litote.kmongo.insertOne
-import org.litote.kmongo.json
+import org.litote.kmongo.*
 
-class DbRepository(table: String){
+class DbRepository(table: String) {
 
     companion object {
         private val options = MongoClientOptions.Builder()
                 .sslEnabled(true)
                 .sslInvalidHostNameAllowed(true)
+
         private val client = KMongo.createClient(MongoClientURI(
                 "mongodb://pokoban:bo7DAZ60wYGp0uoh2dCb7EEknJ6RwF3UddzpXhRj2wvaNpFI5QlFDdrB4zo3YDjygXVXxGBgPkprumB3yAXRcA==" +
                         "@pokoban.documents.azure.com:10255/?replicaSet=globaldb", options))
-        val db = client.getDatabase("pokoban")
+
+        val db = client.getDatabase("pokoban")!!
 
         fun getSupervisedLevelsRepo(): DbRepository = DbRepository("supervised")
         fun getUnsupervisedLevelsRepo(): DbRepository = DbRepository("unsupervised")
@@ -33,8 +34,11 @@ class DbRepository(table: String){
     /**
      * Insert a single item into the db
      */
-    fun insert(item: JsonObject){
-        collection.insertOne(item.toString())
+    fun insert(item: JsonObject) {
+        val options = UpdateOptions()
+        options.upsert(true)
+        options.bypassDocumentValidation(true)
+        collection.replaceOneById(item["_id"].asString, Document.parse(item.toString()), options)
     }
 
     /**
