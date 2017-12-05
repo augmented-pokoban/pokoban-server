@@ -48,7 +48,7 @@ class DbRepository(table: String) {
         return collection
                 .find()
                 .skip(skip)
-                .take(take)
+                .limit(take)
                 .toList()
     }
 
