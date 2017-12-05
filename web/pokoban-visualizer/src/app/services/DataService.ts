@@ -9,7 +9,7 @@ export abstract class DataService {
     endPoint: string;
 
     constructor(private http: Http) {
-        this.endPoint = '/api'
+        this.endPoint = 'http://localhost:5000/api'
     }
 
     /**
@@ -38,7 +38,7 @@ export abstract class DataService {
       params.set('limit', pageSize.toString());
 
       return new Promise((resolve, reject) => {
-        this.http.get(`${this.endPoint}/${url}?${params.toString()}`).subscribe(response => {
+        this.http.get(`${this.endPoint}/${url}${params.toString()}`).subscribe(response => {
           resolve(response.json() as PaginationResponse<T>);
         });
       });
