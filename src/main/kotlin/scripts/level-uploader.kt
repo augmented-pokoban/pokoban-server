@@ -2,7 +2,6 @@ package scripts
 
 import com.github.salomonbrys.kotson.jsonObject
 import com.mongodb.MongoCommandException
-import org.slf4j.LoggerFactory
 import server.repositories.DbRepository
 import server.repositories.FileRepository
 import server.services.LevelService
@@ -16,24 +15,23 @@ import kotlin.streams.asSequence
 
 fun main(args: Array<String>) {
 
-    val mongoLogger = Logger.getLogger("org.mongodb.driver")
-    mongoLogger.level = Level.WARNING
-
-    val logger4j = org.apache.log4j.Logger.getRootLogger()
-    logger4j.level = org.apache.log4j.Level.toLevel("WARN")
-
     val levelType = "train"
-    val levelDifficulty = "easy"
+    val levelDifficulty = "medium"
     var totalFilesStored = 0
+    val threadCount = 1000
 
-
-    val threadCount = (0 until 10).toList()
+    val threads = (0 until threadCount).toList()
     val fileIterator = Files.list(Paths.get("../levels/$levelDifficulty")).asSequence().iterator()
 
     // parallel
-    threadCount.parallelStream().forEach {
+    threads.parallelStream().forEach {
+        // set logging
+        val mongoLogger = Logger.getLogger("org.mongodb.driver")
+        mongoLogger.level = Level.WARNING
 
         var filesStored = 0
+
+        Math.random().toInt()
 
         println("Started thread $it")
 
@@ -74,7 +72,7 @@ fun main(args: Array<String>) {
             }
 
             filesStored++
-            if (filesStored % 100 == 0) println("Thread $it: Stored $filesStored level-files on blob file storage.")
+            if (filesStored % 1000 == 0) println("Thread $it: Stored $filesStored level-files on blob file storage.")
         }
 
         totalFilesStored += filesStored
