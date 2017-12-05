@@ -20,7 +20,7 @@ import java.util.concurrent.ForkJoinPool
 
 val levelType = "train"
 val levelDifficulty = "medium"
-val offset = 1200434
+val offset = 1240029
 val chunkCount = 10000
 val upsert = false
 val poolSize = 500
@@ -61,22 +61,14 @@ fun uploadChunks(chunks: MutableList<MutableList<String>>) {
 
         println("Started thread $it")
 
-        var filesStored = 0
         val fileRepository = FileRepository()
         val dbRepository = DbRepository.getSupervisedLevelsRepo()
 
         it.forEach {
             // each level in chunk
-
             val file = Paths.get(it)
-
             uploadFile(file, fileRepository, dbRepository)
-
-            filesStored++
-            if (filesStored % 1000 == 0) println("Thread $it: Stored $filesStored level-files on blob file storage.")
         }
-
-        totalFilesStored += filesStored
     }
 
     println("Stored a total of $totalFilesStored level-files.")
@@ -88,7 +80,6 @@ fun uploadIterator(threads: List<Number>, fileIterator: Iterator<Path>) {
 
         println("Started thread $it")
 
-        var filesStored = 0
         val fileRepository = FileRepository()
         val dbRepository = DbRepository.getSupervisedLevelsRepo()
 
@@ -97,15 +88,8 @@ fun uploadIterator(threads: List<Number>, fileIterator: Iterator<Path>) {
             // get the next file from stream
             val file = fileIterator.next()
             uploadFile(file, fileRepository, dbRepository)
-
-            filesStored++
-            if (filesStored % 1000 == 0) println("Thread $it: Stored $filesStored level-files on blob file storage.")
         }
-
-        totalFilesStored += filesStored
     }
-
-    println("Stored a total of $totalFilesStored level-files.")
 }
 
 fun uploadFile(file: Path, fileRepository: FileRepository, dbRepository: DbRepository) {
@@ -133,14 +117,15 @@ fun uploadFile(file: Path, fileRepository: FileRepository, dbRepository: DbRepos
 
     try {
         dbRepository.insert(metadata, upsert)
+
+        totalFilesStored++
+        if (totalFilesStored % 1000 == 0) println("Stored $totalFilesStored level-files on blob file storage.")
     } catch (e: MongoWriteException) {
         println("Trying to insert existing record ${metadata["_id"].asString}")
     } catch (e: MongoCommandException) {
-        if (!e.message!!.contains("Request rate is large")) {
-            println(e.message)
-        }
-        Thread.sleep(10000)
+        if (!e.message!!.contains("Request rate is large")) println(e.message)
+        Thread.sleep(1000)
     } catch (e: MongoSocketReadException) {
-        Thread.sleep(50000)
+        Thread.sleep(5000)
     }
 }
