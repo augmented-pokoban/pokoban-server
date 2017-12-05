@@ -34,9 +34,9 @@ class DbRepository(table: String) {
     /**
      * Insert a single item into the db
      */
-    fun insert(item: JsonObject) {
+    fun insert(item: JsonObject, upsert: Boolean = true) {
         val options = UpdateOptions()
-        options.upsert(true)
+        options.upsert(upsert)
         options.bypassDocumentValidation(true)
         collection.replaceOneById(item["_id"].asString, Document.parse(item.toString()), options)
     }
