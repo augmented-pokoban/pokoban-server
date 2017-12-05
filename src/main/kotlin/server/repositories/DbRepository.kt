@@ -1,7 +1,6 @@
 package server.repositories
 
 import com.github.salomonbrys.kotson.fromJson
-import com.github.salomonbrys.kotson.jsonObject
 import com.google.gson.Gson
 import com.google.gson.JsonObject
 import com.mongodb.MongoClientOptions
@@ -35,10 +34,13 @@ class DbRepository(table: String) {
      * Insert a single item into the db
      */
     fun insert(item: JsonObject, upsert: Boolean = true) {
-        val options = UpdateOptions()
-        options.upsert(upsert)
-        options.bypassDocumentValidation(true)
-        collection.replaceOneById(item["_id"].asString, Document.parse(item.toString()), options)
+        if (upsert) {
+            val options = UpdateOptions()
+            options.upsert(upsert)
+            collection.replaceOneById(item["_id"].asString, Document.parse(item.toString()), options)
+        } else {
+            collection.insertOne(Document.parse(item.toString()))
+        }
     }
 
     /**

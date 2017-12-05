@@ -1,51 +1,62 @@
 package scripts
 
+import ch.qos.logback.classic.LoggerContext
 import com.github.salomonbrys.kotson.jsonObject
 import com.mongodb.MongoCommandException
+import com.mongodb.MongoWriteException
+import org.slf4j.LoggerFactory
 import server.repositories.DbRepository
 import server.repositories.FileRepository
 import server.services.LevelService
 import java.io.ByteArrayInputStream
 import java.io.InputStreamReader
-import java.net.URI
 import java.nio.file.Files
 import java.nio.file.Path
 import java.nio.file.Paths
-import java.util.logging.Level
-import java.util.logging.Logger
 import kotlin.streams.asSequence
+import java.util.concurrent.ForkJoinPool
+
 
 val levelType = "train"
 val levelDifficulty = "medium"
 var totalFilesStored = 0
 val threadCount = 100
 val offset = 527260
-val chunkCount = 10
+val chunkCount = 10000
 val upsert = false
+val poolSize = 1000
+var threadPool = ForkJoinPool(poolSize)
 
 fun main(args: Array<String>) {
 
     // set logging
-    val mongoLogger = Logger.getLogger("org.mongodb.driver")
-    mongoLogger.level = Level.WARNING
+    /*val mongoLogger = Logger.getLogger("org.mongodb.driver")
+    mongoLogger.level = Level.WARNING*/
+
+    val loggerContext = LoggerFactory.getILoggerFactory() as LoggerContext
+    val rootLogger = loggerContext.getLogger("org.mongodb.driver")
+    rootLogger.level = ch.qos.logback.classic.Level.OFF
 
     val chunks = (0 until chunkCount).map { mutableListOf<String>() }.toMutableList()
     val threads = (0 until threadCount).toList()
 
     // evenly divide the level files into the chunks
-    Files.list(Paths.get("../levels/$levelDifficulty")).asSequence().drop(offset).forEach {
+    /*Files.list(Paths.get("../levels/$levelDifficulty")).asSequence().drop(offset).forEach {
         val smallestChunk = chunks.mapIndexed { i, it -> Pair(i, it.size) }.minBy { it.second }
         chunks[smallestChunk!!.first].add(it.toAbsolutePath().toString())
-    }
+    }*/
 
     val fileIterator = Files.list(Paths.get("../levels/$levelDifficulty")).asSequence().drop(offset).iterator()
 
-    uploadIterator(threads, fileIterator)
-    uploadChunks(chunks)
+    threadPool.submit {
+        uploadIterator(threads, fileIterator)
+        // uploadChunks(chunks)
+    }.get()
 }
 
 fun uploadChunks(chunks: MutableList<MutableList<String>>) {
-    chunks.parallelStream().forEach { // each chunk
+    chunks.parallelStream().forEach {
+        // each chunk
 
         println("Started thread $it")
 
@@ -53,7 +64,8 @@ fun uploadChunks(chunks: MutableList<MutableList<String>>) {
         val fileRepository = FileRepository()
         val dbRepository = DbRepository.getSupervisedLevelsRepo()
 
-        it.forEach { // each level in chunk
+        it.forEach {
+            // each level in chunk
 
             val file = Paths.get(it)
 
@@ -120,8 +132,10 @@ fun uploadFile(file: Path, fileRepository: FileRepository, dbRepository: DbRepos
 
     try {
         dbRepository.insert(metadata, upsert)
+    } catch (e: MongoWriteException) {
+        println("Trying to insert existing record ${metadata["_id"].asString}")
     } catch (e: MongoCommandException) {
         println(e.message)
-        Thread.sleep(5000)
+        Thread.sleep(1000)
     }
 }
