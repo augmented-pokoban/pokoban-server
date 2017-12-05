@@ -3,6 +3,7 @@ package scripts
 import ch.qos.logback.classic.LoggerContext
 import com.github.salomonbrys.kotson.jsonObject
 import com.mongodb.MongoCommandException
+import com.mongodb.MongoSocketReadException
 import com.mongodb.MongoWriteException
 import org.slf4j.LoggerFactory
 import server.repositories.DbRepository
@@ -19,13 +20,13 @@ import java.util.concurrent.ForkJoinPool
 
 val levelType = "train"
 val levelDifficulty = "medium"
-var totalFilesStored = 0
-val threadCount = 100
-val offset = 527260
+val offset = 1200434
 val chunkCount = 10000
 val upsert = false
-val poolSize = 1000
+val poolSize = 500
 var threadPool = ForkJoinPool(poolSize)
+val threadCount = 100
+var totalFilesStored = 0
 
 fun main(args: Array<String>) {
 
@@ -135,7 +136,11 @@ fun uploadFile(file: Path, fileRepository: FileRepository, dbRepository: DbRepos
     } catch (e: MongoWriteException) {
         println("Trying to insert existing record ${metadata["_id"].asString}")
     } catch (e: MongoCommandException) {
-        println(e.message)
-        Thread.sleep(1000)
+        if (!e.message!!.contains("Request rate is large")) {
+            println(e.message)
+        }
+        Thread.sleep(10000)
+    } catch (e: MongoSocketReadException) {
+        Thread.sleep(50000)
     }
 }
