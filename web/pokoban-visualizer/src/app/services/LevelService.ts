@@ -13,7 +13,7 @@ export class LevelService extends DataService {
     }
 
     getPage(page: number, pageSize: number, folder: string): Promise<PaginationResponse<string>> {
-      return super.paginate<string>(`levels/${folder}?`, page, pageSize);
+      return super.paginate<string>(`levels/${folder}`, page, pageSize);
     }
 
     one(filename: string): Promise<PokobanLevel> {
