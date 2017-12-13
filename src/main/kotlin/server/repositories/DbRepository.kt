@@ -47,7 +47,7 @@ class DbRepository(table: String) {
                 }
             } catch (e: MongoCommandException) {
                 if (!e.message!!.contains("Request rate is large") || retry > 5) throw e
-                Thread.sleep(1000) // wait and retry
+                Thread.sleep(2000) // wait and retry
                 insert(item, upsert, retry + 1)
             } catch (e: MongoSocketReadException) {
                 if (retry > 5) throw e
