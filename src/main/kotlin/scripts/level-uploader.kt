@@ -25,7 +25,7 @@ val chunkCount = 10000
 val upsert = true
 val poolSize = 500
 var threadPool = ForkJoinPool(poolSize)
-val threadCount = 100
+val threadCount = 50
 var totalFilesStored = 0
 
 fun main(args: Array<String>) {
