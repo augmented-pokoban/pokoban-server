@@ -2,9 +2,9 @@ package scripts
 
 import ch.qos.logback.classic.LoggerContext
 import com.github.salomonbrys.kotson.jsonObject
-import com.mongodb.MongoCommandException
-import com.mongodb.MongoSocketReadException
-import com.mongodb.MongoWriteException
+import kotlinx.coroutines.experimental.Job
+import kotlinx.coroutines.experimental.launch
+import kotlinx.coroutines.experimental.runBlocking
 import org.slf4j.LoggerFactory
 import server.repositories.DbRepository
 import server.repositories.FileRepository
@@ -20,7 +20,7 @@ import java.util.concurrent.ForkJoinPool
 
 val levelType = "train"
 val levelDifficulty = "easy"
-val offset = 0
+val offset = 137724
 val chunkCount = 10000
 val upsert = true
 val poolSize = 500
@@ -75,19 +75,25 @@ fun uploadChunks(chunks: MutableList<MutableList<String>>) {
 }
 
 fun uploadIterator(threads: List<Number>, fileIterator: Iterator<Path>) {
-    // parallel
+
+    // parallel threads for reading files
     threads.parallelStream().forEach {
 
-        println("Started thread $it")
+        println("Starting thread $it")
 
+        val jobs = mutableListOf<Job>()
         val fileRepository = FileRepository()
         val dbRepository = DbRepository.getUnsupervisedLevelsRepo()
 
         while (fileIterator.hasNext()) {
-
             // get the next file from stream
             val file = fileIterator.next()
-            uploadFile(file, fileRepository, dbRepository)
+            jobs.add(launch { uploadFile(file, fileRepository, dbRepository) })
+        }
+
+        // wait for all the jobs on this thread to finish
+        runBlocking {
+            jobs.forEach { it.join() }
         }
     }
 }
@@ -115,11 +121,8 @@ fun uploadFile(file: Path, fileRepository: FileRepository, dbRepository: DbRepos
             "countBoxes" to level.getBoxes().count()
     )
 
-    try {
-        dbRepository.insert(metadata, upsert)
-        totalFilesStored++
-        if (totalFilesStored % 1000 == 0) println("Queued $totalFilesStored level-files on blob file storage.")
-    } catch (e: MongoWriteException) {
-        println("Trying to insert existing record ${metadata["_id"].asString}")
-    }
+    dbRepository.insert(metadata, upsert)
+
+    totalFilesStored++
+    if (totalFilesStored % 1000 == 0) println("Uploaded $totalFilesStored level-files on blob file storage.")
 }
