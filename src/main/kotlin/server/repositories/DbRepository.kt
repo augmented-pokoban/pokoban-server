@@ -5,6 +5,8 @@ import com.google.gson.Gson
 import com.google.gson.JsonObject
 import com.mongodb.*
 import com.mongodb.client.model.UpdateOptions
+import kotlinx.coroutines.experimental.async
+import kotlinx.coroutines.experimental.launch
 import org.bson.Document
 import org.litote.kmongo.*
 
@@ -33,23 +35,25 @@ class DbRepository(table: String) {
     /**
      * Insert a single item into the db
      */
-    fun insert(item: JsonObject, upsert: Boolean = true, retry: Int = 0) {
-        try {
-            if (upsert) {
-                val options = UpdateOptions()
-                options.upsert(upsert)
-                collection.replaceOneById(item["_id"].asString, Document.parse(item.toString()), options)
-            } else {
-                collection.insertOne(Document.parse(item.toString()))
+    fun insert(item: JsonObject, upsert: Boolean = true, retry: Int = 1) {
+        launch {
+            try {
+                if (upsert) {
+                    val options = UpdateOptions()
+                    options.upsert(upsert)
+                    collection.replaceOneById(item["_id"].asString, Document.parse(item.toString()), options)
+                } else {
+                    collection.insertOne(Document.parse(item.toString()))
+                }
+            } catch (e: MongoCommandException) {
+                if (!e.message!!.contains("Request rate is large") || retry > 6) throw e
+                Thread.sleep((1000 * retry).toLong()) // wait and retry
+                insert(item, upsert, retry + 1)
+            } catch (e: MongoSocketReadException) {
+                if (retry > 6) throw e
+                Thread.sleep(5000) // wait and try
+                insert(item, upsert, retry + 1)
             }
-        } catch (e: MongoCommandException) {
-            if (!e.message!!.contains("Request rate is large") || retry > 5) throw e
-            Thread.sleep(1000) // wait and retry
-            insert(item, upsert, retry + 1)
-        } catch (e: MongoSocketReadException) {
-            if (retry > 5) throw e
-            Thread.sleep(5000) // wait and try
-            insert(item, upsert, retry + 1)
         }
     }
 

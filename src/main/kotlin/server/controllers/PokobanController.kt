@@ -151,30 +151,25 @@ class PokobanController {
                         "transitions" to Gson().toJsonTree(transitions)
                 ).toString().toByteArray()
 
-                try {
-                    val byteStream = ByteOutputStream()
-                    ZipOutputStream(byteStream).use {
-                        val entry = ZipEntry(game.id + ".json")
-                        it.putNextEntry(entry)
-                        it.write(jsonToBeZipped)
-                        it.closeEntry()
-                    }
-
-                    val lookupUrl = FileRepository().insertPlay(byteStream.newInputStream(), fileName)
-
-                    // Write meta-data to db
-                    DbRepository(folder)
-                            .insert(jsonObject(
-                                    "_id" to game.id,
-                                    "description" to description,
-                                    "date" to Date().time,
-                                    "level" to game.level.filename.replace(".lvl", ""),
-                                    "steps" to transitions.size,
-                                    "fileRef" to lookupUrl))
-
-                } catch (e: Exception) {
-                    print(e)
+                val byteStream = ByteOutputStream()
+                ZipOutputStream(byteStream).use {
+                    val entry = ZipEntry(game.id + ".json")
+                    it.putNextEntry(entry)
+                    it.write(jsonToBeZipped)
+                    it.closeEntry()
                 }
+
+                val lookupUrl = FileRepository().insertPlay(byteStream.newInputStream(), fileName)
+
+                // Write meta-data to db
+                DbRepository(folder)
+                        .insert(jsonObject(
+                                "_id" to game.id,
+                                "description" to description,
+                                "date" to Date().time,
+                                "level" to game.level.filename.replace(".lvl", ""),
+                                "steps" to transitions.size,
+                                "fileRef" to lookupUrl))
             }
         }
 

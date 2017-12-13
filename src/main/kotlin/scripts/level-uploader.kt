@@ -19,13 +19,13 @@ import java.util.concurrent.ForkJoinPool
 
 
 val levelType = "train"
-val levelDifficulty = "medium"
-val offset = 1240029
+val levelDifficulty = "easy"
+val offset = 0
 val chunkCount = 10000
-val upsert = false
+val upsert = true
 val poolSize = 500
 var threadPool = ForkJoinPool(poolSize)
-val threadCount = 100
+val threadCount = 50
 var totalFilesStored = 0
 
 fun main(args: Array<String>) {
@@ -81,7 +81,7 @@ fun uploadIterator(threads: List<Number>, fileIterator: Iterator<Path>) {
         println("Started thread $it")
 
         val fileRepository = FileRepository()
-        val dbRepository = DbRepository.getSupervisedLevelsRepo()
+        val dbRepository = DbRepository.getUnsupervisedLevelsRepo()
 
         while (fileIterator.hasNext()) {
 
@@ -117,15 +117,9 @@ fun uploadFile(file: Path, fileRepository: FileRepository, dbRepository: DbRepos
 
     try {
         dbRepository.insert(metadata, upsert)
-
         totalFilesStored++
-        if (totalFilesStored % 1000 == 0) println("Stored $totalFilesStored level-files on blob file storage.")
+        if (totalFilesStored % 1000 == 0) println("Queued $totalFilesStored level-files on blob file storage.")
     } catch (e: MongoWriteException) {
         println("Trying to insert existing record ${metadata["_id"].asString}")
-    } catch (e: MongoCommandException) {
-        if (!e.message!!.contains("Request rate is large")) println(e.message)
-        Thread.sleep(1000)
-    } catch (e: MongoSocketReadException) {
-        Thread.sleep(5000)
     }
 }
