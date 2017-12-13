@@ -13,6 +13,6 @@ export class PokobanStateGuard implements Resolve<Pokoban> {
   }
 
   resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Promise<Pokoban> {
-    return this.levelService.state(route.params['folder'], route.params['file']);
+    return this.levelService.state(route.params['folder'].toLowerCase(), route.params['file']);
   }
 }

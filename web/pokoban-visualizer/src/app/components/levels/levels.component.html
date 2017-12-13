@@ -14,13 +14,13 @@
     <th>Zip</th>
   </tr>
   </thead>
-  <tr *ngFor="let level of levels | paginate: { itemsPerPage: pageSize, currentPage: curPage, totalItems: total}">
-    <td><a [routerLink]="['/games/state/' + level.relativePath.replace('.lvl', '')]">{{level.relativePath}}</a></td>
+  <tr *ngFor="let level of levels | paginate: {itemsPerPage: pageSize, currentPage: curPage, totalItems: total}">
+    <td><a [routerLink]="['/games/state/' + folder + '/' + level._id]">{{level.relativePath}}</a></td>
     <td>{{level.height}}</td>
     <td>{{level.width}}</td>
     <td>{{level.countWalls}}</td>
     <td>{{level.countBoxes}}</td>
     <td>{{level.countGoals}}</td>
-    <td><a href="{{level.fileUrl}}">FILE.zip</a></td>
+    <td><a href="{{level.fileUrl}}">FILE.lvl</a></td>
   </tr>
 </table>
