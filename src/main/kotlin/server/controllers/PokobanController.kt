@@ -40,7 +40,7 @@ class PokobanController {
         val repo = DbRepository(folder)
 
         val total = repo.count()
-        val gameFiles = repo.paginate(skip, limit)
+        val gameFiles = repo.paginate(skip, limit, "date", -1)
 
         return jsonObject(
                 "data" to Gson().toJsonTree(gameFiles),

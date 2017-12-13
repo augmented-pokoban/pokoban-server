@@ -1,3 +1,4 @@
+<pagination-controls style="display: flex;justify-content: center;" (pageChange)="pageChange($event)"></pagination-controls>
 <table class="table">
   <thead>
   <tr>
@@ -7,7 +8,7 @@
     <th>Date</th>
   </tr>
   </thead>
-  <tr *ngFor="let pokoban of pokobans">
+  <tr *ngFor="let pokoban of pokobans | paginate: {itemsPerPage: pageSize, currentPage: curPage, totalItems: total}">
     <td><a [routerLink]="['/games',pokoban._id]" [queryParams]="{folder:'replays'}">{{pokoban._id}}</a></td>
     <td>{{pokoban.description}}</td>
     <td>{{pokoban.level}}</td>

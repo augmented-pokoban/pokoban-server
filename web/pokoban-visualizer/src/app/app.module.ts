@@ -19,13 +19,16 @@ import {PokobanStateGuard} from './guards/PokobanStateGuard';
 import {PokobanReplaysGuard} from './guards/PokobanReplaysGuard';
 import {ReplaysComponent} from "./components/replays/replays.component";
 import {NgxPaginationModule} from "ngx-pagination";
+import {PokobanRunningGuard} from "./guards/PokobanRunningGuard";
+import {RunningComponent} from "./components/running/running.component";
 
 const GUARDS = [
     PokobanGuard,
     PokobanGamesGuard,
     PokobanReplaysGuard,
     LevelsGuard,
-    PokobanStateGuard
+    PokobanStateGuard,
+    PokobanRunningGuard
 ];
 
 const SERVICES = [
@@ -39,7 +42,8 @@ const COMPONENTS = [
     GameComponent,
     GamesComponent,
     LevelsComponent,
-    ReplaysComponent
+    ReplaysComponent,
+    RunningComponent
 ];
 
 @NgModule({

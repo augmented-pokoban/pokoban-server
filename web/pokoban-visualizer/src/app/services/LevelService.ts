@@ -20,7 +20,7 @@ export class LevelService extends DataService {
         return super.get<PokobanLevel>(`levels/${filename}`);
     }
 
-    state(folder: string, filename: string): Promise<Pokoban> {
-      return super.get<Pokoban>(`levels/${folder}/${filename}/state`);
+    state(folder: string, levelID: string): Promise<Pokoban> {
+      return super.get<Pokoban>(`levels/${folder}/${levelID}/state`);
     }
 }

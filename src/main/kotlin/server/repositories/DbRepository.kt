@@ -58,9 +58,9 @@ class DbRepository(table: String) {
     /**
      * Retrieve a list of items using the skip-take interface
      */
-    fun paginate(skip: Int, take: Int, sortField: String = "_id"): List<Document> {
+    fun paginate(skip: Int, take: Int, sortField: String = "_id", sortOrder: Int = 1): List<Document> {
 
-        val sort = "{$sortField: 1}"
+        val sort = "{$sortField: $sortOrder}"
 
         return collection
                 .find()

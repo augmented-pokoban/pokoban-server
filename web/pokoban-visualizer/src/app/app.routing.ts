@@ -8,6 +8,8 @@ import {LevelsGuard} from "./guards/LevelsGuard";
 import {PokobanStateGuard} from "./guards/PokobanStateGuard";
 import {ReplaysComponent} from "./components/replays/replays.component";
 import {PokobanReplaysGuard} from "./guards/PokobanReplaysGuard";
+import {RunningComponent} from "./components/running/running.component";
+import {PokobanRunningGuard} from "./guards/PokobanRunningGuard";
 
 export const appRoutes: Routes = [
   {
@@ -56,6 +58,13 @@ export const appRoutes: Routes = [
     resolve: {
       pokobans: PokobanReplaysGuard
     }
-
+  },
+  {
+    path: 'running',
+    pathMatch: 'full',
+    component: RunningComponent,
+    resolve: {
+      running: PokobanRunningGuard
+    }
   }
 ];
