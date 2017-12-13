@@ -35,7 +35,7 @@ class DbRepository(table: String) {
     /**
      * Insert a single item into the db
      */
-    fun insert(item: JsonObject, upsert: Boolean = true, retry: Int = 1) {
+    fun insert(item: JsonObject, upsert: Boolean = true, retry: Int = 1): Boolean {
         try {
             if (upsert) {
                 val options = UpdateOptions()
@@ -47,12 +47,13 @@ class DbRepository(table: String) {
         } catch (e: MongoCommandException) {
             if (!e.message!!.contains("Request rate is large") || retry > 6) throw e
             Thread.sleep((1000 * retry).toLong()) // wait and retry
-            insert(item, upsert, retry + 1)
+            return insert(item, upsert, retry + 1)
         } catch (e: MongoSocketReadException) {
             if (retry > 6) throw e
             Thread.sleep(5000) // wait and try
-            insert(item, upsert, retry + 1)
+            return insert(item, upsert, retry + 1)
         }
+        return true
     }
 
     /**

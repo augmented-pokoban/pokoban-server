@@ -16,17 +16,18 @@ import java.nio.file.Path
 import java.nio.file.Paths
 import kotlin.streams.asSequence
 import java.util.concurrent.ForkJoinPool
-
+import java.util.concurrent.locks.ReentrantLock
 
 val levelType = "train"
 val levelDifficulty = "easy"
-val offset = 137724
+val offset = 152184
 val chunkCount = 10000
 val upsert = true
 val poolSize = 500
 var threadPool = ForkJoinPool(poolSize)
 val threadCount = 50
 var totalFilesStored = 0
+var totalJobs = 0
 
 fun main(args: Array<String>) {
 
@@ -76,6 +77,9 @@ fun uploadChunks(chunks: MutableList<MutableList<String>>) {
 
 fun uploadIterator(threads: List<Number>, fileIterator: Iterator<Path>) {
 
+    // iterator read lock
+    val lock = ReentrantLock()
+
     // parallel threads for reading files
     threads.parallelStream().forEach {
 
@@ -86,9 +90,15 @@ fun uploadIterator(threads: List<Number>, fileIterator: Iterator<Path>) {
         val dbRepository = DbRepository.getUnsupervisedLevelsRepo()
 
         while (fileIterator.hasNext()) {
-            // get the next file from stream
+            // get the next file from stream - thread safe
+            lock.lock()
             val file = fileIterator.next()
+            lock.unlock()
+
             jobs.add(launch { uploadFile(file, fileRepository, dbRepository) })
+
+            totalJobs++
+            if (totalJobs % 1000 == 0) println("Thread-$it: Queued $totalJobs level-file jobs.")
         }
 
         // wait for all the jobs on this thread to finish
@@ -121,8 +131,7 @@ fun uploadFile(file: Path, fileRepository: FileRepository, dbRepository: DbRepos
             "countBoxes" to level.getBoxes().count()
     )
 
-    dbRepository.insert(metadata, upsert)
+    val result = dbRepository.insert(metadata, upsert)
 
-    totalFilesStored++
-    if (totalFilesStored % 1000 == 0) println("Uploaded $totalFilesStored level-files on blob file storage.")
+    println("Uploaded ${totalFilesStored++} level-files on blob file storage ($filename).")
 }
