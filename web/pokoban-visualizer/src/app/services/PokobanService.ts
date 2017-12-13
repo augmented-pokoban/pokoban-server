@@ -51,4 +51,8 @@ export class PokobanService extends DataService {
       }).toPromise();
     }
 
+    running(): Promise<string[]>{
+      return super.get<string[]>(`${this.baseUrl}/running`);
+    }
+
 }
