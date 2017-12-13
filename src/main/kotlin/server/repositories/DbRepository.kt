@@ -59,16 +59,25 @@ class DbRepository(table: String) {
     /**
      * Retrieve a list of items using the skip-take interface
      */
-    fun paginate(skip: Int, take: Int, sortField: String = "_id", sortOrder: Int = 1): List<Document> {
+    fun paginate(skip: Int, take: Int, sortField: String = "_id", sortOrder: Int = 1, retry: Int = 1): List<Document> {
+        try {
+            val sort = "{$sortField: $sortOrder}"
 
-        val sort = "{$sortField: $sortOrder}"
-
-        return collection
-                .find()
-                .sort(sort)
-                .skip(skip)
-                .limit(take)
-                .toList()
+            return collection
+                    .find()
+                    .sort(sort)
+                    .skip(skip)
+                    .limit(take)
+                    .toList()
+        } catch (e: MongoCommandException) {
+            if (!e.message!!.contains("Request rate is large") || retry > 6) throw e
+            Thread.sleep((1000 * retry).toLong()) // wait and retry
+            return paginate(skip, take, sortField, sortOrder, retry + 1)
+        } catch (e: MongoSocketReadException) {
+            if (retry > 6) throw e
+            Thread.sleep(5000) // wait and try
+            return paginate(skip, take, sortField, sortOrder, retry + 1)
+        }
     }
 
     /**
