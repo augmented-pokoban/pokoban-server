@@ -3,6 +3,8 @@ package server.controllers
 import com.github.salomonbrys.kotson.jsonObject
 import com.google.gson.Gson
 import com.sun.xml.internal.messaging.saaj.util.ByteOutputStream
+import kotlinx.coroutines.experimental.async
+import kotlinx.coroutines.experimental.launch
 import server.model.PokobanAction
 import server.repositories.DbRepository
 import server.repositories.FileRepository
@@ -14,6 +16,7 @@ import javax.servlet.ServletContext
 import javax.ws.rs.*
 import javax.ws.rs.core.Context
 import javax.ws.rs.core.MediaType
+
 
 operator fun Number.plusAssign(d: Double) {
     this.toDouble() + d
@@ -32,7 +35,7 @@ class PokobanController {
               @DefaultValue("0") @QueryParam("skip") skip: Int,
               @DefaultValue("1000") @QueryParam("limit") limit: Int): String {
 
-        if(!DbRepository.validatePokobanFolder(folder)) throw BadRequestException("Folder: $folder not found.")
+        if (!DbRepository.validatePokobanFolder(folder)) throw BadRequestException("Folder: $folder not found.")
 
         val repo = DbRepository(folder)
 
@@ -70,7 +73,7 @@ class PokobanController {
     @Produces(MediaType.APPLICATION_JSON)
     fun create(@PathParam("filename") filename: String): String {
 
-        val game = PokobanService.instance.start(filename.replace("_","/"))
+        val game = PokobanService.instance.start(filename.replace("_", "/"))
 
         return jsonObject(
                 "state" to Gson().toJsonTree(game.getState()),
@@ -129,46 +132,49 @@ class PokobanController {
                 @DefaultValue("") @QueryParam("description") description: String,
                 @Context context: ServletContext): String {
 
-        val (initalState, game, transitions) = PokobanService.instance.remove(id)
+        // execute the actual request concurrently
+        launch {
+            val (initalState, game, transitions) = PokobanService.instance.remove(id)
 
-        if (store && initalState != null && game != null && transitions != null) {
+            if (store && initalState != null && game != null && transitions != null) {
 
-            val folder = if (isPlanner) "saves" else "replays"
+                val folder = if (isPlanner) "saves" else "replays"
 
-            // Save transition in file system, get path back
-            val fileName = game.id + ".zip"
+                // Save transition in file system, get path back
+                val fileName = game.id + ".zip"
 
-            val jsonToBeZipped = jsonObject(
-                    "id" to game.id,
-                    "description" to description,
-                    "level" to game.level.filename.replace(".lvl", ""),
-                    "initial" to Gson().toJsonTree(initalState),
-                    "transitions" to Gson().toJsonTree(transitions)
-            ).toString().toByteArray()
+                val jsonToBeZipped = jsonObject(
+                        "id" to game.id,
+                        "description" to description,
+                        "level" to game.level.filename.replace(".lvl", ""),
+                        "initial" to Gson().toJsonTree(initalState),
+                        "transitions" to Gson().toJsonTree(transitions)
+                ).toString().toByteArray()
 
-            try{
-                val byteStream = ByteOutputStream()
-                ZipOutputStream(byteStream).use {
-                    val entry = ZipEntry(game.id + ".json")
-                    it.putNextEntry(entry)
-                    it.write(jsonToBeZipped)
-                    it.closeEntry()
+                try {
+                    val byteStream = ByteOutputStream()
+                    ZipOutputStream(byteStream).use {
+                        val entry = ZipEntry(game.id + ".json")
+                        it.putNextEntry(entry)
+                        it.write(jsonToBeZipped)
+                        it.closeEntry()
+                    }
+
+                    val lookupUrl = FileRepository().insertPlay(byteStream.newInputStream(), fileName)
+
+                    // Write meta-data to db
+                    DbRepository(folder)
+                            .insert(jsonObject(
+                                    "_id" to game.id,
+                                    "description" to description,
+                                    "date" to Date().time,
+                                    "level" to game.level.filename.replace(".lvl", ""),
+                                    "steps" to transitions.size,
+                                    "fileRef" to lookupUrl))
+
+                } catch (e: Exception) {
+                    print(e)
                 }
-
-                val lookupUrl = FileRepository().insertPlay(byteStream.newInputStream(), fileName)
-
-                //Write meta-data to db
-                DbRepository(folder)
-                        .insert(jsonObject(
-                                "_id" to game.id,
-                                "description" to description,
-                                "date" to Date().time,
-                                "level" to game.level.filename.replace(".lvl", ""),
-                                "steps" to transitions.size,
-                                "fileRef" to lookupUrl))
-
-            } catch (e: Exception){
-                print(e)
             }
         }
 
