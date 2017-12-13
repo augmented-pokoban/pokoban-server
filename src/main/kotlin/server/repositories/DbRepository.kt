@@ -69,7 +69,7 @@ class DbRepository(table: String) {
                     .skip(skip)
                     .limit(take)
                     .toList()
-        } catch (e: MongoCommandException) {
+        } catch (e: MongoQueryException) {
             if (!e.message!!.contains("Request rate is large") || retry > 6) throw e
             Thread.sleep((1000 * retry).toLong()) // wait and retry
             return paginate(skip, take, sortField, sortOrder, retry + 1)
