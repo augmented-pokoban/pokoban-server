@@ -33,14 +33,16 @@ class PokobanController {
     @Produces(MediaType.APPLICATION_JSON)
     fun index(@PathParam("folder") folder: String,
               @DefaultValue("0") @QueryParam("skip") skip: Int,
-              @DefaultValue("1000") @QueryParam("limit") limit: Int): String {
+              @DefaultValue("1000") @QueryParam("limit") limit: Int,
+              @DefaultValue("") @QueryParam("last_id") lastID: String): String {
 
         if (!DbRepository.validatePokobanFolder(folder)) throw BadRequestException("Folder: $folder not found.")
+        val find = if(lastID == "") lastID else "{_id : {\$gt : '$lastID'}}"
 
         val repo = DbRepository(folder)
 
         val total = repo.count()
-        val gameFiles = repo.paginate(skip, limit, "date", -1)
+        val gameFiles = repo.paginate(skip, limit, "date", -1, find=find)
 
         return jsonObject(
                 "data" to Gson().toJsonTree(gameFiles),
