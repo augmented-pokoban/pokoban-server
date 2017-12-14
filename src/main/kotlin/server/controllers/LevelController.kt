@@ -24,13 +24,13 @@ class LevelController {
     fun index(@PathParam("folder") folder: String,
               @DefaultValue("0") @QueryParam("skip") skip: Int,
               @DefaultValue("1000") @QueryParam("limit") limit: Int,
+              @DefaultValue("") @QueryParam("last_id") lastID: String,
               @Context context: ServletContext): String {
 
         if (!DbRepository.validateLevelFolder(folder)) throw BadRequestException("Folder: $folder not found")
-
+        val find = if(lastID == "") lastID else "{_id : {\$gt : '$lastID'}}"
         val repo = DbRepository(folder)
-        val levels = repo
-                .paginate(skip, limit)
+        val levels = repo.paginate(skip, limit, find=find) //repo.paginate(skip, limit, find=find)
         val total = repo.count()
 
         return jsonObject(
