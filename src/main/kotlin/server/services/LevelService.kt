@@ -32,8 +32,8 @@ class LevelService private constructor() {
 		val goalMap: MutableMap<Int, Goal> = HashMap()
 		val collisionMap: MutableMap<Int, PokobanObject> = HashMap()
 
-		var width: Int = 0
-		var height: Int = 0
+		var width = 0
+		var height = 0
 
 		var mapfile = ""
 

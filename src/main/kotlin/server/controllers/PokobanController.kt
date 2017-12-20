@@ -80,7 +80,7 @@ class PokobanController {
 
         val game = PokobanService.instance.start(filename.replace("_", "/"))
 
-        println("Created game with id ${game.id}")
+        println("Created game with id ${game.id} from level $filename.")
 
         return jsonObject(
                 "state" to Gson().toJsonTree(game.getState()),
@@ -185,10 +185,10 @@ class PokobanController {
                                 "level" to game.level.filename.replace(".lvl", ""),
                                 "steps" to transitions.size,
                                 "fileRef" to lookupUrl))
+
+                println("Destroyed game with id $id and level ${game.level.filename}")
             }
         }
-
-        println("Destroyed game with id $id")
 
         return jsonObject("success" to true).toString()
     }
