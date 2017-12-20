@@ -147,6 +147,8 @@ class PokobanController {
                 @DefaultValue("") @QueryParam("description") description: String,
                 @Context context: ServletContext): String {
 
+        println("Destroying game with id $id")
+
         // execute the actual request concurrently
         launch {
             val (initalState, game, transitions) = PokobanService.instance.remove(id)
@@ -186,7 +188,6 @@ class PokobanController {
                                 "steps" to transitions.size,
                                 "fileRef" to lookupUrl))
 
-                println("Destroyed game with id $id and level ${game.level.filename}")
             }
         }
 
