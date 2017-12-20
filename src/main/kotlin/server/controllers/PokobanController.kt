@@ -16,6 +16,7 @@ import javax.servlet.ServletContext
 import javax.ws.rs.*
 import javax.ws.rs.core.Context
 import javax.ws.rs.core.MediaType
+import javax.ws.rs.core.Response
 
 
 operator fun Number.plusAssign(d: Double) {
@@ -38,13 +39,13 @@ class PokobanController {
               @DefaultValue("desc") @QueryParam("order") order: String): String {
 
         if (!DbRepository.validatePokobanFolder(folder)) throw BadRequestException("Folder: $folder not found.")
-        val find = if(lastID == "") lastID else "{_id : {\$gt : '$lastID'}}"
-        val sortOrder = if(order == "asc") 1 else -1
+        val find = if (lastID == "") lastID else "{_id : {\$gt : '$lastID'}}"
+        val sortOrder = if (order == "asc") 1 else -1
 
         val repo = DbRepository(folder)
 
         val total = repo.count()
-        val gameFiles = repo.paginate(skip, limit, "date", sortOrder, find=find)
+        val gameFiles = repo.paginate(skip, limit, "date", sortOrder, find = find)
 
         return jsonObject(
                 "data" to Gson().toJsonTree(gameFiles),
@@ -107,21 +108,29 @@ class PokobanController {
     @Path("{id}/{action}")
     @Produces(MediaType.APPLICATION_JSON)
     fun transition(@PathParam("id") id: String,
-                   @PathParam("action") action: String): String {
+                   @PathParam("action") action: String) : Response {
 
         val pokobanAction = PokobanAction.valueOf(action.toUpperCase().replace("-", "_"))
-        var (success, reward, game) = PokobanService.instance.transition(id, pokobanAction)
 
-        val done = game.isDone()
-        if (done) reward = 10.0
+        try {
+            var (success, reward, game) = PokobanService.instance.transition(id, pokobanAction)
 
-        return jsonObject(
-                "state" to Gson().toJsonTree(game.getState()),
-                "action" to pokobanAction.toString(),
-                "reward" to reward,
-                "done" to done,
-                "success" to success
-        ).toString()
+            val done = game.isDone()
+            if (done) reward = 10.0
+
+            val json = jsonObject(
+                    "state" to Gson().toJsonTree(game.getState()),
+                    "action" to pokobanAction.toString(),
+                    "reward" to reward,
+                    "done" to done,
+                    "success" to success
+            ).toString()
+
+            return Response.ok(json).build()
+        } catch (e: NoSuchElementException) {
+            println("Game with id $id does not exist.\nCurrently running games:\n${PokobanService.instance.all().map { it.id }}")
+            return Response.status(Response.Status.BAD_REQUEST).build()
+        }
     }
 
     /**

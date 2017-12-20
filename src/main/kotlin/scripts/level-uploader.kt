@@ -20,7 +20,7 @@ import java.util.concurrent.locks.ReentrantLock
 
 val levelType = "train"
 val levelDifficulty = "easy"
-val offset = 152184
+val offset = 629119
 val chunkCount = 10000
 val upsert = true
 val poolSize = 500
@@ -133,5 +133,5 @@ fun uploadFile(file: Path, fileRepository: FileRepository, dbRepository: DbRepos
 
     val result = dbRepository.insert(metadata, upsert)
 
-    println("Uploaded ${totalFilesStored++} level-files on blob file storage ($filename).")
+    println("Uploaded ${totalFilesStored++} of $totalJobs level-files ($filename).")
 }
