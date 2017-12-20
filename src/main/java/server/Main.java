@@ -18,7 +18,7 @@ public class Main extends SpringBootServletInitializer {
         return "forward:/index.html";
     }
 
-    public static void main(String[] args) throws Exception {
+    public static void main(String[] args) {
         if (AuthConfigFactory.getFactory() == null) {
             AuthConfigFactory.setFactory(new AuthConfigFactoryImpl());
         }
