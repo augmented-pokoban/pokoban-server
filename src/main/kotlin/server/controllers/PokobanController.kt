@@ -39,7 +39,7 @@ class PokobanController {
               @DefaultValue("desc") @QueryParam("order") order: String): String {
 
         if (!DbRepository.validatePokobanFolder(folder)) throw BadRequestException("Folder: $folder not found.")
-        val find = if (lastID == "") lastID else "{_id : {\$gt : '$lastID'}}"
+        val find = if (lastID == "") lastID else "{_id : {\$gt : '$lastID'}, description : { \$ne : 'Terminated from outer' }}"
         val sortOrder = if (order == "asc") 1 else -1
 
         val repo = DbRepository(folder)

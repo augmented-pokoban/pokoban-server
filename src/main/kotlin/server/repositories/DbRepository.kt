@@ -63,7 +63,7 @@ class DbRepository(table: String) {
     fun paginate(skip: Int, take: Int, sortField: String = "_id", sortOrder: Int = 1, retry: Int = 1, find: String = EMPTY_JSON): List<Document> {
         try {
             val sort = "{$sortField: $sortOrder}"
-            val findJson = if(find == "") EMPTY_JSON else find
+            val findJson = if (find == "") EMPTY_JSON else find
 
             return collection
                     .find(findJson)
