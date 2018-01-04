@@ -19,15 +19,16 @@ import java.util.concurrent.ForkJoinPool
 import java.util.concurrent.locks.ReentrantLock
 
 val levelType = "train"
-val levelDifficulty = "easy"
-val offset = 629119
+val levelDifficulty = "supereasy"
+val offset = 0
 val chunkCount = 10000
 val upsert = true
 val poolSize = 500
 var threadPool = ForkJoinPool(poolSize)
-val threadCount = 50
+val threadCount = 1
 var totalFilesStored = 0
 var totalJobs = 0
+val totalFilesCount = Files.list(Paths.get("../levels/$levelDifficulty")).count()
 
 fun main(args: Array<String>) {
 
@@ -133,5 +134,5 @@ fun uploadFile(file: Path, fileRepository: FileRepository, dbRepository: DbRepos
 
     val result = dbRepository.insert(metadata, upsert)
 
-    println("Uploaded ${totalFilesStored++} of $totalJobs level-files ($filename).")
+    println("Uploaded ${totalFilesStored++} of $totalFilesCount level-files ($filename).")
 }
