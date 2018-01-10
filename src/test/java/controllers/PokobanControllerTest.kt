@@ -11,15 +11,15 @@ class PokobanControllerTest {
     @Ignore("Requires running server")
     @Test
     fun testIndex() {
-        val response = Unirest.get("http://localhost:8080/pokoban-server/api/running").asJson().body.array
+        val response = Unirest.get("http://localhost:8080/encoding-server/api/running").asJson().body.array
         assertEquals(0, response.length())
     }
 
     @Ignore("Requires running server")
     @Test
     fun testCreate() {
-        val response1 = Unirest.post("http://localhost:8080/pokoban-server/api/test").asJson().body.`object`
-        val response2 = Unirest.get("http://localhost:8080/pokoban-server/api/running").asJson().body.`array`
+        val response1 = Unirest.post("http://localhost:8080/encoding-server/api/test").asJson().body.`object`
+        val response2 = Unirest.get("http://localhost:8080/encoding-server/api/running").asJson().body.`array`
 
         assertEquals(1, response2.length())
     }
@@ -29,7 +29,7 @@ class PokobanControllerTest {
     fun testHeapMax() {
         var times = 100000
         while (times > 0) {
-            Unirest.post("http://localhost:8080/pokoban-server/api/test").asJson().body.`object`
+            Unirest.post("http://localhost:8080/encoding-server/api/test").asJson().body.`object`
             times--
         }
     }

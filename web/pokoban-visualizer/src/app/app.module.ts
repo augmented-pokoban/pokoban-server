@@ -21,6 +21,11 @@ import {ReplaysComponent} from "./components/replays/replays.component";
 import {NgxPaginationModule} from "ngx-pagination";
 import {PokobanRunningGuard} from "./guards/PokobanRunningGuard";
 import {RunningComponent} from "./components/running/running.component";
+import {EncodingGuard} from "./guards/EncodingGuard";
+import {EncodingService} from "./services/EncodingService";
+import {EncodingComponent} from "./components/encoding/encoding.component";
+import {EncodingStorage} from "./services/EncodingStorage";
+import {EncodingVisualizerComponent} from "./components/encoding-visualizer/encoding-visualizer.component";
 
 const GUARDS = [
     PokobanGuard,
@@ -28,12 +33,14 @@ const GUARDS = [
     PokobanReplaysGuard,
     LevelsGuard,
     PokobanStateGuard,
-    PokobanRunningGuard
+    PokobanRunningGuard,
+    EncodingGuard
 ];
 
 const SERVICES = [
     PokobanService,
     LevelService,
+    EncodingService
 ];
 
 const COMPONENTS = [
@@ -43,7 +50,9 @@ const COMPONENTS = [
     GamesComponent,
     LevelsComponent,
     ReplaysComponent,
-    RunningComponent
+    RunningComponent,
+    EncodingComponent,
+    EncodingVisualizerComponent
 ];
 
 @NgModule({
@@ -59,7 +68,8 @@ const COMPONENTS = [
     ],
     providers: [
         ...SERVICES,
-        ...GUARDS
+        ...GUARDS,
+        EncodingStorage
     ],
     bootstrap: [AppComponent]
 })

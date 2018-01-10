@@ -10,6 +10,9 @@ import {ReplaysComponent} from "./components/replays/replays.component";
 import {PokobanReplaysGuard} from "./guards/PokobanReplaysGuard";
 import {RunningComponent} from "./components/running/running.component";
 import {PokobanRunningGuard} from "./guards/PokobanRunningGuard";
+import {EncodingComponent} from "./components/encoding/encoding.component";
+import {EncodingGuard} from "./guards/EncodingGuard";
+import {EncodingVisualizerComponent} from "./components/encoding-visualizer/encoding-visualizer.component";
 
 export const appRoutes: Routes = [
   {
@@ -66,5 +69,24 @@ export const appRoutes: Routes = [
     resolve: {
       running: PokobanRunningGuard
     }
+  },
+  {
+    path: 'encoding',
+    children: [
+      {
+        path: '',
+        pathMatch: 'full',
+        component: EncodingComponent,
+        resolve: {
+          encodings: EncodingGuard
+        },
+      },
+      {
+        path: 'visualizer',
+        pathMatch: 'full',
+        component: EncodingVisualizerComponent
+      }
+    ]
   }
+
 ];

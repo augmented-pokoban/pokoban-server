@@ -2,6 +2,7 @@ package server;
 
 import org.glassfish.jersey.server.ResourceConfig;
 import org.springframework.stereotype.Component;
+import server.controllers.EncodingController;
 import server.controllers.LevelController;
 import server.controllers.PokobanController;
 
@@ -16,5 +17,6 @@ public class JerseyConfig extends ResourceConfig {
         register(PokobanServer.class);
         register(PokobanController.class);
         register(LevelController.class);
+        register(EncodingController.class);
     }
 }

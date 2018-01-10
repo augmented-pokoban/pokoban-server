@@ -1,0 +1,46 @@
+<div class="col-md-8">
+  <canvas #canvas height="750" width="750"></canvas>
+</div>
+<div class="col-md-4">
+  <table>
+
+    <tr><td><strong>Action: </strong></td><td>{{encoding.action}}</td></tr>
+    <tr><td><strong>Reward (actual): </strong></td><td>{{encoding.y_reward_exp}}</td></tr>
+    <tr><td><strong>Reward (output): </strong></td><td>{{encoding.y_reward_eval}}</td></tr>
+    <tr><td><strong>Errors (total): </strong></td><td>{{encoding.errors}}</td></tr>
+    <tr><td><strong>Errors (missing): </strong></td><td>{{encoding.missing_errors}}</td></tr>
+    <tr><td><strong>Errors (overfit): </strong></td><td>{{encoding.overfit_errors}}</td></tr>
+  </table>
+
+
+
+  <div class="card" style="overflow-y: auto; height: 700px">
+    <ul class="list-group">
+      <li class="list-group-item" style="height: 40px" (click)="selectState(encoding.x_state)"
+          [class.trans-selected]="encoding.x_state == selected">
+        <span>Initial state</span>
+      </li>
+      <li class="list-group-item" style="height: 40px" (click)="selectState(encoding.y_state_exp)"
+          [class.trans-selected]="encoding.y_state_exp == selected">
+        <span>Expected state</span>
+      </li>
+      <li class="list-group-item" style="height: 40px" (click)="selectState(encoding.y_state_eval)"
+          [class.trans-selected]="encoding.y_state_eval == selected">
+        <span>Output state</span>
+      </li>
+      <li class="list-group-item" style="height: 40px" (click)="selectState(encoding.diff)"
+          [class.trans-selected]="encoding.diff == selected">
+        <span>Difference</span>
+      </li>
+      <li class="list-group-item" style="height: 40px" (click)="selectState(encoding.missing)"
+          [class.trans-selected]="encoding.missing == selected">
+        <span>Missing in output</span>
+      </li>
+      <li class="list-group-item" style="height: 40px" (click)="selectState(encoding.overfit)"
+          [class.trans-selected]="encoding.overfit == selected">
+        <span>Overfit in output</span>
+      </li>
+    </ul>
+  </div>
+
+</div>

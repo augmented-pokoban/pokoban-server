@@ -1,6 +1,6 @@
 import { AppPage } from './app.po';
 
-describe('pokoban-visualizer App', () => {
+describe('encoding-visualizer App', () => {
   let page: AppPage;
 
   beforeEach(() => {

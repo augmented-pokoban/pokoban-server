@@ -23,7 +23,7 @@ operator fun Number.plusAssign(d: Double) {
     this.toDouble() + d
 }
 
-@Path("/pokoban")
+@Path("/encoding")
 class PokobanController {
 
     /**
@@ -36,7 +36,8 @@ class PokobanController {
               @DefaultValue("0") @QueryParam("skip") skip: Int,
               @DefaultValue("1000") @QueryParam("limit") limit: Int,
               @DefaultValue("") @QueryParam("last_id") lastID: String,
-              @DefaultValue("desc") @QueryParam("order") order: String): String {
+              @DefaultValue("desc") @QueryParam("order") order: String,
+              @DefaultValue("date") @QueryParam("sort_field") sortField: String): String {
 
         if (!DbRepository.validatePokobanFolder(folder)) throw BadRequestException("Folder: $folder not found.")
         val find = "{${if (lastID != "") "_id : {\$gt : '$lastID'}," else ""} 'description' : { \$ne : 'Terminated from outer' }}"
@@ -45,7 +46,7 @@ class PokobanController {
         val repo = DbRepository(folder)
 
         val total = repo.count()
-        val gameFiles = repo.paginate(skip, limit, "date", sortOrder, find = find)
+        val gameFiles = repo.paginate(skip, limit, sortField, sortOrder, find = find)
 
         return jsonObject(
                 "data" to Gson().toJsonTree(gameFiles),
