@@ -23,7 +23,7 @@ operator fun Number.plusAssign(d: Double) {
     this.toDouble() + d
 }
 
-@Path("/encoding")
+@Path("/pokoban")
 class PokobanController {
 
     /**

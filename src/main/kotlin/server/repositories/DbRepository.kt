@@ -20,10 +20,10 @@ class DbRepository(table: String) {
                 .maxConnectionIdleTime(1200000) // 2 minute
 
         private val client = KMongo.createClient(MongoClientURI(
-                "mongodb://encoding:bo7DAZ60wYGp0uoh2dCb7EEknJ6RwF3UddzpXhRj2wvaNpFI5QlFDdrB4zo3YDjygXVXxGBgPkprumB3yAXRcA==" +
-                        "@encoding.documents.azure.com:10255/?replicaSet=globaldb", options))
+                "mongodb://pokoban:bo7DAZ60wYGp0uoh2dCb7EEknJ6RwF3UddzpXhRj2wvaNpFI5QlFDdrB4zo3YDjygXVXxGBgPkprumB3yAXRcA==" +
+                        "@pokoban.documents.azure.com:10255/?replicaSet=globaldb", options))
 
-        val db = client.getDatabase("encoding")!!
+        val db = client.getDatabase("pokoban")!!
 
         fun getSupervisedLevelsRepo(): DbRepository = DbRepository("supervised")
         fun getUnsupervisedLevelsRepo(): DbRepository = DbRepository("unsupervised")
