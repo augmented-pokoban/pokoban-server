@@ -10,6 +10,8 @@ import {ReplaysComponent} from "./components/replays/replays.component";
 import {PokobanReplaysGuard} from "./guards/PokobanReplaysGuard";
 import {RunningComponent} from "./components/running/running.component";
 import {PokobanRunningGuard} from "./guards/PokobanRunningGuard";
+import {LevelComponent} from "./components/level/level.component";
+import {LevelGuard} from "./guards/LevelGuard";
 
 export const appRoutes: Routes = [
   {
@@ -19,10 +21,23 @@ export const appRoutes: Routes = [
   },
   {
     path: 'levels',
-    component: LevelsComponent,
-    resolve: {
-      paginationResp: LevelsGuard
-    },
+    children: [
+      {
+        path: '',
+        pathMatch: 'full',
+        component: LevelsComponent,
+        resolve: {
+          paginationResp: LevelsGuard
+        },
+      },
+      {
+        path: ':level',
+        component: LevelComponent,
+        resolve: {
+          level: LevelGuard
+        }
+      },
+    ]
   },
   {
     path: 'games',

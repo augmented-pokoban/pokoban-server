@@ -13,7 +13,7 @@ export class LevelService extends DataService {
     }
 
     getPage(page: number, pageSize: number, folder: string): Promise<PaginationResponse<string>> {
-      return super.paginate<string>(`levels/${folder}`, page, pageSize);
+        return super.paginate<string>(`levels/${folder}`, page, pageSize);
     }
 
     one(filename: string): Promise<PokobanLevel> {
@@ -21,6 +21,10 @@ export class LevelService extends DataService {
     }
 
     state(folder: string, levelID: string): Promise<Pokoban> {
-      return super.get<Pokoban>(`levels/${folder}/${levelID}/state`);
+        return super.get<Pokoban>(`levels/${folder}/${levelID}/state`);
+    }
+
+    levelState(levelString: string): Promise<Pokoban> {
+        return super.post<Pokoban>(`levels/state`, levelString);
     }
 }

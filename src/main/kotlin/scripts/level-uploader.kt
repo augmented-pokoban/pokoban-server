@@ -32,10 +32,6 @@ val totalFilesCount = Files.list(Paths.get("../levels/$levelDifficulty")).count(
 
 fun main(args: Array<String>) {
 
-    // set logging
-    /*val mongoLogger = Logger.getLogger("org.mongodb.driver")
-    mongoLogger.level = Level.WARNING*/
-
     val loggerContext = LoggerFactory.getILoggerFactory() as LoggerContext
     val rootLogger = loggerContext.getLogger("org.mongodb.driver")
     rootLogger.level = ch.qos.logback.classic.Level.OFF
@@ -96,6 +92,7 @@ fun uploadIterator(threads: List<Number>, fileIterator: Iterator<Path>) {
             val file = fileIterator.next()
             lock.unlock()
 
+            // start a new job
             jobs.add(launch { uploadFile(file, fileRepository, dbRepository) })
 
             totalJobs++
@@ -103,9 +100,7 @@ fun uploadIterator(threads: List<Number>, fileIterator: Iterator<Path>) {
         }
 
         // wait for all the jobs on this thread to finish
-        runBlocking {
-            jobs.forEach { it.join() }
-        }
+        runBlocking { jobs.forEach { it.join() } }
     }
 }
 

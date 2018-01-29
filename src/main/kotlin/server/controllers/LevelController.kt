@@ -77,4 +77,21 @@ class LevelController {
 
         return Gson().toJson(result).toString()
     }
+
+    /**
+     * Returns a level state by input string
+     */
+    @POST
+    @Path("state")
+    @Produces(MediaType.APPLICATION_JSON)
+    fun state(@Context context: ServletContext,
+              body: String): String {
+
+        val level = LevelService.instance.loadLevel(body, "level.lvl")
+        val state = Pokoban("level.lvl", level)
+        return jsonObject(
+                "initial" to Gson().toJsonTree(state.getState()),
+                "transitions" to Gson().toJsonTree(emptyList<PokobanTransition>())
+        ).toString()
+    }
 }

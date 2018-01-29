@@ -1,4 +1,4 @@
-import {AfterContentInit, Component, OnInit, ViewChild} from '@angular/core';
+import {AfterContentInit, Component, OnInit, ViewChild, Input} from '@angular/core';
 import {ActivatedRoute} from "@angular/router";
 import {Pokoban} from "../../models/Pokoban";
 import {PokobanState} from "../../models/PokobanState";
@@ -10,7 +10,7 @@ import {PokobanObject} from "../../models/PokobanObject";
     templateUrl: './visualizer.component.html',
     styleUrls: ['./visualizer.component.css']
 })
-export class VisualizerComponent implements OnInit, AfterContentInit {
+export class VisualizerComponent implements AfterContentInit {
 
     @ViewChild('canvas') canvas;
 
@@ -18,13 +18,10 @@ export class VisualizerComponent implements OnInit, AfterContentInit {
     baseWidth: number;
     baseHeight: number;
 
+    @Input('pokoban')
     pokoban: Pokoban;
 
     constructor(private route: ActivatedRoute) {
-    }
-
-    ngOnInit() {
-        this.pokoban = this.route.snapshot.data['pokoban'];
     }
 
     ngAfterContentInit() {

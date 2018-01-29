@@ -16,7 +16,7 @@
     </parent>
 
     <properties>
-        <kotlin.version>1.2.10</kotlin.version>
+        <kotlin.version>1.2.21</kotlin.version>
         <jersey.version>2.26-b03</jersey.version>
         <java.version>1.8</java.version>
         <node.version>v8.6.0</node.version>
@@ -29,7 +29,7 @@
     <dependencies>
         <dependency>
             <groupId>org.jetbrains.kotlin</groupId>
-            <artifactId>kotlin-stdlib-jre8</artifactId>
+            <artifactId>kotlin-stdlib-jdk8</artifactId>
             <version>${kotlin.version}</version>
         </dependency>
         <dependency>
