@@ -25,10 +25,11 @@ class LevelController {
               @DefaultValue("0") @QueryParam("skip") skip: Int,
               @DefaultValue("1000") @QueryParam("limit") limit: Int,
               @DefaultValue("") @QueryParam("last_id") lastID: String,
+              @DefaultValue("supereasy") @QueryParam("difficulty") difficulty: String,
               @Context context: ServletContext): String {
 
         if (!DbRepository.validateLevelFolder(folder)) throw BadRequestException("Folder: $folder not found")
-        val find = if (lastID == "") lastID else "{_id : {\$gt : '$lastID'}, difficulty: 'supereasy'}"
+        val find = if (lastID == "") lastID else "{_id : {\$gt : '$lastID'}, difficulty: $difficulty'}"
         val repo = DbRepository(folder)
         val levels = repo.paginate(skip, limit, find = find) //repo.paginate(skip, limit, find=find)
         val total = repo.count()

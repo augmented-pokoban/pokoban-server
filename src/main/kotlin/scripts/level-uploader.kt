@@ -19,7 +19,7 @@ import java.util.concurrent.ForkJoinPool
 import java.util.concurrent.locks.ReentrantLock
 
 val levelType = "unsupervised"
-val levelDifficulty = "supervised"
+val levelDifficulty = "simple"
 val offset = 0
 val chunkCount = 10000
 val upsert = true
