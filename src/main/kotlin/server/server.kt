@@ -1,5 +1,6 @@
 package server
 
+import server.controllers.EncodingController
 import server.controllers.LevelController
 import server.controllers.PokobanController
 import java.util.*
@@ -24,7 +25,8 @@ class PokobanServer : Application() {
 		return HashSet<Class<*>>(listOf(
 				CORSFilter::class.java,
 				PokobanController::class.java,
-				LevelController::class.java
+				LevelController::class.java,
+                EncodingController::class.java
 		))
 	}
 

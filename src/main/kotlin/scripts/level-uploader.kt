@@ -18,8 +18,8 @@ import kotlin.streams.asSequence
 import java.util.concurrent.ForkJoinPool
 import java.util.concurrent.locks.ReentrantLock
 
-val levelType = "train"
-val levelDifficulty = "supereasy"
+val levelType = "unsupervised"
+val levelDifficulty = "supervised"
 val offset = 0
 val chunkCount = 10000
 val upsert = true

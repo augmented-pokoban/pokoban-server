@@ -1,0 +1,19 @@
+<p>Count: {{total | number}}</p>
+<table class="table">
+  <thead>
+  <tr>
+    <th>ID</th>
+    <th>Action</th>
+    <th>Errors</th>
+    <th>Reward</th>
+    <th>Correct reward</th>
+  </tr>
+  </thead>
+  <tr *ngFor="let encoding of encodings">
+    <td><a (click)="onClick(encoding)">{{encoding._id.counter}}</a></td>
+    <td>{{encoding.action}}</td>
+    <td>{{encoding.errors}}</td>
+    <td>{{encoding.y_reward_eval}}</td>
+    <td>{{encoding.success}}</td>
+  </tr>
+</table>
