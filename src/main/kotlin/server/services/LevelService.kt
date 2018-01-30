@@ -26,17 +26,11 @@ class LevelService private constructor() {
         val instance: LevelService by lazy { Holder.INSTANCE }
     }
 
-    fun loadLevel(file: InputStreamReader, levelName: String): Level {
+    fun loadLevel(file: InputStreamReader, levelName: String): Level = loadLevel(file.readLines(), levelName)
 
-        return loadLevel(file.readLines(), levelName)
-    }
+    fun loadLevel(body: String, levelName: String): Level = loadLevel(body.split("\n").toList(), levelName)
 
-    fun loadLevel(body: String, levelName: String): Level {
-
-        return loadLevel(body.split("\n").toList(), levelName)
-    }
-
-    fun loadLevel(lines: List<String>, levelName: String): Level {
+    private fun loadLevel(lines: List<String>, levelName: String): Level {
         val wallMap: MutableMap<Int, Wall> = HashMap()
         val goalMap: MutableMap<Int, Goal> = HashMap()
         val collisionMap: MutableMap<Int, PokobanObject> = HashMap()
